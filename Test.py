@@ -30,20 +30,19 @@ __author__ = 'bejar'
 
 path = '/home/bejar/storage/Data/Traffic/Test/'
 
-while True:
-    print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
-    print(time.ctime(int(time.time())-600))
-    rtime = str((int(time.time())-600)*1000)
+itime = int(time.time()-600)
+
+
+for i in range(20):
+
+    rtime = str(((itime-(i*900))*1000))
     ctime = time.strftime('%Y%m%d%H%M', time.localtime())
 
-    for cam in Cameras:
-        #print('Retrieving %s ...' % cam)
+    print(time.ctime(itime-(i*900)))
 
-        img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
+    img_data = requests.get('http://www.bcn.cat/transit/imatges/TunelRovira.gif?a=1&time=%s' % rtime).content
 
 
-        with open(path+'%s-%s.gif' % (ctime, cam), 'wb') as handler:
-            handler.write(img_data)
-        time.sleep(10)
-
-    time.sleep(15 * 60)
+    with open(path+'%s-TunelRovira.gif' % str(itime-(i*900)), 'wb') as handler:
+        handler.write(img_data)
+        time.sleep(2)

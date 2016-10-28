@@ -25,23 +25,34 @@ import time
 __author__ = 'bejar'
 
 
-
 path = '/home/bejar/storage/Data/Traffic/'
 
+camret = 0
 while True:
-    print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
-    print(time.ctime(int(time.time())-600))
     rtime = str((int(time.time())-600)*1000)
-    ctime = time.strftime('%Y%m%d%H%M', time.localtime())
+    ptime = int(time.time())-600
 
-    for cam in Cameras:
-        #print('Retrieving %s ...' % cam)
+    print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
 
-        img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
+    tram = requests.get('http://www.bcn.cat/transit/dades/dadestrams.dat').content
+    with open(path +'Status/' + '%s-dadestram.data' % (ptime), 'wb') as handler:
+            handler.write(tram)
+
+    tram = requests.get('http://www.bcn.cat/transit/dades/dadesitineraris.dat').content
+    with open(path + 'Status/' + '%s-dadesitineraris.data' % (ptime), 'wb') as handler:
+            handler.write(tram)
+
+    if camret == 0:
+        print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
+        for cam in Cameras:
+            img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
+            with open(path + 'Cameras/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
+                handler.write(img_data)
+
+    time.sleep(5 * 60)
+    camret += 1
+    if camret == 3:
+        camret = 0
 
 
-        with open(path+'%s-%s.gif' % (ctime, cam), 'wb') as handler:
-            handler.write(img_data)
-        time.sleep(10)
 
-    time.sleep(15 * 60)

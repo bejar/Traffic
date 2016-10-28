@@ -26,6 +26,7 @@ Cameras =[
     'BalmesMitre',
     'DiagonalCiutatdeGranada',
     'DiagonalMCristina',
+    'GranViaBacRoda',
     'MeridianaFelipII',
     'MeridianaRioJaneiro',
     'PlAntonioLopez',
