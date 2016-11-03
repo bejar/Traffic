@@ -21,38 +21,39 @@ GetImages
 import requests
 from Cameras import Cameras
 import time
+import os.path
 
 __author__ = 'bejar'
 
 
 path = '/home/bejar/storage/Data/Traffic/'
 
-camret = 0
 while True:
+    todaypath = time.strftime('%Y%m%d', time.localtime(int(time.time())-600))
+    if not os.path.exists(path + 'Cameras/' + todaypath):
+        os.mkdir(path + 'Cameras/' + todaypath)
+        os.mkdir(path + 'Status/' + todaypath)
+
     rtime = str((int(time.time())-600)*1000)
-    ptime = int(time.time())-600
+    ptime = time.strftime('%Y%m%d%H%M', time.localtime(int(time.time())-600))
 
     print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
 
     tram = requests.get('http://www.bcn.cat/transit/dades/dadestrams.dat').content
-    with open(path +'Status/' + '%s-dadestram.data' % (ptime), 'wb') as handler:
+    with open(path +'Status/'  + todaypath + '/' + '%s-dadestram.data' % (ptime), 'wb') as handler:
             handler.write(tram)
 
     tram = requests.get('http://www.bcn.cat/transit/dades/dadesitineraris.dat').content
-    with open(path + 'Status/' + '%s-dadesitineraris.data' % (ptime), 'wb') as handler:
+    with open(path + 'Status/' + todaypath + '/' + '%s-dadesitineraris.data' % (ptime), 'wb') as handler:
             handler.write(tram)
 
-    if camret == 0:
-        print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
-        for cam in Cameras:
-            img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
-            with open(path + 'Cameras/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
-                handler.write(img_data)
+    print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
+    for cam in Cameras:
+        img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
+        with open(path + 'Cameras/'  + todaypath + '/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
+            handler.write(img_data)
 
-    time.sleep(5 * 60)
-    camret += 1
-    if camret == 3:
-        camret = 0
+    time.sleep(15 * 60)
 
 
 
