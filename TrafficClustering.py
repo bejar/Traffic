@@ -23,17 +23,21 @@ import glob
 from Constants import cameras_path
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 from scipy.ndimage import zoom
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.cbook as cbook
+import matplotlib.image as mpimg
 
 __author__ = 'bejar'
 
 day = '20161029'
 
-
-ldir = glob.glob(cameras_path+day+'/*Ronda*.gif')
+ldir = []
+for c in ['Ronda*']:
+    ldir.extend(glob.glob(cameras_path+day+'/*%s.gif'%c))
 
 ldata = []
 
@@ -46,23 +50,68 @@ for dir in ldir:
     ldata.append(data)
 
 adata = np.array(ldata)
-pca = PCA(n_components=100)
+pca = PCA(n_components=20)
 
 pcadata = pca.fit_transform(adata)
 
-tsne = TSNE(n_components=3, perplexity=10.0, early_exaggeration=10.0, learning_rate=1000.0)
+v = 0
+for i in range(15):
+    v += pca.explained_variance_ratio_[i]
+print(v)
 
+# fig = plt.figure()
+# fig.set_figwidth(30)
+# fig.set_figheight(30)
+#
+# plt.scatter(pcadata[:,0], pcadata[:,1])
+#
+# plt.show()
+# plt.close()
+
+tsne = TSNE(n_components=2, n_iter=10000, perplexity=200.0, early_exaggeration=4.0, learning_rate=100.0)
 tsdata = tsne.fit_transform(pcadata)
+print(tsne.kl_divergence_ )
 
 fig = plt.figure()
 fig.set_figwidth(30)
 fig.set_figheight(30)
 
-ax = fig.add_subplot(111, projection='3d')
-plt.scatter(tsdata[:,0], tsdata[:,1],zs=tsdata[:,2], c='r', s=30, depthshade=False, marker='o')
+# ax = fig.add_subplot(111, projection='3d')
+# plt.scatter(tsdata[:,0], tsdata[:,1],zs=tsdata[:,2], c='r', s=30, depthshade=False, marker='o')
 
 
-# plt.scatter(tsdata[:,0], tsdata[:,1])
+plt.scatter(tsdata[:,0], tsdata[:,1])
 
 plt.show()
 plt.close()
+
+kmeans = KMeans(n_clusters=20, n_jobs=-1)
+
+kmeans.fit_transform(tsdata)
+
+fig = plt.figure()
+fig.set_figwidth(30)
+fig.set_figheight(30)
+plt.scatter(tsdata[:,0], tsdata[:,1], c=kmeans.labels_)
+
+plt.show()
+plt.close()
+
+for c in np.unique(kmeans.labels_):
+    bools = kmeans.labels_ == c
+
+    for i  in range(bools.shape[0]):
+        if bools[i]:
+            print(c, ldir[i])
+            # im = Image.open(ldir[i])#.convert('RGB')
+            # image =np.asarray(im)
+            image = mpimg.imread(ldir[i])
+            fig = plt.figure()
+            fig.set_figwidth(30)
+            fig.set_figheight(30)
+            plt.imshow(image)
+            plt.show()
+            plt.close()
+
+
+

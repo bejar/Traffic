@@ -24,4 +24,4 @@ data_path = '/home/bejar/storage/Data/Traffic/'
 
 cameras_path = '/home/bejar/storage/Data/Traffic/Cameras/'
 
-status_path = '/home/bejar/storage/Data/Status/'
+status_path = '/home/bejar/storage/Data/Traffic/Status/'

@@ -21,52 +21,60 @@ import os.path
 import glob
 from CamTram import CamTram
 from DataTram import DataTram
-from Constants import data_path
+from Constants import data_path, cameras_path, status_path
 import numpy as np
 
 __author__ = 'bejar'
 
-day = '20161031'
 
-imgpath = '/home/bejar/storage/Data/Traffic/Cameras/'
-datapath = '/home/bejar/storage/Data/Traffic/Status/'
+def generate_classification_dataset(day):
+    """
+    Generates a dictionary with the dates of the images with lists that contain the camera name and current and predicted
+    traffic status
 
-CTram = CamTram()
+    :param day:
+    :return:
+    """
 
-ldir = glob.glob(imgpath+day+'/*.gif')
+    #day = '20161031'
 
-camdic = {}
+    CTram = CamTram()
 
-for f in sorted(ldir):
-    name = f.split('.')[0].split('/')[-1]
-    time, place = name.split('-')
-    # print(time, place, CTram.ct[place])
-    if int(time) in camdic:
-        camdic[int(time)].append(place)
-    else:
-        camdic[int(time)] = [place]
+    ldir = glob.glob(cameras_path + day + '/*.gif')
 
-# print(camdic)
+    camdic = {}
 
-ldir = glob.glob(datapath+day+'/*-dadestram.data')
-ldata = []
-for f in sorted(ldir):
-    ldata.append(DataTram(f))
+    for f in sorted(ldir):
+        name = f.split('.')[0].split('/')[-1]
+        time, place = name.split('-')
+        # print(time, place, CTram.ct[place])
+        if int(time) in camdic:
+            camdic[int(time)].append(place)
+        else:
+            camdic[int(time)] = [place]
+
+    # print(camdic)
+
+    ldir = glob.glob(status_path + day + '/*-dadestram.data')
+    ldata = []
+    for f in sorted(ldir):
+        ldata.append(DataTram(f))
 
 
-assoc = {}
+    assoc = {}
 
-for imgtime in sorted(camdic):
-    dmin = None
-    vmin = 10000
-    for d in ldata:
-        if vmin > np.abs(imgtime - d.date):
-            vmin = np.abs(imgtime - d.date)
-            dmin = d
-    lclass = []
-    for img in camdic[imgtime]:
-        tram = CTram.ct[img][0]
-        print(imgtime, dmin.dt[tram], img)
-        lclass.append((img, dmin.dt[tram][0], dmin.dt[tram][1]))
-    assoc[imgtime] = lclass
+    for imgtime in sorted(camdic):
+        dmin = None
+        vmin = 10000
+        for d in ldata:
+            if vmin > np.abs(imgtime - d.date):
+                vmin = np.abs(imgtime - d.date)
+                dmin = d
+        lclass = []
+        for img in camdic[imgtime]:
+            tram = CTram.ct[img][0]
+            # print(imgtime, dmin.dt[tram], img)
+            lclass.append((img, dmin.dt[tram][0], dmin.dt[tram][1]))
+        assoc[imgtime] = lclass
 
+    return assoc
