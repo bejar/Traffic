@@ -60,6 +60,7 @@ for dir in ldir:
     fig.set_figheight(30)
     sp1 = fig.add_subplot(1,1,1)
     sp1.imshow(dataz[:,:,0], cmap="Greys")
+    plt.hist(lum_img.ravel(), bins=256, range=(0.0, 1.0), fc='k', ec='k')
     plt.show()
     plt.close()
 

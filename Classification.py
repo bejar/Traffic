@@ -23,7 +23,7 @@ import numpy as np
 import glob
 from Constants import cameras_path
 from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, IncrementalPCA
 from sklearn.cluster import KMeans
 from scipy.ndimage import zoom
 import matplotlib
@@ -36,62 +36,105 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import cross_val_score
-
-
+from itertools import product
+import time
+from sklearn.svm import SVC
 __author__ = 'bejar'
 
 
-ldata = []
-llabels = []
+z_factor = 0.25
+
+ldataTr = []
+llabelsTr = []
 
 #ldays = ['20161031', '20161102', '20161103', '20161104']
+ldays = ['20161107', '20161108', '20161109', '20161110', '20161111']
 
-ldays = ['20161102']
+ldaysTr = ['20161107', '20161108']
 
-for day in ldays:
+for day in ldaysTr:
     dataset = generate_classification_dataset(day)
     for t in dataset:
         for cam, l, _ in dataset[t]:
             # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
-            im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
-            data = np.asarray(im)
-            data = np.dstack((zoom(data[:,:,0], 0.5), zoom(data[:,:,1], 0.5), zoom(data[:,:,2], 0.5)))
-            data = np.reshape(data, (data.shape[0]*data.shape[1]*data.shape[2]))
-            ldata.append(data)
-            llabels.append(l)
-
-print(Counter(llabels))
-adata = np.array(ldata)
-
-ncomp = 30
-pca = PCA(n_components=ncomp)
-
-pcadata = pca.fit_transform(adata)
-
-v = 0
-for i in range(ncomp):
-    v += pca.explained_variance_ratio_[i]
-print(v)
-#
-# fig = plt.figure()
-# fig.set_figwidth(30)
-# fig.set_figheight(30)
-#
-# plt.scatter(pcadata[:,0], pcadata[:,1], c=llabels)
-#
-# plt.show()
-# plt.close()
+            if l != 0 and l!= 6:
+                image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                if np.sum(image == 254) < 100000:
+                    del image
+                    im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
+                    data = np.asarray(im)
+                    data = data[5:235, 5:315,:].astype('float32')
+                    data /= 255.0
+                    data = np.dstack((zoom(data[:,:,0], z_factor), zoom(data[:,:,1], z_factor), zoom(data[:,:,2], z_factor)))
+                    data = np.reshape(data, (data.shape[0]*data.shape[1]*data.shape[2]))
+                    ldataTr.append(data)
+                    llabelsTr.append(l)
 
 
-X_train, X_test, y_train, y_test = train_test_split(pcadata, llabels, test_size=0.33, stratify=llabels)
+ldataTs = []
+llabelsTs = []
 
-# gb.fit(X_train, y_train)
-# print(gb.score(X_test, y_test))
+ldaysTs = ['20161109']
 
-gb = GradientBoostingClassifier(n_estimators=200, max_depth=4)
-scores = cross_val_score(gb, X_train, y_train, cv=10)
-print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+for day in ldaysTs:
+    dataset = generate_classification_dataset(day)
+    for t in dataset:
+        for cam, l, _ in dataset[t]:
+            # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+            if l != 0 and l!= 6:
+                image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                if np.sum(image == 254) < 100000:
+                    del image
+                    im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
+                    data = np.asarray(im)
+                    data = data[5:235, 5:315,:].astype('float32')
+                    data /= 255.0
+                    data = np.dstack((zoom(data[:,:,0], z_factor), zoom(data[:,:,1], z_factor), zoom(data[:,:,2], z_factor)))
+                    data = np.reshape(data, (data.shape[0]*data.shape[1]*data.shape[2]))
+                    ldataTs.append(data)
+                    llabelsTs.append(l)
+del data
 
-labels = gb.score(X_test, y_test)
+print(Counter(llabelsTr))
+print(Counter(llabelsTs))
+adata = np.array(ldataTr) #.extend(ldataTs))
 
-print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
+ncomp = 300
+pca = IncrementalPCA(n_components=ncomp)
+pca.fit(adata)
+print(np.sum(pca.explained_variance_ratio_[:ncomp]))
+
+X_train = pca.transform(np.array(ldataTr))
+y_train = llabelsTr
+del ldataTr
+X_test = pca.transform(np.array(ldataTs))
+y_test = llabelsTs
+del ldataTs
+
+print(Counter(y_test))
+
+clsf = 'SVM'
+
+if clsf == 'GB':
+    for est, depth in product([300, 400, 500, 600], [3, 5, 7]):
+        print('Estimators= %d Depth= %d Time= %s' %(est, depth, time.ctime()))
+        gb = GradientBoostingClassifier(n_estimators=est, max_depth=depth)
+        scores = cross_val_score(gb, X_train, y_train, cv=10)
+        print("CV Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+        gb.fit(X_train, y_train)
+        labels = gb.predict(X_test)
+        print('Test Accuracy: %0.2f'% gb.score(X_test, y_test))
+        print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
+elif clsf == 'SVM':
+    for C in [0.2, 0.3, 0.4, 0.5, 0.6]:
+        print('C= %f Time= %s' %(C, time.ctime()))
+        svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
+
+        scores = cross_val_score(svm, X_train, y_train, cv=10)
+        print("CV Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+        svm.fit(X_train, y_train)
+        labels = svm.predict(X_test)
+        print('Test Accuracy: %0.2f'% svm.score(X_test, y_test))
+        print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
