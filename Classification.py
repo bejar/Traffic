@@ -44,20 +44,22 @@ __author__ = 'bejar'
 
 z_factor = 0.25
 
+# -------------------- Train Set ------------------
+
 ldataTr = []
 llabelsTr = []
 
 #ldays = ['20161031', '20161102', '20161103', '20161104']
 ldays = ['20161107', '20161108', '20161109', '20161110', '20161111']
 
-ldaysTr = ['20161107', '20161108']
+ldaysTr = ['20161107', '20161108', '20161109','20161110', '20161111']
 
 for day in ldaysTr:
     dataset = generate_classification_dataset(day)
     for t in dataset:
         for cam, l, _ in dataset[t]:
             # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
-            if l != 0 and l!= 6:
+            if l != 0 and l != 6:
                 image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if np.sum(image == 254) < 100000:
                     del image
@@ -65,23 +67,25 @@ for day in ldaysTr:
                     data = np.asarray(im)
                     data = data[5:235, 5:315,:].astype('float32')
                     data /= 255.0
-                    data = np.dstack((zoom(data[:,:,0], z_factor), zoom(data[:,:,1], z_factor), zoom(data[:,:,2], z_factor)))
+                    if z_factor is not None:
+                        data = np.dstack((zoom(data[:,:,0], z_factor), zoom(data[:,:,1], z_factor), zoom(data[:,:,2], z_factor)))
                     data = np.reshape(data, (data.shape[0]*data.shape[1]*data.shape[2]))
                     ldataTr.append(data)
                     llabelsTr.append(l)
 
-
 ldataTs = []
 llabelsTs = []
 
-ldaysTs = ['20161109']
+
+# ------------- Test Set ------------------
+ldaysTs = ['20161114']
 
 for day in ldaysTs:
     dataset = generate_classification_dataset(day)
     for t in dataset:
         for cam, l, _ in dataset[t]:
             # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
-            if l != 0 and l!= 6:
+            if l != 0 and l != 6:
                 image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if np.sum(image == 254) < 100000:
                     del image
@@ -89,17 +93,17 @@ for day in ldaysTs:
                     data = np.asarray(im)
                     data = data[5:235, 5:315,:].astype('float32')
                     data /= 255.0
-                    data = np.dstack((zoom(data[:,:,0], z_factor), zoom(data[:,:,1], z_factor), zoom(data[:,:,2], z_factor)))
+                    if z_factor is not None:
+                        data = np.dstack((zoom(data[:,:,0], z_factor), zoom(data[:,:,1], z_factor), zoom(data[:,:,2], z_factor)))
                     data = np.reshape(data, (data.shape[0]*data.shape[1]*data.shape[2]))
                     ldataTs.append(data)
                     llabelsTs.append(l)
 del data
 
 print(Counter(llabelsTr))
-print(Counter(llabelsTs))
 adata = np.array(ldataTr) #.extend(ldataTs))
 
-ncomp = 300
+ncomp = 350
 pca = IncrementalPCA(n_components=ncomp)
 pca.fit(adata)
 print(np.sum(pca.explained_variance_ratio_[:ncomp]))

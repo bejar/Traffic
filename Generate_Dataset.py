@@ -67,14 +67,16 @@ def generate_classification_dataset(day):
         dmin = None
         vmin = 10000
         for d in ldata:
-            if vmin > np.abs(imgtime - d.date):
-                vmin = np.abs(imgtime - d.date)
-                dmin = d
-        lclass = []
-        for img in camdic[imgtime]:
-            tram = CTram.ct[img][0]
-            # print(imgtime, dmin.dt[tram], img)
-            lclass.append((img, dmin.dt[tram][0], dmin.dt[tram][1]))
-        assoc[imgtime] = lclass
+            if vmin > np.abs(imgtime - d.date): # Only if it is ahead in time
+                if imgtime - d.date >0:
+                    vmin = np.abs(imgtime - d.date)
+                    dmin = d
+        if dmin is not None:
+            lclass = []
+            for img in camdic[imgtime]:
+                tram = CTram.ct[img][0]
+                # print(imgtime, dmin.dt[tram], img)
+                lclass.append((img, dmin.dt[tram][0], dmin.dt[tram][1]))
+            assoc[imgtime] = lclass
 
     return assoc
