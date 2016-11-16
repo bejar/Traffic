@@ -40,7 +40,7 @@ ldaysTr = ['20161108']
 for day in ldaysTr:
     dataset = generate_classification_dataset(day)
     for t in sorted(dataset):
-        for cam, l, _ in sorted(dataset[t]):
+        for cam, l, _, _ in sorted(dataset[t]):
             # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
             if l == 4:
                 image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')

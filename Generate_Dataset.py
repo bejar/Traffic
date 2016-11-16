@@ -64,19 +64,23 @@ def generate_classification_dataset(day):
     assoc = {}
 
     for imgtime in sorted(camdic):
+        # Look for the status and forecast closer to the image but always in the future
         dmin = None
+        dmin2 = None
         vmin = 10000
         for d in ldata:
             if vmin > np.abs(imgtime - d.date): # Only if it is ahead in time
                 if imgtime - d.date >0:
                     vmin = np.abs(imgtime - d.date)
                     dmin = d
-        if dmin is not None:
+                    dmin2 = dmin
+        if dmin is not None and dmin2 is not None:
             lclass = []
             for img in camdic[imgtime]:
                 tram = CTram.ct[img][0]
                 # print(imgtime, dmin.dt[tram], img)
-                lclass.append((img, dmin.dt[tram][0], dmin.dt[tram][1]))
+                # store for an image of that time the name, closest status, prediction and next status
+                lclass.append((img, dmin.dt[tram][0], dmin.dt[tram][1], dmin2.dt[tram][0]))
             assoc[imgtime] = lclass
 
     return assoc

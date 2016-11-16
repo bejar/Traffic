@@ -52,12 +52,12 @@ llabelsTr = []
 #ldays = ['20161031', '20161102', '20161103', '20161104']
 ldays = ['20161107', '20161108', '20161109', '20161110', '20161111']
 
-ldaysTr = ['20161107', '20161108', '20161109','20161110', '20161111']
+ldaysTr = ['20161107', '20161108', '20161109','20161110', '20161111', '20161114']
 
 for day in ldaysTr:
     dataset = generate_classification_dataset(day)
     for t in dataset:
-        for cam, l, _ in dataset[t]:
+        for cam, l, _, _ in dataset[t]:
             # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
             if l != 0 and l != 6:
                 image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
@@ -78,12 +78,12 @@ llabelsTs = []
 
 
 # ------------- Test Set ------------------
-ldaysTs = ['20161114']
+ldaysTs = ['20161115']
 
 for day in ldaysTs:
     dataset = generate_classification_dataset(day)
     for t in dataset:
-        for cam, l, _ in dataset[t]:
+        for cam, l, _, _ in dataset[t]:
             # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
             if l != 0 and l != 6:
                 image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
