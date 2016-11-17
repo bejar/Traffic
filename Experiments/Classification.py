@@ -126,7 +126,7 @@ if clsf == 'GB':
         print('Test Accuracy: %0.2f'% gb.score(X_test, y_test))
         print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
 elif clsf == 'SVM':
-    for C in [0.2, 0.3, 0.4, 0.5, 0.6]:
+    for C in [0.6, 0.7, 0.8, 0.9, 2]:
         print('C= %f Time= %s' %(C, time.ctime()))
         svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
 
