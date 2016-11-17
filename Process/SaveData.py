@@ -31,7 +31,7 @@ from Util.Generate_Dataset import generate_classification_dataset
 __author__ = 'bejar'
 
 
-z_factor = 0.5
+z_factor = 0.25
 
 # -------------------- Train Set ------------------
 
@@ -106,7 +106,7 @@ del ldataTs
 
 print(X_train.shape, X_test.shape)
 
-np.save(data_path + 'train_data%0.2f.npy'%z_factor, X_train)
+np.save(data_path + 'train_data.npy', X_train)
 np.save(data_path + 'train_labels.npy', np.array(y_train))
-np.save(data_path + 'test_data%0.2f.npy'%z_factor, X_test)
+np.save(data_path + 'test_data.npy', X_test)
 np.save(data_path + 'test_labels.npy', np.array(y_test))
