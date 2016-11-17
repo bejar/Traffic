@@ -17,19 +17,18 @@ TrafficClustering
 
 """
 
-from PIL import Image
-import numpy as np
 import glob
-from Constants import cameras_path
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-from scipy.ndimage import zoom
-import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.cbook as cbook
+
 import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
+from scipy.ndimage import zoom
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
+from Util.Constants import cameras_path
 
 __author__ = 'bejar'
 

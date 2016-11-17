@@ -17,32 +17,21 @@ Classification
 
 """
 
-from Generate_Dataset import generate_classification_dataset
-from PIL import Image
-import numpy as np
-import glob
-from Constants import cameras_path
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA, IncrementalPCA
-from sklearn.cluster import KMeans
-from scipy.ndimage import zoom
-import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.cbook as cbook
-import matplotlib.image as mpimg
 from collections import Counter
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import cross_val_score
-from itertools import product
-import time
-from sklearn.svm import SVC
+
+import matplotlib.image as mpimg
+import numpy as np
+from PIL import Image
+from scipy.ndimage import zoom
+from sklearn.decomposition import IncrementalPCA
+
+from Util.Constants import cameras_path,data_path
+from Util.Generate_Dataset import generate_classification_dataset
+
 __author__ = 'bejar'
 
 
-z_factor = 0.25
+z_factor = 0.5
 
 # -------------------- Train Set ------------------
 
@@ -115,30 +104,9 @@ X_test = pca.transform(np.array(ldataTs))
 y_test = llabelsTs
 del ldataTs
 
-print(Counter(y_test))
+print(X_train.shape, X_test.shape)
 
-clsf = 'SVM'
-
-if clsf == 'GB':
-    for est, depth in product([300, 400, 500, 600], [3, 5, 7]):
-        print('Estimators= %d Depth= %d Time= %s' %(est, depth, time.ctime()))
-        gb = GradientBoostingClassifier(n_estimators=est, max_depth=depth)
-        scores = cross_val_score(gb, X_train, y_train, cv=10)
-        print("CV Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-
-        gb.fit(X_train, y_train)
-        labels = gb.predict(X_test)
-        print('Test Accuracy: %0.2f'% gb.score(X_test, y_test))
-        print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
-elif clsf == 'SVM':
-    for C in [0.2, 0.3, 0.4, 0.5, 0.6]:
-        print('C= %f Time= %s' %(C, time.ctime()))
-        svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
-
-        scores = cross_val_score(svm, X_train, y_train, cv=10)
-        print("CV Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-
-        svm.fit(X_train, y_train)
-        labels = svm.predict(X_test)
-        print('Test Accuracy: %0.2f'% svm.score(X_test, y_test))
-        print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
+np.save(data_path + 'train_data%0.2f.npy'%z_factor, X_train)
+np.save(data_path + 'train_labels.npy', np.array(y_train))
+np.save(data_path + 'test_data%0.2f.npy'%z_factor, X_test)
+np.save(data_path + 'test_labels.npy', np.array(y_test))

@@ -21,8 +21,10 @@ datainfo
 
 """
 
-from Cameras import CamCoord, Cameras
 import numpy as np
+
+from Util.Cameras import CamCoord, Cameras
+
 __author__ = 'bejar'
 
 

@@ -17,12 +17,13 @@ Generate_Dataset
 
 """
 
-import os.path
 import glob
-from CamTram import CamTram
-from DataTram import DataTram
-from Constants import data_path, cameras_path, status_path
+
 import numpy as np
+
+from Process.CamTram import CamTram
+from Util.Constants import cameras_path, status_path
+from Util.DataTram import DataTram
 
 __author__ = 'bejar'
 

@@ -20,9 +20,6 @@ DataTram
 __author__ = 'bejar'
 
 
-from Constants import data_path
-
-
 class DataTram:
 
     dt = None

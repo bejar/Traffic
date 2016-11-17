@@ -17,20 +17,11 @@ ViewImagesClasses
 
 """
 
-from PIL import Image
-from Generate_Dataset import generate_classification_dataset
-import numpy as np
-import glob
-from Constants import cameras_path
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-from scipy.ndimage import zoom
-import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.cbook as cbook
 import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+
+from Util.Constants import cameras_path
+from Util.Generate_Dataset import generate_classification_dataset
 
 __author__ = 'bejar'
 

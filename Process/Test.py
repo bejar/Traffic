@@ -19,10 +19,9 @@ Test
 
 __author__ = 'bejar'
 
+import time
 
 import requests
-from Cameras import Cameras
-import time
 
 __author__ = 'bejar'
 

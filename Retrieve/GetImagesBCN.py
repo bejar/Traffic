@@ -17,22 +17,22 @@ GetImages
 
 """
 
+import os.path
+import time
 
 import requests
-from Cameras import Cameras
-import time
-import os.path
+
+from Util.Cameras import Cameras
+from Util.Constants import cameras_path, data_path, status_path
 
 __author__ = 'bejar'
 
 
-path = '/home/bejar/storage/Data/Traffic/'
-
 while True:
     todaypath = time.strftime('%Y%m%d', time.localtime(int(time.time())-600))
-    if not os.path.exists(path + 'Cameras/' + todaypath):
-        os.mkdir(path + 'Cameras/' + todaypath)
-        os.mkdir(path + 'Status/' + todaypath)
+    if not os.path.exists(cameras_path + todaypath):
+        os.mkdir(cameras_path + todaypath)
+        os.mkdir(data_path + todaypath)
 
     rtime = str((int(time.time())-600)*1000)
     ptime = time.strftime('%Y%m%d%H%M', time.localtime(int(time.time())-600))
@@ -40,17 +40,17 @@ while True:
     print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
 
     tram = requests.get('http://www.bcn.cat/transit/dades/dadestrams.dat').content
-    with open(path +'Status/'  + todaypath + '/' + '%s-dadestram.data' % (ptime), 'wb') as handler:
+    with open(status_path + todaypath + '/' + '%s-dadestram.data' % (ptime), 'wb') as handler:
             handler.write(tram)
 
     tram = requests.get('http://www.bcn.cat/transit/dades/dadesitineraris.dat').content
-    with open(path + 'Status/' + todaypath + '/' + '%s-dadesitineraris.data' % (ptime), 'wb') as handler:
+    with open(status_path + '/' + '%s-dadesitineraris.data' % (ptime), 'wb') as handler:
             handler.write(tram)
 
     print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
     for cam in Cameras:
         img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
-        with open(path + 'Cameras/'  + todaypath + '/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
+        with open(cameras_path + todaypath + '/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
             handler.write(img_data)
 
     time.sleep(15 * 60)
