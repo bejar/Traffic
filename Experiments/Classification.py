@@ -33,33 +33,37 @@ __author__ = 'bejar'
 if __name__ == '__main__':
 
     log = config_logger(file='classification-' + time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time()))))
-    ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161114']
-    ldaysTs = ['20161115']
-    z_factor = 0.5
+    ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161112', '20161113', '20161114', '20161115']
+    ldaysTs = ['20161116']
+    z_factor = 0.25
     ncomp = 350
     PCA = True
 
     pre = True
     if pre:
+        log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
         ldata = []
         y_train = []
         for day in ldaysTr:
-            data = np.load(data_path + 'data.-D%s-Z%0.2f-C%dnpy' % (day, z_factor, ncomp))
+            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            ldata.append(data)
             y_train.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
-        X_train = np.stack(ldata)
-
+        X_train = np.concatenate(ldata)
+        print(X_train.shape)
 
         ldata = []
         y_test = []
         for day in ldaysTs:
-            data = np.load(data_path + 'data.-D%s-Z%0.2f-C%dnpy' % (day, z_factor, ncomp))
+            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            ldata.append(data)
             y_test.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
-        X_test = np.stack(ldata)
+        X_test = np.concatenate(ldata)
+        print(X_test.shape)
         del ldata
 
     else:
         X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=PCA, ncomp=ncomp)
-        log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA)
+        log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
 
     clsf = 'SVM'
 

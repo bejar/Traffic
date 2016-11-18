@@ -175,6 +175,7 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100):
 
     return X_train, y_train, X_test, y_test
 
+
 def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100):
     """
     Comptes the PCA transformation using the days in ldaysTr
@@ -218,10 +219,10 @@ def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100):
 
     # ------------- Test Set ------------------
 
-    ldataTs = []
-    llabelsTs = []
 
     for day in ldaysTs:
+        ldataTs = []
+        llabelsTs = []
         dataset = generate_classification_dataset(day)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
