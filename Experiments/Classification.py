@@ -21,50 +21,74 @@ import time
 from itertools import product
 import numpy as np
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import cross_val_score
 from sklearn.svm import SVC
 from Util.Generate_Dataset import generate_dataset
 from Util.Constants import data_path
+from Util.Logger import config_logger
 
 __author__ = 'bejar'
 
 if __name__ == '__main__':
 
+    log = config_logger(file='classification-' + time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time()))))
+    ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161114']
+    ldaysTs = ['20161115']
+    z_factor = 0.5
+    ncomp = 350
+    PCA = True
+
     pre = True
     if pre:
-       X_train = np.load(data_path + 'train_data.npy')
-       y_train = np.load(data_path + 'train_labels.npy')
-       X_test = np.load(data_path + 'test_data.npy')
-       y_test = np.load(data_path + 'test_labels.npy')
+        ldata = []
+        y_train = []
+        for day in ldaysTr:
+            data = np.load(data_path + 'data.-D%s-Z%0.2f-C%dnpy' % (day, z_factor, ncomp))
+            y_train.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
+        X_train = np.stack(ldata)
+
+
+        ldata = []
+        y_test = []
+        for day in ldaysTs:
+            data = np.load(data_path + 'data.-D%s-Z%0.2f-C%dnpy' % (day, z_factor, ncomp))
+            y_test.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
+        X_test = np.stack(ldata)
+        del ldata
+
     else:
-        z_factor = 0.25
-        ldaysTr = ['20161107', '20161108', '20161109','20161110', '20161111', '20161114']
-        ldaysTs = ['20161115']
-        X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=350)
+        X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=PCA, ncomp=ncomp)
+        log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA)
 
     clsf = 'SVM'
 
     if clsf == 'GB':
+        log.info(' -- GB ----------------------')
         for est, depth in product([300, 400, 500, 600], [3, 5, 7]):
-            print('Estimators= %d Depth= %d Time= %s' %(est, depth, time.ctime()))
+            log.info('Estimators= %d Depth= %d Time= %s', est, depth, time.ctime())
             gb = GradientBoostingClassifier(n_estimators=est, max_depth=depth)
             scores = cross_val_score(gb, X_train, y_train, cv=10)
-            print("CV Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+            log.info("CV Accuracy: %0.2f (+/- %0.2f)", scores.mean(), scores.std() * 2)
 
             gb.fit(X_train, y_train)
             labels = gb.predict(X_test)
-            print('Test Accuracy: %0.2f'% gb.score(X_test, y_test))
-            print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
+            log.info('Test Accuracy: %0.2f', gb.score(X_test, y_test))
+            log.info('%s', str(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test)))))
+            log.info('%s', classification_report(y_test, labels, labels=sorted(np.unique(y_test))))
     elif clsf == 'SVM':
-        for C in [1.1, 1.5]:
-            print('C= %f Time= %s' %(C, time.ctime()))
+        log.info(' -- SVM ----------------------')
+        for C in [1.1, 1.3, 1.5, 1.7, 1.9]:
+            log.info('C= %f Time= %s', C, time.ctime())
             svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
 
             scores = cross_val_score(svm, X_train, y_train, cv=10)
-            print("CV Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+            log.info("CV Accuracy: %0.2f (+/- %0.2f)", scores.mean(), scores.std() * 2)
 
             svm.fit(X_train, y_train)
             labels = svm.predict(X_test)
-            print('Test Accuracy: %0.2f'% svm.score(X_test, y_test))
-            print(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test))))
+            log.info('Test Accuracy: %0.2f', svm.score(X_test, y_test))
+            log.info('%s', str(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test)))))
+            log.info('%s', classification_report(y_test, labels, labels=sorted(np.unique(y_test))))
+

@@ -24,7 +24,7 @@ import requests
 
 from Util.Cameras import Cameras
 from Util.Constants import cameras_path, data_path, status_path
-
+from Util.Webservice import inform_webservice
 __author__ = 'bejar'
 
 
@@ -32,7 +32,7 @@ while True:
     todaypath = time.strftime('%Y%m%d', time.localtime(int(time.time())-600))
     if not os.path.exists(cameras_path + todaypath):
         os.mkdir(cameras_path + todaypath)
-        os.mkdir(data_path + todaypath)
+        os.mkdir(status_path + todaypath)
 
     rtime = str((int(time.time())-600)*1000)
     ptime = time.strftime('%Y%m%d%H%M', time.localtime(int(time.time())-600))
@@ -53,6 +53,7 @@ while True:
         with open(cameras_path + todaypath + '/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
             handler.write(img_data)
 
+    inform_webservice('BCN')
     time.sleep(15 * 60)
 
 

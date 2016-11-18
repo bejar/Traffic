@@ -28,3 +28,9 @@ status_path = '/home/bejar/storage/Data/Traffic/Status/'
 data_path_MAD = '/home/bejar/storage/Data/TrafficMAD/'
 cameras_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Cameras/'
 status_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Status/'
+
+# Results dir
+
+results_path = '/home/bejar/storage/Data/Traffic/Results'
+results_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Results'
+

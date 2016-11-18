@@ -175,3 +175,73 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100):
 
     return X_train, y_train, X_test, y_test
 
+def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100):
+    """
+    Comptes the PCA transformation using the days in ldaysTr
+    Generates  datasets from the days in the ldaysTs
+    z_factor is the zoom factor to rescale the images
+    :param trdays:
+    :param tsdays:
+    :return:
+    """
+
+    # -------------------- Train Set ------------------
+    ldataTr = []
+    llabelsTr = []
+
+    for day in ldaysTr:
+        dataset = generate_classification_dataset(day)
+        for t in dataset:
+            for cam, l, _, _ in dataset[t]:
+                # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                if l != 0 and l != 6:
+                    image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                    if np.sum(image == 254) < 100000:
+                        del image
+                        im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
+                        data = np.asarray(im)
+                        data = data[5:235, 5:315, :].astype('float32')
+                        data /= 255.0
+                        if z_factor is not None:
+                            data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
+                                              zoom(data[:, :, 2], z_factor)))
+                        data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
+                        ldataTr.append(data)
+                        llabelsTr.append(l)
+
+    print(Counter(llabelsTr))
+    X_train = np.array(ldataTr)
+    pca = IncrementalPCA(n_components=ncomp)
+    pca.fit(X_train)
+    print(np.sum(pca.explained_variance_ratio_[:ncomp]))
+    del X_train
+
+    # ------------- Test Set ------------------
+
+    ldataTs = []
+    llabelsTs = []
+
+    for day in ldaysTs:
+        dataset = generate_classification_dataset(day)
+        for t in dataset:
+            for cam, l, _, _ in dataset[t]:
+                # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                if l != 0 and l != 6:
+                    image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                    if np.sum(image == 254) < 100000:
+                        del image
+                        im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
+                        data = np.asarray(im)
+                        data = data[5:235, 5:315, :].astype('float32')
+                        data /= 255.0
+                        if z_factor is not None:
+                            data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
+                                              zoom(data[:, :, 2], z_factor)))
+                        data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
+                        ldataTs.append(data)
+                        llabelsTs.append(l)
+        X_test = pca.transform(np.array(ldataTs))
+        y_test = llabelsTs
+        print(Counter(llabelsTs))
+        np.save(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), X_test)
+        np.save(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), np.array(y_test))

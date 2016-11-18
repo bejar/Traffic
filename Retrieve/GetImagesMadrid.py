@@ -27,6 +27,7 @@ from bs4 import BeautifulSoup
 from joblib import Parallel, delayed
 
 from Util.Constants import data_path_MAD, cameras_path_MAD, status_path_MAD
+from Util.Webservice import inform_webservice
 
 __author__ = 'bejar'
 
@@ -121,4 +122,5 @@ if __name__ == '__main__':
         Parallel(n_jobs=-1)(
             delayed(retrieve_camera)(cam, name, ptime) for cam, name in zip(lcameras,lnames))
 
+        inform_webservice('MAD')
         time.sleep(3 * 60)
