@@ -39,8 +39,8 @@ if __name__ == '__main__':
     ncomp = 350
     PCA = True
 
-    pre = True
-    if pre:
+    dataset = 'rb'  # 'rb' 'gen'
+    if dataset == 'pre':
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
         ldata = []
         y_train = []
@@ -60,7 +60,21 @@ if __name__ == '__main__':
         X_test = np.concatenate(ldata)
         print(X_test.shape)
         del ldata
+    elif dataset == 'rb':
+        log.info('Train= RB  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTs, z_factor, PCA, ncomp)
+        X_train = np.load(data_path + 'data-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp))
+        y_train = np.load(data_path + 'labels-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp))
+        print(X_train.shape)
 
+        ldata = []
+        y_test = []
+        for day in ldaysTs:
+            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            ldata.append(data)
+            y_test.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
+        X_test = np.concatenate(ldata)
+        print(X_test.shape)
+        del ldata
     else:
         X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=PCA, ncomp=ncomp)
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
@@ -82,7 +96,7 @@ if __name__ == '__main__':
             log.info('%s', classification_report(y_test, labels, labels=sorted(np.unique(y_test))))
     elif clsf == 'SVM':
         log.info(' -- SVM ----------------------')
-        for C in [1.1, 1.3, 1.5, 1.7, 1.9]:
+        for C in [0.1, 0.3, 0.5, 0.7, 0.9]:
             log.info('C= %f Time= %s', C, time.ctime())
             svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
 

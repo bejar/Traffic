@@ -81,7 +81,11 @@ def retrieve_camera(cam, name, ptime):
 
     :return:
     """
-    img_data = requests.get(cam).content
+    resp = requests.get(cam)
+    if resp.status_code != 200:
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    img_data = resp.content
+
     with open(cameras_path_MAD + todaypath + '/' + '%s-%s.jpg' % (ptime, name), 'wb') as handler:
         handler.write(img_data)
 

@@ -246,3 +246,31 @@ def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100):
         print(Counter(llabelsTs))
         np.save(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), X_test)
         np.save(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), np.array(y_test))
+
+
+def generate_rebalanced_dataset(ldaysTr, ndays, z_factor, PCA=True, ncomp=100):
+    """
+    Generates a training dataset with a rebalance of the classes using a specific number of days of
+    the input files for the training dataset
+
+    :param ldaysTr:
+    :param z_factor:
+    :param PCA:
+    :param ncomp:
+    :return:
+    """
+    ldata = []
+    y_train = []
+
+    for cl, nd in ndays:
+        for i in range(nd):
+            day = ldaysTr[i]
+            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            labels = np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            ldata.append(data[labels==cl,:])
+            y_train.extend(labels[labels==cl])
+    X_train = np.concatenate(ldata)
+    print(X_train.shape)
+    print(Counter(y_train))
+    np.save(data_path + 'data-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), X_train)
+    np.save(data_path + 'labels-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), np.array(y_train))
