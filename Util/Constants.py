@@ -23,14 +23,13 @@ __author__ = 'bejar'
 data_path = '/home/bejar/storage/Data/Traffic/'
 cameras_path = '/home/bejar/storage/Data/Traffic/Cameras/'
 status_path = '/home/bejar/storage/Data/Traffic/Status/'
+results_path = '/home/bejar/storage/Data/Traffic/Results'
+dataset_path = '/home/bejar/storage/Data/Traffic/Datasets/'
 
 # Madrid Data
 data_path_MAD = '/home/bejar/storage/Data/TrafficMAD/'
 cameras_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Cameras/'
 status_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Status/'
-
-# Results dir
-
-results_path = '/home/bejar/storage/Data/Traffic/Results'
 results_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Results'
+dataset_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Datasets/'
 

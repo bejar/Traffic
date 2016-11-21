@@ -23,15 +23,15 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from Util.Constants import cameras_path
 
 __author__ = 'bejar'
 
 
-imgpath = '/home/bejar/storage/Data/Traffic/Cameras/'
 day = '20161029'
 nclass = 6
 
-ldir = glob.glob(imgpath+day+'/*.gif')
+ldir = glob.glob(cameras_path+day+'/*.gif')
 
 ldata = []
 

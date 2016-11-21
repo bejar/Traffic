@@ -32,7 +32,7 @@ from PIL import Image
 from scipy.ndimage import zoom
 from sklearn.decomposition import IncrementalPCA
 
-from Util.Constants import cameras_path,data_path
+from Util.Constants import cameras_path,data_path, dataset_path
 
 __author__ = 'bejar'
 
@@ -244,8 +244,8 @@ def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100):
         X_test = pca.transform(np.array(ldataTs))
         y_test = llabelsTs
         print(Counter(llabelsTs))
-        np.save(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), X_test)
-        np.save(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), np.array(y_test))
+        np.save(dataset_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), X_test)
+        np.save(dataset_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp), np.array(y_test))
 
 
 def generate_rebalanced_dataset(ldaysTr, ndays, z_factor, PCA=True, ncomp=100):
@@ -265,12 +265,12 @@ def generate_rebalanced_dataset(ldaysTr, ndays, z_factor, PCA=True, ncomp=100):
     for cl, nd in ndays:
         for i in range(nd):
             day = ldaysTr[i]
-            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
-            labels = np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            data = np.load(dataset_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            labels = np.load(dataset_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
             ldata.append(data[labels==cl,:])
             y_train.extend(labels[labels==cl])
     X_train = np.concatenate(ldata)
     print(X_train.shape)
     print(Counter(y_train))
-    np.save(data_path + 'data-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), X_train)
-    np.save(data_path + 'labels-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), np.array(y_train))
+    np.save(dataset_path + 'data-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), X_train)
+    np.save(dataset_path + 'labels-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), np.array(y_train))

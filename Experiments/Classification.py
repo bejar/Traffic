@@ -25,7 +25,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import cross_val_score
 from sklearn.svm import SVC
 from Util.Generate_Dataset import generate_dataset
-from Util.Constants import data_path
+from Util.Constants import data_path, dataset_path
 from Util.Logger import config_logger
 
 __author__ = 'bejar'
@@ -33,30 +33,31 @@ __author__ = 'bejar'
 if __name__ == '__main__':
 
     log = config_logger(file='classification-' + time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time()))))
+    #ldaysTr = ['20161101', '20161102', '20161103', '20161104', '20161105', '20161106', '20161107']
     ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161112', '20161113', '20161114', '20161115']
-    ldaysTs = ['20161116']
+    ldaysTs = ['20161116', '20161117', '20161118']
     z_factor = 0.25
     ncomp = 350
     PCA = True
 
-    dataset = 'rb'  # 'rb' 'gen'
+    dataset = 'pre'  # 'pre' rb' 'gen'
     if dataset == 'pre':
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
         ldata = []
         y_train = []
         for day in ldaysTr:
-            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            data = np.load(dataset_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
             ldata.append(data)
-            y_train.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
+            y_train.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
         X_train = np.concatenate(ldata)
         print(X_train.shape)
 
         ldata = []
         y_test = []
         for day in ldaysTs:
-            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            data = np.load(dataset_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
             ldata.append(data)
-            y_test.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
+            y_test.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
         X_test = np.concatenate(ldata)
         print(X_test.shape)
         del ldata
@@ -69,9 +70,9 @@ if __name__ == '__main__':
         ldata = []
         y_test = []
         for day in ldaysTs:
-            data = np.load(data_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
+            data = np.load(dataset_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
             ldata.append(data)
-            y_test.extend(np.load(data_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
+            y_test.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
         X_test = np.concatenate(ldata)
         print(X_test.shape)
         del ldata
@@ -99,6 +100,7 @@ if __name__ == '__main__':
         for C in [0.1, 0.3, 0.5, 0.7, 0.9]:
             log.info('C= %f Time= %s', C, time.ctime())
             svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
+            svm = SVC(C=C, kernel='rbf', coef0=1, class_weight='balanced')
 
             scores = cross_val_score(svm, X_train, y_train, cv=10)
 
