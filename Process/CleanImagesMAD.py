@@ -28,7 +28,7 @@ import csv
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    day = '20161117'
+    day = '20161121'
 
     lcameras = []
     with open(data_path_MAD + 'MAD_cameras.txt', 'r') as csvfile:

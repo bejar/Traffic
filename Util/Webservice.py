@@ -23,9 +23,9 @@ __author__ = 'bejar'
 WS_port = 8870
 Webservice = "http://polaris.lsi.upc.edu:8870/Update"
 
-def inform_webservice(city):
+def inform_webservice(city, status):
     """
     Sends status report to webservice
     :return:
     """
-    requests.get(Webservice, params={'content': 'traffic-' + city, 'count': 0, 'delta': 0})
+    requests.get(Webservice, params={'content': 'traffic-' + city, 'count': status, 'delta': status})

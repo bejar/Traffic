@@ -86,12 +86,23 @@ for line in f:
 for cam in Cameras:
     coord = CamCoord[cam]
     mdist = 1
-    res = None
+    mdist2 = 2
+    res = [cam, None, None, None, None]
     for ni, street, iti in litin:
+
         for i in iti:
             if euc_dist(coord,i) < mdist:
+                mdist2 = mdist
                 mdist = euc_dist(coord,i)
-                res = (cam, ni, street)
-    print(res[0], ',', res[1], ',', res[2])
+                res[2] = res[1]
+                res[1] = ni
+                res[4] = res[3]
+                res[3] = street
+            elif euc_dist(coord,i) < mdist2:
+                mdist2 = euc_dist(coord,i)
+                res[2] = ni
+                res[4] = street
+
+    print('%s, %d, %d, %s, %s' % (res[0], res[1], res[2], res[3], res[4]))
 
 

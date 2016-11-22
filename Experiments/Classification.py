@@ -34,13 +34,14 @@ if __name__ == '__main__':
 
     log = config_logger(file='classification-' + time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time()))))
     #ldaysTr = ['20161101', '20161102', '20161103', '20161104', '20161105', '20161106', '20161107']
-    ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161112', '20161113', '20161114', '20161115']
-    ldaysTs = ['20161116', '20161117', '20161118']
+    #ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161112', '20161113', '20161114', '20161115']
+    ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111']
+    ldaysTs = ['20161116']
     z_factor = 0.25
     ncomp = 350
     PCA = True
 
-    dataset = 'pre'  # 'pre' rb' 'gen'
+    dataset = 'gen'  # 'pre' rb' 'gen'
     if dataset == 'pre':
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
         ldata = []
@@ -77,7 +78,7 @@ if __name__ == '__main__':
         print(X_test.shape)
         del ldata
     else:
-        X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=PCA, ncomp=ncomp)
+        X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=PCA, ncomp=ncomp, method='two')
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
 
     clsf = 'SVM'
@@ -97,9 +98,9 @@ if __name__ == '__main__':
             log.info('%s', classification_report(y_test, labels, labels=sorted(np.unique(y_test))))
     elif clsf == 'SVM':
         log.info(' -- SVM ----------------------')
-        for C in [0.1, 0.3, 0.5, 0.7, 0.9]:
+        for C in [0.001, 0.01, 0.1, 2, 10]:
             log.info('C= %f Time= %s', C, time.ctime())
-            svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
+            # svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
             svm = SVC(C=C, kernel='rbf', coef0=1, class_weight='balanced')
 
             scores = cross_val_score(svm, X_train, y_train, cv=10)
