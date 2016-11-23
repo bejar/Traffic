@@ -192,8 +192,13 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
     """
     Generates a training and test datasets from the days in the parameters
     z_factor is the zoom factor to rescale the images
-    :param trdays:
-    :param tsdays:
+    :param ldaysTr:
+    :param ldaysTs:
+    :param z_factor:
+    :param PCA:
+    :param method:
+    :return:
+    :param ncomp:
     :return:
     """
 
