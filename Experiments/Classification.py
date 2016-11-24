@@ -33,16 +33,16 @@ __author__ = 'bejar'
 if __name__ == '__main__':
 
     log = config_logger(file='classification-' + time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time()))))
-    #ldaysTr = ['20161101', '20161102', '20161103', '20161104', '20161105', '20161106', '20161107']
-    ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161112', '20161113', '20161114', '20161115',
-               '20161117', '20161118', '20161119', '20161120']
+    #ldaysTr = ['20161101', '20161102', '20161103', '20161104', '20161105', '20161106', '20161107', '20161117', '20161118', '20161119', '20161120']
+    ldaysTr = ['20161101', '20161102', '20161103', '20161104', '20161105', '20161106', '20161107', '20161108',
+               '20161109', '20161110', '20161111', '20161112', '20161113', '20161114', '20161115', ]
     #ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161112', '20161113']
-    ldaysTs = ['20161116']
+    ldaysTs = ['20161116', '20161116', '20161117', '20161118']
     z_factor = 0.25
-    ncomp = 350
+    ncomp = 1000
     PCA = True
 
-    dataset = 'gen'  # 'pre' rb' 'gen'
+    dataset = 'pre'  # 'pre' rb' 'gen'
     if dataset == 'pre':
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
         ldata = []
@@ -99,7 +99,7 @@ if __name__ == '__main__':
             log.info('%s', classification_report(y_test, labels, labels=sorted(np.unique(y_test))))
     elif clsf == 'SVM':
         log.info(' -- SVM ----------------------')
-        for C in [10, 100, 1000, 10000]:
+        for C in [10, 100, 1000]:
             log.info('C= %f Time= %s', C, time.ctime())
             # svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
             svm = SVC(C=C, kernel='rbf', coef0=1, class_weight='balanced')
@@ -109,6 +109,12 @@ if __name__ == '__main__':
             log.info("CV Accuracy: %0.2f (+/- %0.2f)", scores.mean(), scores.std() * 2)
 
             svm.fit(X_train, y_train)
+
+            labels = svm.predict(X_train)
+            log.info('Train Accuracy: %0.2f', svm.score(X_train, y_train))
+            log.info('%s', str(confusion_matrix(y_train, labels, labels=sorted(np.unique(y_train)))))
+            log.info('%s', classification_report(y_train, labels, labels=sorted(np.unique(y_train))))
+
             labels = svm.predict(X_test)
             log.info('Test Accuracy: %0.2f', svm.score(X_test, y_test))
             log.info('%s', str(confusion_matrix(y_test, labels, labels=sorted(np.unique(y_test)))))

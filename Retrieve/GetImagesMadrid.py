@@ -81,13 +81,16 @@ def retrieve_camera(cam, name, ptime):
 
     :return:
     """
-    resp = requests.get(cam)
-    if resp.status_code != 200:
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    img_data = resp.content
+    try:
+        resp = requests.get(cam)
+        if resp.status_code != 200:
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        img_data = resp.content
 
-    with open(cameras_path_MAD + todaypath + '/' + '%s-%s.jpg' % (ptime, name), 'wb') as handler:
-        handler.write(img_data)
+        with open(cameras_path_MAD + todaypath + '/' + '%s-%s.jpg' % (ptime, name), 'wb') as handler:
+            handler.write(img_data)
+    except ConnectionError:
+        pass
 
 if __name__ == '__main__':
     # get_info_cameras()
@@ -126,5 +129,5 @@ if __name__ == '__main__':
         Parallel(n_jobs=-1)(
             delayed(retrieve_camera)(cam, name, ptime) for cam, name in zip(lcameras,lnames))
 
-        inform_webservice('MAD')
+        inform_webservice('MAD', 0)
         time.sleep(3 * 60)
