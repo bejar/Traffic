@@ -19,7 +19,7 @@ Classification
 
 import numpy as np
 from Util.Constants import cameras_path,data_path
-from Util.Generate_Dataset import generate_dataset, generate_daily_dataset, generate_rebalanced_dataset
+from Util.Generate_Dataset import generate_dataset, save_daily_dataset, generate_rebalanced_dataset
 
 __author__ = 'bejar'
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # np.save(data_path + 'test_data.npy', X_test)
     # np.save(data_path + 'test_labels.npy', np.array(y_test))
 
-    generate_daily_dataset(ldaysTr, ldaysTs, z_factor=z_factor, ncomp=ncomp, method='two')
+    save_daily_dataset(ldaysTr, ldaysTs, z_factor=z_factor, ncomp=ncomp, method='two')
 
     # generate_rebalanced_dataset(ldaysTs, [(1,4), (2,3), (3, 15), (4,15), (5,15)], z_factor=z_factor, ncomp=ncomp)
 

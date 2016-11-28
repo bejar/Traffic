@@ -27,6 +27,7 @@ from sklearn.svm import SVC
 from Util.Generate_Dataset import generate_dataset
 from Util.Constants import data_path, dataset_path
 from Util.Logger import config_logger
+from sklearn.preprocessing import MinMaxScaler
 
 __author__ = 'bejar'
 
@@ -39,11 +40,12 @@ if __name__ == '__main__':
     #ldaysTr = ['20161107', '20161108', '20161109', '20161110', '20161111', '20161112', '20161113']
     ldaysTs = ['20161116', '20161116', '20161117', '20161118']
     z_factor = 0.25
-    ncomp = 1000
+    ncomp = 350
     PCA = True
 
     dataset = 'pre'  # 'pre' rb' 'gen'
     if dataset == 'pre':
+        scale = MinMaxScaler(feature_range=(-1,1))
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
         ldata = []
         y_train = []
@@ -51,7 +53,7 @@ if __name__ == '__main__':
             data = np.load(dataset_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
             ldata.append(data)
             y_train.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
-        X_train = np.concatenate(ldata)
+        X_train = scale.fit_transform(np.concatenate(ldata))
         print(X_train.shape)
 
         ldata = []
@@ -60,7 +62,7 @@ if __name__ == '__main__':
             data = np.load(dataset_path + 'data-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp))
             ldata.append(data)
             y_test.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f-C%d.npy' % (day, z_factor, ncomp)))
-        X_test = np.concatenate(ldata)
+        X_test = scale.fit_transform(np.concatenate(ldata))
         print(X_test.shape)
         del ldata
     elif dataset == 'rb':
@@ -79,7 +81,7 @@ if __name__ == '__main__':
         print(X_test.shape)
         del ldata
     else:
-        X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=PCA, ncomp=ncomp, method='two')
+        X_train, y_train, X_test, y_test = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=PCA, ncomp=ncomp, method='two', reshape=True)
         log.info('Train= %s  Test= %s z_factor= %0.2f PCA= %s NCOMP= %d', ldaysTr, ldaysTs, z_factor, PCA, ncomp)
 
     clsf = 'SVM'
@@ -99,7 +101,7 @@ if __name__ == '__main__':
             log.info('%s', classification_report(y_test, labels, labels=sorted(np.unique(y_test))))
     elif clsf == 'SVM':
         log.info(' -- SVM ----------------------')
-        for C in [10, 100, 1000]:
+        for C in [10, 100, 1000, 10000, 100000]:
             log.info('C= %f Time= %s', C, time.ctime())
             # svm = SVC(C=C, kernel='poly', degree=3, coef0=1, class_weight='balanced')
             svm = SVC(C=C, kernel='rbf', coef0=1, class_weight='balanced')

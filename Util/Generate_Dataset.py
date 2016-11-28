@@ -37,7 +37,59 @@ from Util.Constants import cameras_path,data_path, dataset_path
 __author__ = 'bejar'
 
 
-def generate_classification_dataset_one(day):
+def get_day_images_data(day, cpatt=None):
+    """
+    Return a dictionary with all the camera identifiers that exist for all the timestamps of the day
+    :param cpatt:
+    :return:
+    """
+    camdic = {}
+
+    if cpatt is not None:
+        ldir = glob.glob(cameras_path + day + '/*' + cpatt + '*.gif')
+    else:
+        ldir = glob.glob(cameras_path + day + '/*.gif')
+
+    camdic = {}
+
+    for f in sorted(ldir):
+        name = f.split('.')[0].split('/')[-1]
+        time, place = name.split('-')
+        if int(time) in camdic:
+            camdic[int(time)].append(place)
+        else:
+            camdic[int(time)] = [place]
+
+    return camdic
+
+def get_day_predictions(day):
+    """
+    Returns all the predictions for a day
+
+    :param day:
+    :return:
+    """
+    ldir = glob.glob(status_path + day + '/*-dadestram.data')
+    ldata = []
+    for f in sorted(ldir):
+        ldata.append(DataTram(f))
+    return ldata
+
+
+def dist_time(time1, time2):
+    """
+    distance between two hours
+
+    :param time1:
+    :param time2:
+    :return:
+    """
+    t1 = (time1 % 100) + (60 * ((time1 // 100) % 100))
+    t2 = (time2 % 100) + (60 * ((time2 // 100) % 100))
+    return t2 - t1
+
+
+def generate_classification_dataset_one(day, cpatt=None):
     """
     Generates a dictionary with the dates of the images with lists that contain the camera name and current and predicted
     traffic status using only the nearest prediction in space and time
@@ -45,31 +97,9 @@ def generate_classification_dataset_one(day):
     :param day:
     :return:
     """
-    #day = '20161031'
-
+    camdic = get_day_images_data(day, cpatt=cpatt)
+    ldata = get_day_predictions(day)
     CTram = CamTram()
-
-    ldir = glob.glob(cameras_path + day + '/*.gif')
-
-    camdic = {}
-
-    for f in sorted(ldir):
-        name = f.split('.')[0].split('/')[-1]
-        time, place = name.split('-')
-        # print(time, place, CTram.ct[place])
-        if int(time) in camdic:
-            camdic[int(time)].append(place)
-        else:
-            camdic[int(time)] = [place]
-
-    # print(camdic)
-
-    ldir = glob.glob(status_path + day + '/*-dadestram.data')
-    ldata = []
-    for f in sorted(ldir):
-        ldata.append(DataTram(f))
-
-
     assoc = {}
 
     for imgtime in sorted(camdic):
@@ -103,22 +133,7 @@ def generate_classification_dataset_one(day):
     return assoc
 
 
-def dist_time(time1, time2):
-    """
-    distance between two hours
-
-    :param time1:
-    :param time2:
-    :return:
-    """
-
-    t1 = (time1 % 100) + (60 * ((time1 // 100) % 100))
-    t2 = (time2 % 100) + (60 * ((time2 // 100) % 100))
-#    print(time1, time2, t1, t2, t2 - t1)
-    return t2 - t1
-
-
-def generate_classification_dataset_two(day):
+def generate_classification_dataset_two(day, cpatt=None):
     """
     Generates a dictionary with the dates of the images with lists that contain the camera name and current and predicted
     traffic status using the two nearest prediction in space and time
@@ -126,31 +141,11 @@ def generate_classification_dataset_two(day):
     :param day:
     :return:
     """
-    #day = '20161031'
 
-    CTram = CamTram()
-
-    ldir = glob.glob(cameras_path + day + '/*.gif')
-
-    camdic = {}
-
-    for f in sorted(ldir):
-        name = f.split('.')[0].split('/')[-1]
-        time, place = name.split('-')
-        # print(time, place, CTram.ct[place])
-        if int(time) in camdic:
-            camdic[int(time)].append(place)
-        else:
-            camdic[int(time)] = [place]
-
-    # print(camdic)
-
-    ldir = glob.glob(status_path + day + '/*-dadestram.data')
-    ldata = []
-    for f in sorted(ldir):
-        ldata.append(DataTram(f))
-
+    camdic = get_day_images_data(day, cpatt=cpatt)
+    ldata = get_day_predictions(day)
     assoc = {}
+    CTram = CamTram()
 
     for imgtime in sorted(camdic):
         # Look for the status and forecast closer to the image but always in the future
@@ -173,11 +168,9 @@ def generate_classification_dataset_two(day):
 
         if dmin is not None and dmin2 is not None and vmin < 60 and vmin2 < 60:
             lclass = []
-            # print(imgtime, dmin.date, dmin2.date, vmin, vmin2)
             for img in camdic[imgtime]:
                 tram1 = CTram.ct[img][0]
                 tram2 = CTram.ct[img][1]
-                # print(imgtime, dmin.dt[tram], img)
                 # store for an image of that time the name, closest status, prediction and next status
                 lclass.append((img,
                                max(dmin.dt[tram1][0], dmin.dt[tram2][0]),
@@ -188,7 +181,7 @@ def generate_classification_dataset_two(day):
     return assoc
 
 
-def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one'):
+def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
     """
     Generates a training and test datasets from the days in the parameters
     z_factor is the zoom factor to rescale the images
@@ -198,25 +191,23 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
     :param PCA:
     :param method:
     :return:
-    :param ncomp:
-    :return:
-    """
 
+    """
     # -------------------- Train Set ------------------
     ldataTr = []
     llabelsTr = []
 
     for day in ldaysTr:
         if method == 'one':
-            dataset = generate_classification_dataset_one(day)
+            dataset = generate_classification_dataset_one(day, cpatt=cpatt)
         else:
-            dataset = generate_classification_dataset_two(day)
+            dataset = generate_classification_dataset_two(day, cpatt=cpatt)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
                 # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if l != 0 and l != 6:
                     image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
-                    if np.sum(image == 254) < 100000:
+                    if np.sum(image == 254) < 100000: # This avoids the "not Available data" image
                         del image
                         im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
                         data = np.asarray(im)
@@ -225,26 +216,26 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
                         if z_factor is not None:
                             data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
                                               zoom(data[:, :, 2], z_factor)))
-                        data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
+                        if reshape:
+                            data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
                         ldataTr.append(data)
                         llabelsTr.append(l)
 
     # ------------- Test Set ------------------
-
     ldataTs = []
     llabelsTs = []
 
     for day in ldaysTs:
         if method == 'one':
-            dataset = generate_classification_dataset_one(day)
+            dataset = generate_classification_dataset_one(day, cpatt=cpatt)
         else:
-            dataset = generate_classification_dataset_two(day)
+            dataset = generate_classification_dataset_two(day, cpatt=cpatt)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
                 # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if l != 0 and l != 6:
                     image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
-                    if np.sum(image == 254) < 100000:
+                    if np.sum(image == 254) < 100000: # This avoids the "not Available data" image
                         del image
                         im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
                         data = np.asarray(im)
@@ -253,7 +244,8 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
                         if z_factor is not None:
                             data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
                                               zoom(data[:, :, 2], z_factor)))
-                        data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
+                        if reshape:
+                            data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
                         ldataTs.append(data)
                         llabelsTs.append(l)
     del data
@@ -280,10 +272,10 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
     return X_train, y_train, X_test, y_test
 
 
-def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one'):
+def save_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
     """
-    Comptes the PCA transformation using the days in ldaysTr
-    Generates  datasets from the days in the ldaysTs
+    Computes the PCA transformation using the days in ldaysTr
+    Generates and save datasets from the days in the ldaysTs
     z_factor is the zoom factor to rescale the images
     :param trdays:
     :param tsdays:
@@ -296,9 +288,9 @@ def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, meth
 
     for day in ldaysTr:
         if method == 'one':
-            dataset = generate_classification_dataset_one(day)
+            dataset = generate_classification_dataset_one(day, cpatt=cpatt)
         else:
-            dataset = generate_classification_dataset_two(day)
+            dataset = generate_classification_dataset_two(day, cpatt=cpatt)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
                 # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
@@ -313,7 +305,9 @@ def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, meth
                         if z_factor is not None:
                             data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
                                               zoom(data[:, :, 2], z_factor)))
-                        data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
+                        if reshape:
+                            data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
+
                         ldataTr.append(data)
                         llabelsTr.append(l)
 
@@ -331,9 +325,9 @@ def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, meth
         ldataTs = []
         llabelsTs = []
         if method == 'one':
-            dataset = generate_classification_dataset_one(day)
+            dataset = generate_classification_dataset_one(day, cpatt=cpatt)
         else:
-            dataset = generate_classification_dataset_two(day)
+            dataset = generate_classification_dataset_two(day, cpatt=cpatt)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
                 # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
@@ -348,7 +342,8 @@ def generate_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, meth
                         if z_factor is not None:
                             data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
                                               zoom(data[:, :, 2], z_factor)))
-                        data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
+                        if reshape:
+                            data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
                         ldataTs.append(data)
                         llabelsTs.append(l)
         X_test = pca.transform(np.array(ldataTs))
@@ -384,6 +379,13 @@ def generate_rebalanced_dataset(ldaysTr, ndays, z_factor, PCA=True, ncomp=100):
     print(Counter(y_train))
     np.save(dataset_path + 'data-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), X_train)
     np.save(dataset_path + 'labels-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), np.array(y_train))
+
+
+def generate_images_dataset():
+    """
+    Generates a dataset with images for DNN training
+    :return:
+    """
 
 
 
