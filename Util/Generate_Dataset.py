@@ -248,7 +248,9 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
                             data = np.reshape(data, (data.shape[0] * data.shape[1] * data.shape[2]))
                         ldataTs.append(data)
                         llabelsTs.append(l)
-    del data
+
+    if reshape or z_factor is not None:
+        del data
 
     print(Counter(llabelsTr))
     print(Counter(llabelsTs))
