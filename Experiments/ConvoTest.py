@@ -35,7 +35,7 @@ from Util.Logger import config_logger
 import time
 from Util.Cameras import Cameras
 from sklearn.metrics import confusion_matrix, classification_report
-from keras.utils.visualize_util import plot
+#from keras.utils.visualize_util import plot
 from Util.Constants import results_path
 
 __author__ = 'bejar'
@@ -61,46 +61,60 @@ if __name__ == '__main__':
     X_train = X_train.transpose((0,3,1,2))
     X_test = X_test.transpose((0,3,1,2))
 
-    print(X_train[0].shape)
-    print(np.unique(y_trainO))
-    print(np.unique(y_testO))
     y_trainO = [i -1 for i in y_trainO]
     y_testO = [i -1 for i in y_testO]
     y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
     y_test = np_utils.to_categorical(y_testO, len(np.unique(y_testO)))
-    print(y_train[0])
-    print(y_test[0])
     num_classes = y_test.shape[1]
     print(num_classes)
 
-    model = 2
-    dropoutconvo = 0.2
+    smodel = 2
+    dropoutconvo = 0.15
     dropoutfull = 0.5
-    if model == 1:
+    convofield = 3
+    if smodel == 1:
         # Model 1
         model = Sequential()
-        model.add(Convolution2D(32, 3, 3, input_shape=X_train[0].shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(32, convofield, convofield, input_shape=X_train[0].shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(32, convofield, convofield, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
         model.add(MaxPooling2D(pool_size=(4, 4)))
         model.add(Flatten())
         model.add(Dense(32, activation='relu', W_constraint=maxnorm(3))) #512
         model.add(Dropout(dropoutfull))
         model.add(Dense(num_classes, activation='softmax'))
-    elif model == 2:
+    elif smodel == 2:
         # Model 2
         model = Sequential()
-        model.add(Convolution2D(32, 3, 3, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
+        model.add(Convolution2D(32, convofield, convofield, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same'))
+        model.add(Convolution2D(32, convofield, convofield, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, 3, 3, activation='relu', border_mode='same'))
+        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(64, 3, 3, activation='relu', border_mode='same'))
+        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(128, 3, 3, activation='relu', border_mode='same'))
+        model.add(Convolution2D(128, convofield, convofield, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(128, 3, 3, activation='relu', border_mode='same'))
+        model.add(Convolution2D(128, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Flatten())
+        model.add(Dropout(dropoutconvo))
+        model.add(Dense(64, activation='relu', W_constraint=maxnorm(3)))
+        model.add(Dropout(dropoutfull))
+        model.add(Dense(32, activation='relu', W_constraint=maxnorm(3)))
+        model.add(Dropout(dropoutfull))
+        model.add(Dense(num_classes, activation='softmax'))
+    elif smodel == 3:
+        # Model 3
+        model = Sequential()
+        model.add(Convolution2D(32, convofield, convofield, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
+        model.add(Dropout(dropoutconvo))
+        model.add(Convolution2D(32, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Dropout(dropoutconvo))
+        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
@@ -110,27 +124,30 @@ if __name__ == '__main__':
         model.add(Dropout(dropoutfull))
         model.add(Dense(num_classes, activation='softmax'))
 
-
     # Compile model
+
     epochs = 50
-    lrate = 0.01  #0.01
+    lrate = 0.01 #0.01
     momentum = 0.9
+    batchsize = 64
     decay = lrate/epochs
     sgd = SGD(lr=lrate, momentum=momentum, decay=decay, nesterov=False)
     model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-    log.info('Model = %d, Epochs= %d, LRate= %.3f, Momentum= %.2f', model, epochs, lrate, momentum)
-    log.info('DPC = %.2f, DPF = %.2f',dropoutconvo, dropoutfull)
-    plot(model, to_file=results_path + '/' + 'convolutional-' + ltime +'.png', show_shapes=True)
+    log.info('Model = %d, Epochs= %d, LRate= %.3f, Momentum= %.2f', smodel, epochs, lrate, momentum)
+    log.info('DPC = %.2f, DPF = %.2f, Batch Size= %d', dropoutconvo, dropoutfull, batchsize)
     model.summary()
     log.info('%s', model.to_json())
-    hist = model.fit(X_train, y_train, validation_data=(X_test, y_test), nb_epoch=epochs, batch_size=32)
+    log.info('BEGIN= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
+    hist = model.fit(X_train, y_train, validation_data=(X_test, y_test), nb_epoch=epochs, batch_size=batchsize,
+                     class_weight={0: 1.0, 1: 1.1, 2: 1.7, 3: 1.7, 4: 2.5})
+    log.info('END= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
+
     log.info('%s', hist.history)
 
     # Final evaluation of the model
     scores = model.evaluate(X_test, y_test, verbose=0)
     log.info("Accuracy: %.2f%%",(scores[1]*100))
     labels = model.predict(X_test)
-
 
     y_pred = model.predict_classes(X_test)
 
