@@ -49,7 +49,7 @@ if __name__ == '__main__':
     np.random.seed(seed)
     ltime = time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time())))
     log = config_logger(file='convolutional-' + ltime )
-    ldaysTr = ['20161108','20161109','20161110','20161111', '20161112', '20161113', '20161114', '20161115']
+    ldaysTr = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110','20161111', '20161112', '20161113', '20161114', '20161115', '20161117', '20161118', '20161119']
     ldaysTs = ['20161116']
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
@@ -68,16 +68,17 @@ if __name__ == '__main__':
     num_classes = y_test.shape[1]
     print(num_classes)
 
-    smodel = 2
-    dropoutconvo = 0.15
+    smodel = 4
+    dropoutconvo = 0.3
     dropoutfull = 0.5
-    convofield = 3
+    convofield1 = 3
+    convofield2 = 3
     if smodel == 1:
         # Model 1
         model = Sequential()
-        model.add(Convolution2D(32, convofield, convofield, input_shape=X_train[0].shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(32, convofield1, convofield1, input_shape=X_train[0].shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield, convofield, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(32, convofield1, convofield1, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
         model.add(MaxPooling2D(pool_size=(4, 4)))
         model.add(Flatten())
         model.add(Dense(32, activation='relu', W_constraint=maxnorm(3))) #512
@@ -86,17 +87,17 @@ if __name__ == '__main__':
     elif smodel == 2:
         # Model 2
         model = Sequential()
-        model.add(Convolution2D(32, convofield, convofield, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
+        model.add(Convolution2D(32, convofield2, convofield2, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(32, convofield2, convofield2, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(128, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(128, convofield1, convofield1, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(128, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(128, convofield1, convofield1, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
@@ -108,13 +109,13 @@ if __name__ == '__main__':
     elif smodel == 3:
         # Model 3
         model = Sequential()
-        model.add(Convolution2D(32, convofield, convofield, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
+        model.add(Convolution2D(32, convofield2, convofield2, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(32, convofield2, convofield2, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(64, convofield, convofield, activation='relu', border_mode='same'))
+        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
@@ -123,13 +124,27 @@ if __name__ == '__main__':
         model.add(Dense(32, activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutfull))
         model.add(Dense(num_classes, activation='softmax'))
+    elif smodel == 4:
+        # Model 4
+        model = Sequential()
+        model.add(Convolution2D(32, convofield1, convofield1, input_shape=X_train[0].shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(Dropout(dropoutconvo))
+        model.add(Convolution2D(32, convofield1, convofield1, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(MaxPooling2D(pool_size=(4, 4)))
+        model.add(Flatten())
+        model.add(Dropout(dropoutconvo))
+        model.add(Dense(64, activation='relu', W_constraint=maxnorm(3)))
+        model.add(Dropout(dropoutfull))
+        model.add(Dense(32, activation='relu', W_constraint=maxnorm(3))) #512
+        model.add(Dropout(dropoutfull))
+        model.add(Dense(num_classes, activation='softmax'))
 
     # Compile model
 
-    epochs = 50
-    lrate = 0.01 #0.01
+    epochs = 100
+    lrate = 0.005 #0.01
     momentum = 0.9
-    batchsize = 64
+    batchsize = 100
     decay = lrate/epochs
     sgd = SGD(lr=lrate, momentum=momentum, decay=decay, nesterov=False)
     model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
@@ -139,7 +154,7 @@ if __name__ == '__main__':
     log.info('%s', model.to_json())
     log.info('BEGIN= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
     hist = model.fit(X_train, y_train, validation_data=(X_test, y_test), nb_epoch=epochs, batch_size=batchsize,
-                     class_weight={0: 1.0, 1: 1.1, 2: 1.7, 3: 1.7, 4: 2.5})
+                     class_weight={0: 1.0, 1: 1.5, 2: 2.0, 3: 3.0, 4: 4.0})  #{0: 1.0, 1: 1.1, 2: 1.7, 3: 1.7, 4: 2.5})
     log.info('END= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
 
     log.info('%s', hist.history)

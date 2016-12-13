@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Keras Training Status Page</title>
+
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Keras Status</h1>
+
+<br>
+
+<p>Net</p>
+
+<table>
+    <tr>
+        <th>NET</th>
+        <th>Acc</th>
+        <th>Loss</th>
+        <th>Val Acc</th>
+        <th>Val Loss</th>
+    </tr>
+    {% for net in status|sort %}
+    <tr>
+        <td> {{net}}</td>
+        <td>{{status[net]}}</td>
+        <td>{{acc[net]}}</td>
+        <td>{{loss[net]}}</td>
+        <td>{{val_acc[net]}}</td>
+        <td>{{val_loss[net]}}</td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
