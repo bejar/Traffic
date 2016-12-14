@@ -38,25 +38,24 @@ class MyRemoteMonitor(Callback):
                  id = '',
                  root='http://localhost:9000',
                  path='/publish/epoch/end/',
-                 field='data',
-                 headers={'Accept': 'application/json', 'Content-Type': 'application/json'}):
+                 field='data'):
         super(Callback, self).__init__()
         self.id = id
         self.root = root
         self.path = path
         self.field = field
-        self.headers = headers
 
     def on_epoch_end(self, epoch, logs={}):
         import requests
         send = {}
         send['epoch'] = epoch
+        send['id'] = self.id
         for k, v in logs.items():
             send[k] = v
+        print(send)
         try:
             requests.post(self.root + self.path,
-                          {self.field: json.dumps(send), 'id': self.id},
-                          headers=self.headers)
+                          params=send)
         except:
             print('Warning: could not reach RemoteMonitor '
                   'root server at ' + str(self.root))

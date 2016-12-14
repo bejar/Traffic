@@ -20,6 +20,8 @@
 <table>
     <tr>
         <th>NET</th>
+        <th>Epoch</th>
+        <th>Time</th>
         <th>Acc</th>
         <th>Loss</th>
         <th>Val Acc</th>
@@ -28,6 +30,7 @@
     {% for net in status|sort %}
     <tr>
         <td> {{net}}</td>
+        <td>{{epoch[net]}}</td>
         <td>{{status[net]}}</td>
         <td>{{acc[net]}}</td>
         <td>{{loss[net]}}</td>
