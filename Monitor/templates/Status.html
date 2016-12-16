@@ -23,21 +23,36 @@
         <th>Epoch</th>
         <th>Time</th>
         <th>Acc</th>
-        <th>Loss</th>
         <th>Val Acc</th>
-        <th>Val Loss</th>
     </tr>
     {% for net in status|sort %}
     <tr>
         <td> {{net}}</td>
-        <td>{{epoch[net]}}</td>
-        <td>{{status[net]}}</td>
-        <td>{{acc[net]}}</td>
-        <td>{{loss[net]}}</td>
-        <td>{{val_acc[net]}}</td>
-        <td>{{val_loss[net]}}</td>
+        <td>{{epoch[net][-1]}}</td>
+        <td>{{status[net][-1]}}</td>
+        <td>{{acc[net][-1]}}</td>
+        <td>{{val_acc[net][-1]}}</td>
     </tr>
     {% endfor %}
 </table>
+
+
+<table>
+    <tr>
+        <th>NET</th>
+        <th>D Acc</th>
+        <th>D Val Acc</th>
+    </tr>
+
+    {% for net in status|sort %}
+    <tr>
+        <td> {{net}}</td>
+        <td>{{acc[net][-1]} - acc[net][-2]}}</td>
+        <td>{{val_acc[net][-1]-{{val_acc[net][-2]}}}}</td>
+    </tr>
+    {% endfor %}
+ </table>
+
+
 </body>
 </html>

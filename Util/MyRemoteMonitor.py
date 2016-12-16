@@ -52,7 +52,6 @@ class MyRemoteMonitor(Callback):
         send['id'] = self.id
         for k, v in logs.items():
             send[k] = v
-        print(send)
         try:
             requests.post(self.root + self.path,
                           params=send)
