@@ -18,3 +18,8 @@ __init__.py
 """
 
 __author__ = 'bejar'
+
+from .MyRemoteMonitor import MyRemoteMonitor
+from .DBLog import DBLog
+
+__all__ = ['MyRemoteMonitor', 'DBLog']

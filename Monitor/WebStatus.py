@@ -2,7 +2,7 @@ __author__ = 'bejar'
 
 import socket
 import time
-import json
+
 
 from flask import Flask, request, render_template
 #from Parameters.Private import WS_port

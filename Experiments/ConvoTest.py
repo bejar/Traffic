@@ -37,7 +37,9 @@ from Util.Cameras import Cameras
 from sklearn.metrics import confusion_matrix, classification_report
 #from keras.utils.visualize_util import plot
 from Util.Constants import results_path
-from Util.MyRemoteMonitor import MyRemoteMonitor
+from Util import MyRemoteMonitor, DBLog
+from Config.Private import mongodata
+
 import socket
 
 __author__ = 'bejar'
@@ -147,6 +149,7 @@ if __name__ == '__main__':
     lrate = 0.005 #0.01
     momentum = 0.9
     batchsize = 100
+    classweight = {0: 1.0, 1: 1.5, 2: 2.0, 3: 3.0, 4: 4.0}
     decay = lrate/epochs
     sgd = SGD(lr=lrate, momentum=momentum, decay=decay, nesterov=False)
     model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
@@ -161,8 +164,15 @@ if __name__ == '__main__':
                             root='http://chandra.cs.upc.edu',
                             path='/Update')
 
-    hist = model.fit(X_train, y_train, validation_data=(X_test, y_test), nb_epoch=epochs, batch_size=batchsize, callbacks=[remote],
-                     class_weight={0: 1.0, 1: 1.5, 2: 2.0, 3: 3.0, 4: 4.0}) 
+    dblog = DBLog(id='%sMd%d-Ep%d-LR%.3f-MM%.2f-DPC%.2f-DPF%.2f-BS%d'%
+                    (socket.gethostname(), smodel, epochs, lrate, momentum,dropoutconvo, dropoutfull, batchsize),
+                  database=mongodata,
+                  config=str(model.to_json())
+                  )
+
+
+    hist = model.fit(X_train, y_train, validation_data=(X_test, y_test), nb_epoch=epochs, batch_size=batchsize, callbacks=[dblog],
+                     class_weight=classweight)
     log.info('END= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
 
     log.info('%s', hist.history)
