@@ -22,6 +22,7 @@ import os
 import time
 
 import requests
+from requests.exceptions import ChunkedEncodingError
 import urllib3
 from bs4 import BeautifulSoup
 from joblib import Parallel, delayed
@@ -90,6 +91,8 @@ def retrieve_camera(cam, name, ptime):
         with open(cameras_path_MAD + todaypath + '/' + '%s-%s.jpg' % (ptime, name), 'wb') as handler:
             handler.write(img_data)
     except ConnectionError:
+        pass
+    except ChunkedEncodingError:
         pass
 
 if __name__ == '__main__':

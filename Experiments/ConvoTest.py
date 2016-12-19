@@ -18,31 +18,35 @@ ConvoTest
 """
 
 import numpy as np
-from keras.datasets import cifar10
-from keras.models import Sequential
+from keras import backend as K
+from keras.constraints import maxnorm
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Flatten
-from keras.constraints import maxnorm
-from keras.optimizers import SGD
 from keras.layers.convolutional import Convolution2D
 from keras.layers.convolutional import MaxPooling2D
+from keras.models import Sequential
+from keras.optimizers import SGD
 from keras.utils import np_utils
-from keras import backend as K
+
 K.set_image_dim_ordering('th')
 from Util.Generate_Dataset import generate_dataset
 from Util.Logger import config_logger
 import time
-from Util.Cameras import Cameras
 from sklearn.metrics import confusion_matrix, classification_report
 #from keras.utils.visualize_util import plot
-from Util.Constants import results_path
-from Util import MyRemoteMonitor, DBLog
-from Config.Private import mongodata
-
-import socket
+from Util.DBLog import DBLog
+from Util.DBConfig import mongoconnection
 
 __author__ = 'bejar'
+
+
+def transweights(weights):
+    wtrans = {}
+    for v in weights:
+        wtrans[str(v)] = weights[v]
+    return wtrans
+
 
 
 if __name__ == '__main__':
@@ -53,7 +57,8 @@ if __name__ == '__main__':
     np.random.seed(seed)
     ltime = time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time())))
     log = config_logger(file='convolutional-' + ltime )
-    ldaysTr = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110','20161111', '20161112', '20161113', '20161114', '20161115', '20161117', '20161118', '20161119']
+#    ldaysTr = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110','20161111', '20161112', '20161113', '20161114', '20161115', '20161117', '20161118', '20161119']
+    ldaysTr = ['20161115']
     ldaysTs = ['20161116']
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
@@ -72,7 +77,7 @@ if __name__ == '__main__':
     num_classes = y_test.shape[1]
     print(num_classes)
 
-    smodel = 3
+    smodel = 4
     dropoutconvo = 0.2
     dropoutfull = 0.6
     convofield1 = 3
@@ -159,15 +164,17 @@ if __name__ == '__main__':
     log.info('%s', model.to_json())
     log.info('BEGIN= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
 
-    remote = MyRemoteMonitor(id='%sMd%d-Ep%d-LR%.3f-MM%.2f-DPC%.2f-DPF%.2f-BS%d'%
-                                (socket.gethostname(), smodel, epochs, lrate, momentum,dropoutconvo, dropoutfull, batchsize),
-                            root='http://chandra.cs.upc.edu',
-                            path='/Update')
+    # remote = MyRemoteMonitor(id='%sMd%d-Ep%d-LR%.3f-MM%.2f-DPC%.2f-DPF%.2f-BS%d'%
+    #                             (socket.gethostname(), smodel, epochs, lrate, momentum,dropoutconvo, dropoutfull, batchsize),
+    #                         root='http://chandra.cs.upc.edu',
+    #                         path='/Update')
 
-    dblog = DBLog(id='%sMd%d-Ep%d-LR%.3f-MM%.2f-DPC%.2f-DPF%.2f-BS%d'%
-                    (socket.gethostname(), smodel, epochs, lrate, momentum,dropoutconvo, dropoutfull, batchsize),
-                  database=mongodata,
-                  config=str(model.to_json())
+    config = {'model': smodel, 'epochs': epochs, 'lrate': lrate, 'momentum': momentum, 'dpconvo': dropoutconvo,
+              'dpfull': dropoutfull, 'convofields': [convofield1, convofield2], 'batchsize': batchsize,
+              'classweight': transweights(classweight)}
+    dblog = DBLog(database=mongoconnection,
+                  config=config,
+                  model=model.to_json()
                   )
 
 

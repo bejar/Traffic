@@ -20,16 +20,26 @@
 <table>
     <tr>
         <th>NET</th>
+        <th>host</th>
+
         <th>Epoch</th>
         <th>Acc</th>
         <th>Val Acc</th>
+        <th>button</th>
     </tr>
-    {% for net in status|sort %}
+    {% for net in data|sort %}
     <tr>
         <td> {{net}}</td>
-        <td>{{epoch[net]['epoch'][-1]}}</td>
-        <td>{{acc[net]['acc'][-1]}}</td>
-        <td>{{val_acc['val_acc'][net][-1]}}</td>
+        <td>{{data[net]['host']}}</td>
+        <td>{{data[net]['epoch']}}</td>
+        <td>{{data[net]['acc']}}</td>
+        <td>{{data[net]['val_acc']}}</td>
+        <td>
+            <form action="/graph" method="post">
+            <button type="submit" value={{net}} />
+            </form>
+        </td>
+
     </tr>
     {% endfor %}
 </table>
