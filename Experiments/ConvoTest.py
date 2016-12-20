@@ -59,9 +59,10 @@ if __name__ == '__main__':
     np.random.seed(seed)
     ltime = time.strftime('%Y%m%d%H%M%S', time.localtime(int(time.time())))
     #log = config_logger(file='convolutional-' + ltime )
-#    ldaysTr = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110','20161111', '20161112', '20161113', '20161114', '20161115', '20161117', '20161118', '20161119']
-    ldaysTr = ['20161115']
-    ldaysTs = ['20161116']
+    ldaysTr = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110',
+               '20161111', '20161112', '20161113', '20161114', '20161115', '20161116', '20161117', '20161118',
+               '20161119', '20161120', '20161121', '20161122', '20161123']
+    ldaysTs = ['20161124']
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
 
@@ -79,7 +80,7 @@ if __name__ == '__main__':
     num_classes = y_test.shape[1]
     print(num_classes)
 
-    smodel = 4
+    smodel = 3
 
     classweight = {0: 1.0, 1: 1.5, 2: 2.0, 3: 3.0, 4: 4.0}
     epochs = 100
@@ -91,7 +92,7 @@ if __name__ == '__main__':
     config = {'model': smodel,
               'input_shape': X_train[0].shape, 'nexamples': X_train.shape[0], 'num_classes': num_classes,
               'dpconvo': 0.2,
-              'dpfull': 0.6,
+              'dpfull': 0.7,
               'convofields': [3, 3],
               'fulllayers': [64, 32],
               'classweight': transweights(classweight),
