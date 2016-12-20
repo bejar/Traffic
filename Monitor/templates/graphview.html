@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+    {{ result[0]|safe }}
+</head>
+<body>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+     equationNumbers: {  autoNumber: "AMS"  },
+     extensions: ["AMSmath.js", "AMSsymbols.js", "autobold.js"]
+  }
+});
+</script>
+<script type="text/javascript" src=
+"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+{% if result != None %}
+<!-- script and div elements for Bokeh plot -->
+{{ result[1]|safe }}
+{{ result[2]|safe }}
+{% endif %}
+</p>
+</body>
+</html>
