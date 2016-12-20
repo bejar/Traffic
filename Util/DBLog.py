@@ -82,3 +82,15 @@ class DBLog(Callback):
                                               'final_val_acc': send['val_acc'][-1],
                                               }})
 
+    def save_final_results(self, accuracy, confusion, report):
+        """
+        Adds  accuracy, confusion matrix and classification report to the DB
+        :param confusion:
+        :param report:
+        :return:
+        """
+        client = MongoClient(self.mgdb.server)
+        db = client[self.mgdb.db]
+        db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
+        col = db[self.mgdb.col]
+        col.update({'_id':self.id}, {'$set': {'confusion': confusion, 'report': report, 'accuracy': accuracy}})
