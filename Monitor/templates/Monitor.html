@@ -21,22 +21,25 @@
     <tr>
         <th>NET</th>
         <th>host</th>
+        <th>Time</th>
 
         <th>Epoch</th>
         <th>Acc</th>
         <th>Val Acc</th>
-        <th>button</th>
+        <th>Graph</th>
     </tr>
     {% for net in data|sort %}
     <tr>
         <td> {{net}}</td>
         <td>{{data[net]['host']}}</td>
+        <td>{{data[net]['upd']}}</td>
+
         <td>{{data[net]['epoch']}}</td>
         <td>{{data[net]['acc']}}</td>
         <td>{{data[net]['val_acc']}}</td>
         <td>
-            <form action="/graph" method="post">
-            <button type="submit" value={{net}} />
+            <form action="/Graph" method="post">
+            <button type="submit" name="graph"  value={{net}} />
             </form>
         </td>
 
@@ -45,6 +48,35 @@
 </table>
 
 
+<p>Best Models</p>
+
+<table>
+    <tr>
+        <th>NET</th>
+        <th>Acc</th>
+        <th>Val Acc</th>
+        <th>Graph</th>
+        <th>Model</th>
+    </tr>
+    {% for net in old|sort %}
+    <tr>
+        <td> {{net}}</td>
+        <td>{{old[net]['acc']}}</td>
+        <td>{{old[net]['val_acc']}}</td>
+        <td>
+             <form action="/Graph" method="post">
+            <button type="submit" name="graph"  value={{net}} />
+            </form>
+        </td>
+       <td>
+           <form action="/Model" method="post">
+            <button type="submit" name="model"  value={{net}} />
+            </form>
+
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
 </body>
 </html>
