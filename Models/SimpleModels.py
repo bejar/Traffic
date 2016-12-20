@@ -95,7 +95,7 @@ def simple_model(smodel, config):
     elif smodel == 4:
         # Model 4
         model = Sequential()
-        model.add(Convolution2D(32, convofield[0], convofield[0], input_shape=input_shape.shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(32, convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(32, convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
         model.add(MaxPooling2D(pool_size=(4, 4)))

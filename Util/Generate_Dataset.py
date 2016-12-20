@@ -383,6 +383,40 @@ def generate_rebalanced_dataset(ldaysTr, ndays, z_factor, PCA=True, ncomp=100):
     np.save(dataset_path + 'labels-RB-Z%0.2f-C%d.npy' % (z_factor, ncomp), np.array(y_train))
 
 
+
+def generate_data_day(day, z_factor, method='two'):
+    """
+    Generates a raw dataset for a day with a zoom factor (data and labels)
+    :param z_factor:
+    :return:
+    """
+    ldata = []
+    llabels = []
+    if method == 'one':
+        dataset = generate_classification_dataset_one(day)
+    else:
+        dataset = generate_classification_dataset_two(day)
+    for t in dataset:
+        for cam, l, _, _ in dataset[t]:
+            if l != 0 and l != 6:
+                image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                if np.sum(image == 254) < 100000:
+                    del image
+                    im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
+                    data = np.asarray(im)
+                    data = data[5:235, 5:315, :].astype('float32')
+                    data /= 255.0
+                    if z_factor is not None:
+                        data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
+                                          zoom(data[:, :, 2], z_factor)))
+
+                    ldata.append(data)
+                    llabels.append(l)
+
+    np.save(dataset_path + 'data-D%s-Z%0.2f.npy' % (day, z_factor), np.array(ldata))
+    np.save(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor), np.array(llabels))
+
+
 def generate_images_dataset():
     """
     Generates a dataset with images for DNN training
@@ -392,4 +426,11 @@ def generate_images_dataset():
 
 
 if __name__ == '__main__':
-    generate_classification_dataset_two('20161101')
+    #generate_classification_dataset_two('20161101')
+
+    days = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110',
+               '20161111', '20161112', '20161113', '20161114', '20161115', '20161116', '20161117', '20161118',
+               '20161119', '20161120', '20161121', '20161122', '20161123', '20161123']
+    z_factor = 0.25
+    for day in days:
+        generate_data_day(day, z_factor)

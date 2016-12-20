@@ -25,7 +25,7 @@ from pymongo import MongoClient
 import StringIO
 
 import bokeh.plotting as plt
-import tempfile
+
 import matplotlib
 matplotlib.use('Agg')
 
@@ -34,7 +34,7 @@ import base64
 import seaborn as sns
 
 from Util.DBConfig import mongoconnection
-#from Parameters.Private import WS_port
+import pprint
 
 __author__ = 'bejar'
 
@@ -146,9 +146,25 @@ def model():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find_one({'_id': int(payload)}, {'model':1})
+    vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1})
+    pp = pprint.PrettyPrinter(indent=4)
 
-    return vals['model']
+    head = """
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Keras NN Config </title>
+  </head>
+<body>
+"""
+    end = '</body></html>'
+
+    return head + \
+           '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=40).replace('\n', '<br>') + \
+           '<br><br><h2>Net:</h2><br><br>'+ \
+           pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
+           end
+
 
 
 

@@ -22,11 +22,11 @@
         <th>NET</th>
         <th>host</th>
         <th>Time</th>
-
         <th>Epoch</th>
         <th>Acc</th>
         <th>Val Acc</th>
         <th>Graph</th>
+        <th>Model</th>
     </tr>
     {% for net in data|sort %}
     <tr>
@@ -42,7 +42,12 @@
             <button type="submit" name="graph"  value={{net}} />
             </form>
         </td>
+       <td>
+           <form action="/Model" method="post">
+            <button type="submit" name="model"  value={{net}} />
+            </form>
 
+        </td>
     </tr>
     {% endfor %}
 </table>
