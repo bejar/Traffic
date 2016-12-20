@@ -52,7 +52,6 @@ def info():
     """
     Status de las ciudades
     """
-
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
@@ -62,7 +61,7 @@ def info():
 
     res = {}
     for v in vals:
-        if len(v['acc'])>0:
+        if len(v['acc']) > 0:
             res[v['_id']] = {}
             res[v['_id']]['epoch'] = len(v['acc'])
             res[v['_id']]['acc'] = v['acc'][-1]
@@ -70,9 +69,8 @@ def info():
             res[v['_id']]['host'] = v['host']
             res[v['_id']]['upd'] = v['time_upd']
 
-
-    vals = col.find({'done': True, 'final_val_acc': { '$gt': 0.7 }},
-                    {'_id':1,'final_acc':1, 'final_val_acc':1, 'val_loss':1})
+    vals = col.find({'done': True, 'final_val_acc': {'$gt': 0.7}},
+                    {'_id': 1,'final_acc': 1, 'final_val_acc': 1, 'val_loss': 1})
 
     old = {}
 
@@ -84,8 +82,22 @@ def info():
 
     return render_template('Monitor.html', data=res, old=old)
 
+@app.route('/Batch')
+def batch():
+    """
+    Returns the batches pending in the DB
+    """
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
 
-
+    vals = col.find({'pending': True})
+    res = {}
+    for v in vals:
+        res[v['_id']] = {}
+        res[v['_id']]['host'] = v['host']
+    return render_template('Batch.html', data=res)
 
 @app.route('/Graph', methods=['GET','POST'])
 def graphic():
@@ -135,7 +147,7 @@ def graphic():
 @app.route('/Model', methods=['GET','POST'])
 def model():
     """
-    Generates a page with the training trace
+    Generates a page with the configuration of the training and the model
 
     :return:
     """
@@ -165,7 +177,36 @@ def model():
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
            end
 
+@app.route('/BConfig', methods=['GET','POST'])
+def config():
+    """
+    Generates a page with the configuration of the batch
 
+    :return:
+    """
+    payload = request.form['config']
+
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+
+    vals = col.find_one({'_id': int(payload)}, {'config':1})
+    pp = pprint.PrettyPrinter(indent=4)
+
+    head = """
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Keras NN Config </title>
+  </head>
+<body>
+"""
+    end = '</body></html>'
+
+    return head + \
+           '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=40).replace('\n', '<br>') + \
+           end
 
 
 if __name__ == '__main__':

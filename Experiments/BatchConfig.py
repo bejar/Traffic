@@ -19,7 +19,7 @@ BatchConfig
 
 from pymongo import MongoClient
 from Util.DBConfig import mongoconnection
-
+import time
 
 __author__ = 'bejar'
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
               'zfactor': 0.25,
               'model': smodel,
               'dpconvo': 0.2,
-              'dpfull': 0.7,
+              'dpfull': 0.6,
               'convofields': [3, 3],
               'fulllayers': [64, 32],
               'classweight': classweight,
@@ -49,15 +49,14 @@ if __name__ == '__main__':
               'batchsize': 100,
               'momentum': 0.9}
 
-
-
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     host = 'itza'
-    bconfig = {'done': False,
+    bconfig = {'_id': int(time.time()),
+               'pending': True,
                'host': host,
                'config': config}
 

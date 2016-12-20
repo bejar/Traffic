@@ -38,7 +38,7 @@ if __name__ == '__main__':
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
-        batch = col.find_one({'host':socket.gethostname().split('.')[0], 'done': False})
+        batch = col.find_one({'host':socket.gethostname().split('.')[0], 'pending': True})
         if batch is not None:
             config = batch['config']
             train, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['z_factor'])
@@ -49,7 +49,6 @@ if __name__ == '__main__':
 
             model = simple_model(config['model'], config)
             train_model(model, config, train, test, test_labels)
-            col.update({'_id': batch['_id']}, {'$set':{'done': True}})
-
+            col.update({'_id': batch['_id']}, {'$set':{'pending': False}})
         else:
             sleep(1500)
