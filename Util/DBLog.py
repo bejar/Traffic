@@ -75,5 +75,10 @@ class DBLog(Callback):
         db = client[self.mgdb.db]
         db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
         col = db[self.mgdb.col]
+        send = col.find_one({'_id':self.id}, {'acc':1, 'val_acc':1})
+        col.update({'_id':self.id}, {'$set': {'done':True,
+                                              'time_end':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                                              'final_acc': send['acc'][-1],
+                                              'final_val_acc': send['val_acc'][-1],
+                                              }})
 
-        col.update({'_id':self.id}, {'$set': {'done':True, 'time_end':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}})

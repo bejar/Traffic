@@ -38,6 +38,8 @@ from sklearn.metrics import confusion_matrix, classification_report
 from Util.DBLog import DBLog
 from Util.DBConfig import mongoconnection
 
+from Models.SimpleModels import simple_model
+
 __author__ = 'bejar'
 
 
@@ -78,90 +80,33 @@ if __name__ == '__main__':
     print(num_classes)
 
     smodel = 4
-    dropoutconvo = 0.2
-    dropoutfull = 0.6
-    convofield1 = 3
-    convofield2 = 3
-    if smodel == 1:
-        # Model 1
-        model = Sequential()
-        model.add(Convolution2D(32, convofield1, convofield1, input_shape=X_train[0].shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield1, convofield1, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
-        model.add(MaxPooling2D(pool_size=(4, 4)))
-        model.add(Flatten())
-        model.add(Dense(32, activation='relu', W_constraint=maxnorm(3))) #512
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
-    elif smodel == 2:
-        # Model 2
-        model = Sequential()
-        model.add(Convolution2D(32, convofield2, convofield2, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
-        model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield2, convofield2, activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
-        model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(128, convofield1, convofield1, activation='relu', border_mode='same'))
-        model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(128, convofield1, convofield1, activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Flatten())
-        model.add(Dropout(dropoutconvo))
-        model.add(Dense(64, activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(32, activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
-    elif smodel == 3:
-        # Model 3
-        model = Sequential()
-        model.add(Convolution2D(32, convofield2, convofield2, input_shape=X_train[0].shape, activation='relu', border_mode='same'))
-        model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield2, convofield2, activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
-        model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(64, convofield1, convofield1, activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Flatten())
-        model.add(Dropout(dropoutconvo))
-        model.add(Dense(128, activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(64, activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
-    elif smodel == 4:
-        # Model 4
-        model = Sequential()
-        model.add(Convolution2D(32, convofield1, convofield1, input_shape=X_train[0].shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield1, convofield1, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
-        model.add(MaxPooling2D(pool_size=(4, 4)))
-        model.add(Flatten())
-        model.add(Dropout(dropoutconvo))
-        model.add(Dense(64, activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(32, activation='relu', W_constraint=maxnorm(3))) #512
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
 
-    # Compile model
-
+    classweight = {0: 1.0, 1: 1.5, 2: 2.0, 3: 3.0, 4: 4.0}
     epochs = 100
-    lrate = 0.005 #0.01
+    lrate = 0.005  # 0.01
     momentum = 0.9
     batchsize = 100
-    classweight = {0: 1.0, 1: 1.5, 2: 2.0, 3: 3.0, 4: 4.0}
-    decay = lrate/epochs
+    decay = lrate / epochs
+
+    config = {'model': smodel,
+              'input_shape': X_train[0].shape, 'nexamples': X_train.shape[0], 'num_classes': num_classes,
+              'dpconvo': 0.2,
+              'dpfull': 0.6,
+              'convofields': [3, 3],
+              'fulllayers': [64, 32],
+              'classweight': transweights(classweight),
+              'epochs': epochs, 'lrate': lrate, 'decay': decay,
+              'batchsize': batchsize,'momentum': momentum}
+
+    model = simple_model(smodel, config)
+
+
+    # Compile model
     sgd = SGD(lr=lrate, momentum=momentum, decay=decay, nesterov=False)
     model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
     log.info('Model = %d, Epochs= %d, LRate= %.3f, Momentum= %.2f', smodel, epochs, lrate, momentum)
-    log.info('DPC = %.2f, DPF = %.2f, Batch Size= %d', dropoutconvo, dropoutfull, batchsize)
-    model.summary()
-    log.info('%s', model.to_json())
+    log.info('DPC = %.2f, DPF = %.2f, Batch Size= %d', config['dpconvo'], config['dpfull'], batchsize)
+
     log.info('BEGIN= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
 
     # remote = MyRemoteMonitor(id='%sMd%d-Ep%d-LR%.3f-MM%.2f-DPC%.2f-DPF%.2f-BS%d'%
@@ -169,20 +114,12 @@ if __name__ == '__main__':
     #                         root='http://chandra.cs.upc.edu',
     #                         path='/Update')
 
-    config = {'model': smodel, 'epochs': epochs, 'lrate': lrate, 'momentum': momentum, 'dpconvo': dropoutconvo,
-              'dpfull': dropoutfull, 'convofields': [convofield1, convofield2], 'batchsize': batchsize,
-              'classweight': transweights(classweight)}
-    dblog = DBLog(database=mongoconnection,
-                  config=config,
-                  model=model.to_json()
-                  )
-
+    dblog = DBLog(database=mongoconnection, config=config, model=model.to_json())
 
     hist = model.fit(X_train, y_train, validation_data=(X_test, y_test), nb_epoch=epochs, batch_size=batchsize, callbacks=[dblog],
                      class_weight=classweight)
-    log.info('END= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
 
-    log.info('%s', hist.history)
+    log.info('END= %s',time.strftime('%d-%m-%Y %H:%M:%S', time.localtime()))
 
     # Final evaluation of the model
     scores = model.evaluate(X_test, y_test, verbose=0)
@@ -191,7 +128,6 @@ if __name__ == '__main__':
 
     y_pred = model.predict_classes(X_test)
 
-    p = model.predict_proba(X_test) # to predict probability
     log.info('%s',confusion_matrix(y_testO, y_pred))
 
     log.info('%s',classification_report(y_testO, y_pred))
