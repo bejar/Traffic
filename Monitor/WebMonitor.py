@@ -35,6 +35,9 @@ import seaborn as sns
 
 from Util.DBConfig import mongoconnection
 import pprint
+import pydotplus as pydot
+import pickle
+from IPython.display import SVG
 
 __author__ = 'bejar'
 
@@ -121,8 +124,6 @@ def graphic():
 
         img = StringIO.StringIO()
 
-
-
         fig = plt.figure(figsize=(5,4),dpi=100)
         axes = fig.add_subplot(1,1,1)
 
@@ -158,8 +159,15 @@ def model():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1})
+    vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1, 'dotobj':1})
     pp = pprint.PrettyPrinter(indent=4)
+
+    if 'dotobj' in vals:
+        dotobj = pickle.loads(vals['dotobj'])
+        svgobj = ''
+       # svgobj = SVG(dotobj.create(prog='dot', format='svg'))
+    else:
+        svgobj = ''
 
     head = """
     <!DOCTYPE html>
@@ -175,6 +183,7 @@ def model():
            '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=40).replace('\n', '<br>') + \
            '<br><br><h2>Net:</h2><br><br>'+ \
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
+            '<br>' + svgobj +\
            end
 
 @app.route('/BConfig', methods=['GET','POST'])

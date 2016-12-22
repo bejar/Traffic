@@ -23,6 +23,7 @@ K.set_image_dim_ordering('th')
 
 from Models.SimpleModels import simple_model
 from Util.ConvoTrain import transweights, train_model, load_dataset
+from Util.Generate_Dataset import list_days_generator
 
 __author__ = 'bejar'
 
@@ -30,10 +31,8 @@ __author__ = 'bejar'
 if __name__ == '__main__':
 
 
-    ldaysTr = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110',
-               '20161111', '20161112', '20161113', '20161114', '20161115', '20161116', '20161117', '20161118',
-               '20161119', '20161120', '20161121', '20161122', '20161123']
-    ldaysTs = ['20161124']
+    ldaysTr = list_days_generator(2016, 11, 2, 23)
+    ldaysTs = list_days_generator(2016, 11, 24, 24)
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
 
@@ -55,7 +54,7 @@ if __name__ == '__main__':
               'batchsize': 100,
               'momentum': 0.9}
 
-    train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, camera)
+    train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)
 
     config['input_shape'] = train[0][0].shape
     config['nexamples'] = train[0].shape[0]
@@ -65,7 +64,7 @@ if __name__ == '__main__':
 
     # Compile model
 
-    train_model(model, config, train, test, test_labels, classweight)
+    train_model(model, config, train, test, test_labels)
 
 
 

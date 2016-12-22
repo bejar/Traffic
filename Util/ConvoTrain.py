@@ -26,7 +26,7 @@ from keras import backend as K
 from keras.optimizers import SGD
 from keras.utils import np_utils
 K.set_image_dim_ordering('th')
-from Util.Generate_Dataset import generate_dataset
+from Util.Generate_Dataset import generate_dataset, load_generated_dataset
 from sklearn.metrics import confusion_matrix, classification_report
 from Util.DBLog import DBLog
 from Util.DBConfig import mongoconnection
@@ -54,8 +54,8 @@ def train_model(model, config, train, test, test_labels):
     """
     sgd = SGD(lr=config['lrate'], momentum=config['momentum'], decay=config['lrate']/config['momentum'], nesterov=False)
     model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-    classweight = detransweights(config['classweights'])
-    dblog = DBLog(database=mongoconnection, config=config, model=model.to_json())
+    classweight = detransweights(config['classweight'])
+    dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
     model.fit(train[0], train[1], validation_data=(test[0], test[1]), nb_epoch=config['epochs'],
               batch_size=config['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
@@ -65,12 +65,17 @@ def train_model(model, config, train, test, test_labels):
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def load_dataset(ldaysTr, ldaysTs, z_factor):
+def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True):
     """
     Loads the dataset
     :return:
     """
-    X_train, y_trainO, X_test, y_testO = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=False, method='two', reshape=False)
+
+    if gen:
+        X_train, y_trainO, X_test, y_testO = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=False, method='two', reshape=False)
+    else:
+        X_train, y_trainO, X_test, y_testO = load_generated_dataset(ldaysTr, ldaysTs, z_factor)
+
     X_train = X_train.transpose((0,3,1,2))
     X_test = X_test.transpose((0,3,1,2))
 

@@ -273,7 +273,6 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
 
     return X_train, y_train, X_test, y_test
 
-
 def save_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
     """
     Computes the PCA transformation using the days in ldaysTr
@@ -399,6 +398,7 @@ def generate_data_day(day, z_factor, method='two'):
     for t in dataset:
         for cam, l, _, _ in dataset[t]:
             if l != 0 and l != 6:
+                print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if np.sum(image == 254) < 100000:
                     del image
@@ -417,6 +417,33 @@ def generate_data_day(day, z_factor, method='two'):
     np.save(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor), np.array(llabels))
 
 
+def load_generated_dataset(ldaysTr, ldaysTs, z_factor):
+    """
+    Load the already generated datasets
+
+    :param ldaysTr:
+    :param ldaysTs:
+    :param z_factor:
+    :return:
+    """
+    ldata = []
+    y_train = []
+    for day in ldaysTr:
+        data = np.load(dataset_path + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
+        ldata.append(data)
+        y_train.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
+    X_train = np.concatenate(ldata)
+
+    ldata = []
+    y_test = []
+    for day in ldaysTs:
+        data = np.load(dataset_path + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
+        ldata.append(data)
+        y_test.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
+    X_test = np.concatenate(ldata)
+
+    return X_train, y_train, X_test, y_test
+
 def generate_images_dataset():
     """
     Generates a dataset with images for DNN training
@@ -424,13 +451,25 @@ def generate_images_dataset():
     """
 
 
+def list_days_generator(year, month, iday, fday):
+    """
+    Generates a list of days
+    :param year:
+    :param month:
+    :param iday:
+    :param fday:
+    :return:
+    """
+    ldays = []
+    for v in range(iday, fday+1):
+        ldays.append("%d%d%02d" % (year, month, v))
+    return ldays
 
 if __name__ == '__main__':
     #generate_classification_dataset_two('20161101')
 
-    days = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110',
-               '20161111', '20161112', '20161113', '20161114', '20161115', '20161116', '20161117', '20161118',
-               '20161119', '20161120', '20161121', '20161122', '20161123', '20161123']
+    days = list_days_generator(2016, 12, 17, 20)
+
     z_factor = 0.25
     for day in days:
         generate_data_day(day, z_factor)

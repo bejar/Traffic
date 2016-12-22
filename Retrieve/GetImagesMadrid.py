@@ -22,7 +22,7 @@ import os
 import time
 
 import requests
-from requests.exceptions import ChunkedEncodingError
+from requests.exceptions import ChunkedEncodingError, ConnectionError
 import urllib3
 from bs4 import BeautifulSoup
 from joblib import Parallel, delayed
@@ -119,13 +119,19 @@ if __name__ == '__main__':
 
         print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
 
-        tram = requests.get(niveles).content
-        with open(status_path_MAD + todaypath + '/' + '%s-niveles.kml' % (ptime), 'wb') as handler:
-                handler.write(tram)
+        try:
+            tram = requests.get(niveles).content
+            with open(status_path_MAD + todaypath + '/' + '%s-niveles.kml' % (ptime), 'wb') as handler:
+                    handler.write(tram)
+        except ChunkedEncodingError:
+            pass
 
-        tram = requests.get(intensidades).content
-        with open(status_path_MAD + todaypath + '/' + '%s-intensidades.kml' % (ptime), 'wb') as handler:
-                handler.write(tram)
+        try:
+            tram = requests.get(intensidades).content
+            with open(status_path_MAD + todaypath + '/' + '%s-intensidades.kml' % (ptime), 'wb') as handler:
+                    handler.write(tram)
+        except ChunkedEncodingError:
+            pass
 
         print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
 
