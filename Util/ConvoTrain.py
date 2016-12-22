@@ -30,6 +30,7 @@ from Util.Generate_Dataset import generate_dataset, load_generated_dataset
 from sklearn.metrics import confusion_matrix, classification_report
 from Util.DBLog import DBLog
 from Util.DBConfig import mongoconnection
+from Util.DataGenerators import simpleDataGenerator
 
 __author__ = 'bejar'
 
@@ -46,7 +47,7 @@ def detransweights(weights):
         wtrans[int(v)] = weights[v]
     return wtrans
 
-def train_model(model, config, train, test, test_labels):
+def train_model(model, config, train, test, test_labels, generator=None, samples_epoch=10000):
     """
     Trains the model
 
@@ -57,32 +58,52 @@ def train_model(model, config, train, test, test_labels):
     classweight = detransweights(config['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
-    model.fit(train[0], train[1], validation_data=(test[0], test[1]), nb_epoch=config['epochs'],
-              batch_size=config['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
+    if generator is None:
+        model.fit(train[0], train[1], validation_data=(test[0], test[1]), nb_epoch=config['epochs'],
+                  batch_size=config['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
+    else:
+        model.fit_generator(generator, samples_per_epoch=samples_epoch, validation_data=(test[0], test[1]), nb_epoch=config['epochs'],
+                  batch_size=config['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
+
+
     scores = model.evaluate(test[0], test[1], verbose=0)
     y_pred = model.predict_classes(test[0])
 
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True):
+def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True, only_test=False):
     """
-    Loads the dataset
+    Loads the train and test dataset
+
     :return:
     """
 
-    if gen:
-        X_train, y_trainO, X_test, y_testO = generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=False, method='two', reshape=False)
+    if not only_test:
+
+        if gen:
+            X_train, y_trainO = generate_dataset(ldaysTr,z_factor, method='two')
+        else:
+            X_train, y_trainO = load_generated_dataset(ldaysTr, z_factor)
+        X_train = X_train.transpose((0,3,1,2))
+        y_trainO = [i - 1 for i in y_trainO]
+        y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
     else:
-        X_train, y_trainO, X_test, y_testO = load_generated_dataset(ldaysTr, ldaysTs, z_factor)
+        X_train = None,
+        y_train = None
 
-    X_train = X_train.transpose((0,3,1,2))
+    if gen:
+        X_test, y_testO = generate_dataset(ldaysTs, z_factor, method='two')
+    else:
+        X_test, y_testO = load_generated_dataset(ldaysTs, z_factor)
+
+
     X_test = X_test.transpose((0,3,1,2))
-
-    y_trainO = [i -1 for i in y_trainO]
     y_testO = [i -1 for i in y_testO]
-    y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
     y_test = np_utils.to_categorical(y_testO, len(np.unique(y_testO)))
+
+
     num_classes = y_test.shape[1]
 
     return (X_train, y_train), (X_test, y_test), y_testO, num_classes
+

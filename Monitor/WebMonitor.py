@@ -35,9 +35,9 @@ import seaborn as sns
 
 from Util.DBConfig import mongoconnection
 import pprint
-import pydotplus as pydot
-import pickle
-from IPython.display import SVG
+#import pydotplus as pydot
+#import pickle
+#from IPython.display import SVG
 
 __author__ = 'bejar'
 
@@ -162,12 +162,12 @@ def model():
     vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1, 'dotobj':1})
     pp = pprint.PrettyPrinter(indent=4)
 
-    if 'dotobj' in vals:
-        dotobj = pickle.loads(vals['dotobj'])
-        svgobj = ''
-       # svgobj = SVG(dotobj.create(prog='dot', format='svg'))
-    else:
-        svgobj = ''
+    # if 'dotobj' in vals:
+    #     dotobj = pickle.loads(vals['dotobj'])
+    #     svgobj = ''
+    #    # svgobj = SVG(dotobj.create(prog='dot', format='svg'))
+    # else:
+    #     svgobj = ''
 
     head = """
     <!DOCTYPE html>
@@ -183,7 +183,7 @@ def model():
            '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=40).replace('\n', '<br>') + \
            '<br><br><h2>Net:</h2><br><br>'+ \
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
-            '<br>' + svgobj +\
+            '<br>' + \
            end
 
 @app.route('/BConfig', methods=['GET','POST'])

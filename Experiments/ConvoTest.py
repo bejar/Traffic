@@ -24,14 +24,14 @@ K.set_image_dim_ordering('th')
 from Models.SimpleModels import simple_model
 from Util.ConvoTrain import transweights, train_model, load_dataset
 from Util.Generate_Dataset import list_days_generator
-
+from Util.DataGenerators import simpleDataGenerator
 __author__ = 'bejar'
 
 
 if __name__ == '__main__':
 
 
-    ldaysTr = list_days_generator(2016, 11, 2, 23)
+    ldaysTr = list_days_generator(2016, 11, 1, 23)
     ldaysTs = list_days_generator(2016, 11, 24, 24)
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
@@ -54,17 +54,26 @@ if __name__ == '__main__':
               'batchsize': 100,
               'momentum': 0.9}
 
-    train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)
+    generator = None
+#    generator = simpleDataGenerator(ldaysTr, z_factor, config['batchsize'], groups=5)
+    samples_epoch = 50000
 
-    config['input_shape'] = train[0][0].shape
-    config['nexamples'] = train[0].shape[0]
-    config['num_classes'] = num_classes
+    if generator is None:
+        train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)
+        config['input_shape'] = train[0][0].shape
+        config['nexamples'] = train[0].shape[0]
+        config['num_classes'] = num_classes
+    else:
+        train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
+        config['input_shape'] = test[0][0].shape
+        config['num_classes'] = num_classes
+        config['nexamples'] = samples_epoch
 
     model = simple_model(smodel, config)
 
     # Compile model
 
-    train_model(model, config, train, test, test_labels)
+    train_model(model, config, train, test, test_labels, generator=generator, samples_epoch=samples_epoch)
 
 
 

@@ -24,9 +24,9 @@ from keras.callbacks import Callback
 import time
 from pymongo import MongoClient
 import socket
-import pydotplus as pydot
+#import pydotplus as pydot
 import pickle
-from keras.utils.visualize_util import model_to_dot
+#from keras.utils.visualize_util import model_to_dot
 
 class DBLog(Callback):
     '''Callback used to stream events to a DB
@@ -41,7 +41,7 @@ class DBLog(Callback):
         db = client[self.mgdb.db]
         db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
         col = db[self.mgdb.col]
-        dotobj = model_to_dot(model)
+ #       dotobj = model_to_dot(model)
 
         col.insert({'_id': self.id,
                     'host': socket.gethostname().split('.')[0],
@@ -53,7 +53,7 @@ class DBLog(Callback):
                     'val_loss': [],
                     'time_init': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
                     'time_upd': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
-                    'dotobj': pickle.dumps(dotobj),
+#                    'dotobj': pickle.dumps(dotobj),
                     'done': False
                     })
 
@@ -72,7 +72,6 @@ class DBLog(Callback):
         col.update({'_id':self.id}, {'$set': {'val_loss': send['val_loss']}})
         col.update({'_id':self.id}, {'$set': {'val_acc': send['val_acc']}})
         col.update({'_id':self.id}, {'$set': {'time_upd': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}})
-
 
     def on_train_end(self, logs={}):
 

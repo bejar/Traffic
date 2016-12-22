@@ -181,7 +181,9 @@ def generate_classification_dataset_two(day, cpatt=None):
     return assoc
 
 
-def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
+
+
+def generate_dataset_PCA(ldaysTr, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
     """
     Generates a training and test datasets from the days in the parameters
     z_factor is the zoom factor to rescale the images
@@ -272,6 +274,54 @@ def generate_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='on
     print(X_train.shape, X_test.shape)
 
     return X_train, y_train, X_test, y_test
+
+def generate_dataset(ldaysTr, z_factor, method='one', cpatt=None):
+    """
+    Generates a training and test datasets from the days in the parameters
+    z_factor is the zoom factor to rescale the images
+    :param ldaysTr:
+    :param ldaysTs:
+    :param z_factor:
+    :param PCA:
+    :param method:
+    :return:
+
+    """
+    # -------------------- Train Set ------------------
+    ldataTr = []
+    llabelsTr = []
+
+    for day in ldaysTr:
+        if method == 'one':
+            dataset = generate_classification_dataset_one(day, cpatt=cpatt)
+        else:
+            dataset = generate_classification_dataset_two(day, cpatt=cpatt)
+        for t in dataset:
+            for cam, l, _, _ in dataset[t]:
+                # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                if l != 0 and l != 6:
+                    image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                    if np.sum(image == 254) < 100000: # This avoids the "not Available data" image
+                        del image
+                        im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
+                        data = np.asarray(im)
+                        data = data[5:235, 5:315, :].astype('float32')
+                        data /= 255.0
+                        if z_factor is not None:
+                            data = np.dstack((zoom(data[:, :, 0], z_factor), zoom(data[:, :, 1], z_factor),
+                                              zoom(data[:, :, 2], z_factor)))
+
+                        ldataTr.append(data)
+                        llabelsTr.append(l)
+
+
+    print(Counter(llabelsTr))
+
+    X_train = np.array(ldataTr)
+    y_train = llabelsTr
+
+    return X_train, y_train
+
 
 def save_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
     """
@@ -417,7 +467,7 @@ def generate_data_day(day, z_factor, method='two'):
     np.save(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor), np.array(llabels))
 
 
-def load_generated_dataset(ldaysTr, ldaysTs, z_factor):
+def load_generated_dataset(ldaysTr, z_factor):
     """
     Load the already generated datasets
 
@@ -434,15 +484,7 @@ def load_generated_dataset(ldaysTr, ldaysTs, z_factor):
         y_train.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
     X_train = np.concatenate(ldata)
 
-    ldata = []
-    y_test = []
-    for day in ldaysTs:
-        data = np.load(dataset_path + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
-        ldata.append(data)
-        y_test.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
-    X_test = np.concatenate(ldata)
-
-    return X_train, y_train, X_test, y_test
+    return X_train, y_train
 
 def generate_images_dataset():
     """
