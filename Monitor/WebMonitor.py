@@ -58,7 +58,7 @@ def info():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find({'done': False}, {'_id':1,'acc':1, 'loss': 1, 'val_acc':1, 'val_loss':1, 'host':1, 'time_upd':1})
+    vals = col.find({'done': False}, {'_id':1,'acc':1, 'loss': 1, 'val_acc':1, 'val_loss':1, 'host':1, 'time_upd':1, 'time_init': 1})
 
     res = {}
     for v in vals:
@@ -69,6 +69,7 @@ def info():
             res[v['_id']]['val_acc'] = v['val_acc'][-1]
             res[v['_id']]['host'] = v['host']
             res[v['_id']]['upd'] = v['time_upd']
+            res[v['_id']]['init'] = v['time_init']
 
     vals = col.find({'done': True, 'final_val_acc': {'$gt': 0.7}},
                     {'_id': 1,'final_acc': 1, 'final_val_acc': 1, 'val_loss': 1})
@@ -180,9 +181,9 @@ def model():
 
     return head + \
            '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=40).replace('\n', '<br>') + \
-           '<br><br><h2>Net:</h2><br><br>'+ \
+           '<br><br><h2>Graph:</h2><br><br>' + svgmodel +'<br><br><h2>Net:</h2><br><br>'+ \
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
-            '<br>' + svgmodel + \
+            '<br>' + \
            end
 
 @app.route('/BConfig', methods=['GET','POST'])
