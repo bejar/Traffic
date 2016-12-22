@@ -43,10 +43,10 @@ if __name__ == '__main__':
               'test': ldaysTs,
               'zfactor': 0.25,
               'model': smodel,
-              'dpconvo': 0.2,
+              'dpconvo': 0.3,
               'dpfull': 0.7,
               'convofields': [3, 3],
-              'fulllayers': [64, 32],
+              'fulllayers': [128, 64],
               'classweight': transweights(classweight),
               'epochs': 100,
               'lrate': 0.005,
@@ -55,8 +55,8 @@ if __name__ == '__main__':
               'momentum': 0.9}
 
     generator = None
-#    generator = simpleDataGenerator(ldaysTr, z_factor, config['batchsize'], groups=5)
-    samples_epoch = 50000
+    generator = simpleDataGenerator(ldaysTr, z_factor, config['batchsize'], groups=2)
+    samples_epoch = 30000
 
     if generator is None:
         train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)

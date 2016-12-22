@@ -23,7 +23,7 @@ from numpy.random import shuffle
 import numpy as np
 from Util.Constants import  dataset_path
 from Generate_Dataset import list_days_generator
-
+from keras.utils import np_utils
 
 def load_days(days, z_factor):
     """
@@ -37,7 +37,7 @@ def load_days(days, z_factor):
         data = np.load(dataset_path + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
         ldata.append(data)
         labels.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
-    data =np.concatenate(ldata)
+    data = np.concatenate(ldata)
     return data, labels
 
 
@@ -59,12 +59,16 @@ def simpleDataGenerator(days, z_factor, batchsize, groups):
                     group.append(days[i + j])
             lgroups.append(group)
 
-        for lday in days:
+        for lday in lgroups:
             data, labels = load_days(lday, z_factor)
+
             limit = (data.shape[0]//batchsize) - 2
+            X_train = data.transpose((0,3,1,2))
+            y_trainO = [i -1 for i in labels]
+            y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
 
             for i in range(limit):
-                yield data[i, (i+1)*batchsize], labels[i, (i+1)*batchsize]
+                yield X_train[i*batchsize:(i+1)*batchsize], y_train[i*batchsize:(i+1)*batchsize]
 
 
 if __name__ == '__main__':
