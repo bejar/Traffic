@@ -19,16 +19,15 @@ BatchConfig
 
 from pymongo import MongoClient
 from Util.DBConfig import mongoconnection
+from Util.Generate_Dataset import list_days_generator
 import time
 
 __author__ = 'bejar'
 
 if __name__ == '__main__':
 
-    ldaysTr = ['20161102','20161103','20161104','20161105','20161106','20161107','20161108','20161109','20161110',
-               '20161111', '20161112', '20161113', '20161114', '20161115', '20161116', '20161117', '20161118',
-               '20161119', '20161120', '20161121', '20161122', '20161123']
-    ldaysTs = ['20161124']
+    ldaysTr = list_days_generator(2016, 11, 1, 23)
+    ldaysTs = list_days_generator(2016, 11, 24, 24)
     z_factor = 0.25
 
     smodel = 3
@@ -48,6 +47,9 @@ if __name__ == '__main__':
               'decay': 0.005/100,
               'batchsize': 100,
               'momentum': 0.9}
+
+    config['generator'] = False
+    config['samples_epoch'] = 50000
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
