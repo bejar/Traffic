@@ -24,7 +24,7 @@ from keras.callbacks import Callback
 import time
 from pymongo import MongoClient
 import socket
-
+from keras.utils.visualize_util import model_to_dot
 
 class DBLog(Callback):
     '''Callback used to stream events to a DB
@@ -39,10 +39,12 @@ class DBLog(Callback):
         db = client[self.mgdb.db]
         db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
         col = db[self.mgdb.col]
+        svgmodel = model_to_dot(model).create(prog='dot', format='svg')
 
         col.insert({'_id': self.id,
                     'host': socket.gethostname().split('.')[0],
                     'model': modelj,
+                    'svgmodel': svgmodel,
                     'config': self.config,
                     'acc': [],
                     'loss': [],

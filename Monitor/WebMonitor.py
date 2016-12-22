@@ -160,8 +160,13 @@ def model():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1, 'dotobj':1})
+    vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1, 'svgmodel':1})
     pp = pprint.PrettyPrinter(indent=4)
+
+    if 'svgmodel' in vals:
+        svgmodel = vals['svgmodel']
+    else:
+        svgmodel = ''
 
     head = """
     <!DOCTYPE html>
@@ -177,7 +182,7 @@ def model():
            '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=40).replace('\n', '<br>') + \
            '<br><br><h2>Net:</h2><br><br>'+ \
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
-            '<br>' + \
+            '<br>' + svgmodel + \
            end
 
 @app.route('/BConfig', methods=['GET','POST'])

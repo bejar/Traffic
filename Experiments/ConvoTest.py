@@ -55,8 +55,8 @@ if __name__ == '__main__':
               'momentum': 0.9}
 
     generator = None
-    generator = simpleDataGenerator(ldaysTr, z_factor, config['batchsize'], groups=2)
-    samples_epoch = 30000
+    generator = simpleDataGenerator(ldaysTr, z_factor, config['batchsize'], groups=4)
+    samples_epoch = 33000
 
     if generator is None:
         train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)

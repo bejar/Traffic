@@ -62,7 +62,7 @@ def simpleDataGenerator(days, z_factor, batchsize, groups):
         for lday in lgroups:
             data, labels = load_days(lday, z_factor)
 
-            limit = (data.shape[0]//batchsize) - 2
+            limit = (data.shape[0]//batchsize) - 1
             X_train = data.transpose((0,3,1,2))
             y_trainO = [i -1 for i in labels]
             y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
