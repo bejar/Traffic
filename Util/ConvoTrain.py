@@ -30,6 +30,9 @@ from Util.Generate_Dataset import generate_dataset, load_generated_dataset
 from sklearn.metrics import confusion_matrix, classification_report
 from Util.DBLog import DBLog
 from Util.DBConfig import mongoconnection
+from Util.DataGenerators import dayGenerator
+from numpy.random import shuffle
+import numpy as np
 
 __author__ = 'bejar'
 
@@ -66,8 +69,56 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
 
 
     scores = model.evaluate(test[0], test[1], verbose=0)
-    y_pred = model.predict_classes(test[0])
+    y_pred = model.predict_classes(test[0], verbose=0)
 
+    dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
+
+
+def train_model_batch(model, config, ldaysTr, test, test_labels):
+    """
+    Trains the model using Keras batch method
+
+    :param model:
+    :param config:
+    :param test:
+    :param test_labels:
+    :return:
+    """
+
+    sgd = SGD(lr=config['lrate'], momentum=config['momentum'], decay=config['lrate']/config['momentum'], nesterov=False)
+    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+    classweight = detransweights(config['classweight'])
+    dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
+
+
+    # Train Epochs
+    logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
+    for epoch in range(config['epochs']):
+        shuffle(ldaysTr)
+        tloss = []
+        tacc = []
+        # Train Batches
+        for day in ldaysTr:
+            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'])
+
+            for p in perm:
+
+                loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
+                tloss.append(loss[0])
+                tacc.append(loss[1])
+        print('Loss %2.3f Acc %2.3f' % (np.mean(tloss), np.mean(tacc)))
+        logs['loss'] = np.mean(tloss)
+        logs['acc'] = np.mean(tacc)
+
+        scores = model.evaluate(test[0], test[1], verbose=0)
+        logs['loss'] = scores[0]
+        logs['acc'] = scores[1]
+
+        dblog.on_epoch_end(epoch, logs=logs)
+
+    scores = model.evaluate(test[0], test[1], verbose=0)
+    dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
+    y_pred = model.predict_classes(test[0], verbose=0)
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
@@ -79,7 +130,6 @@ def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True, only_test=False):
     """
 
     if not only_test:
-
         if gen:
             X_train, y_trainO = generate_dataset(ldaysTr,z_factor, method='two')
         else:

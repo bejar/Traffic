@@ -83,8 +83,39 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
                 yield X_train[lperm[i]], y_train[lperm[i]]
 
 
+
+def dayGenerator(day, z_factor, nclasses, batchsize):
+    """
+    Load the data for a day and return a random permutation for
+    generating the random batches
+
+    :param day:
+    :param z_factor:
+    :param nclasses:
+    :param batchsize:
+    :return:
+    """
+    data, labels = load_days([day], z_factor)
+
+
+    X_train = data.transpose((0,3,1,2))
+    y_trainO = [i -1 for i in labels]
+    y_train = np_utils.to_categorical(y_trainO, nclasses)
+    perm = range(X_train.shape[0])
+    shuffle(perm)
+    lperm = []
+    for i in range(0, len(perm), batchsize):
+        gperm = []
+        for j in range(batchsize):
+            if (i + j) < len(perm):
+                gperm.append(perm[i + j])
+        lperm.append(gperm)
+
+    return X_train, y_train, lperm
+
 if __name__ == '__main__':
     ldays = list_days_generator(2016, 11, 12, 12)
-    gen = simpleDataGenerator(ldays, 0.25, 100, 5)
+    gen = simpleDataGenerator(ldays, 0.25, 5, 100, 5)
     for d in gen:
-        pass
+        print(d[0])
+
