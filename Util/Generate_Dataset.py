@@ -183,7 +183,7 @@ def generate_classification_dataset_two(day, cpatt=None):
 
 
 
-def generate_dataset_PCA(ldaysTr, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
+def generate_dataset_PCA(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='one', cpatt=None, reshape=False):
     """
     Generates a training and test datasets from the days in the parameters
     z_factor is the zoom factor to rescale the images

@@ -101,6 +101,48 @@ def batch():
         res[v['_id']]['host'] = v['host']
     return render_template('Batch.html', data=res)
 
+@app.route('/Logs')
+def logs():
+    """
+    Returns the logs in the DB
+    """
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+
+    vals = col.find({},  {'final_acc':1, 'final_val_acc':1, 'time_init': 1, 'done':1})
+    res = {}
+    for v in vals:
+        if 'time_init' in v:
+            res[v['_id']] = {}
+            if 'final_acc' in v:
+                res[v['_id']]['acc'] = v['final_acc']
+            else:
+                res[v['_id']]['acc'] = 0
+            if 'final_val_acc' in v:
+                res[v['_id']]['val_acc'] = v['final_val_acc']
+            else:
+                res[v['_id']]['val_acc'] = 0
+            res[v['_id']]['init'] = v['time_init']
+            res[v['_id']]['done'] = v['done']
+    return render_template('Logs.html', data=res)
+
+@app.route('/Delete', methods=['GET','POST'])
+def delete():
+    """
+    Deletes a log
+    """
+    payload = request.form['delete']
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+
+    col.remove({'_id': int(payload)})
+
+    return str(payload) + ' Removed'
+
 @app.route('/Graph', methods=['GET','POST'])
 def graphic():
     """

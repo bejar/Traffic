@@ -39,7 +39,7 @@ class DBLog(Callback):
         db = client[self.mgdb.db]
         db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
         col = db[self.mgdb.col]
-        svgmodel = model_to_dot(model).create(prog='dot', format='svg')
+        svgmodel = model_to_dot(model, show_shapes=True).create(prog='dot', format='svg')
 
         col.insert({'_id': self.id,
                     'host': socket.gethostname().split('.')[0],

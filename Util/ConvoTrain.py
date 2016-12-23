@@ -62,7 +62,7 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
                   batch_size=config['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
     else:
         model.fit_generator(generator, samples_per_epoch=samples_epoch, validation_data=(test[0], test[1]), nb_epoch=config['epochs'],
-                   callbacks=[dblog], class_weight=classweight, verbose=1)
+                   callbacks=[dblog], class_weight=classweight, verbose=0)
 
 
     scores = model.evaluate(test[0], test[1], verbose=0)

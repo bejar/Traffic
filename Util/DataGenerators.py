@@ -22,7 +22,7 @@ __author__ = 'bejar'
 from numpy.random import shuffle
 import numpy as np
 from Util.Constants import  dataset_path
-from Generate_Dataset import list_days_generator
+from Util.Generate_Dataset import list_days_generator
 from keras.utils import np_utils
 
 def load_days(days, z_factor):
@@ -42,13 +42,13 @@ def load_days(days, z_factor):
 
 
 
-def simpleDataGenerator(days, z_factor, batchsize, groups):
+def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
     """
     Loops through the day files yielding a batch of examples
+    Files are loaded in groups and batches are randomized
     :param days:
     :return:
     """
-
     while True:
         shuffle(days)
         lgroups = []
@@ -65,12 +65,26 @@ def simpleDataGenerator(days, z_factor, batchsize, groups):
             limit = (data.shape[0]//batchsize) - 1
             X_train = data.transpose((0,3,1,2))
             y_trainO = [i -1 for i in labels]
-            y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
+            y_train = np_utils.to_categorical(y_trainO, nclasses)
+            perm = range(X_train.shape[0])
+            shuffle(perm)
+            lperm = []
+            for i in range(0, len(perm), batchsize):
+                gperm = []
+                for j in range(batchsize):
+                    if (i + j) < len(perm):
+                        gperm.append(perm[i + j])
+                lperm.append(gperm)
+
+            # for i in range(limit):
+            #     yield X_train[i*batchsize:(i+1)*batchsize], y_train[i*batchsize:(i+1)*batchsize]
 
             for i in range(limit):
-                yield X_train[i*batchsize:(i+1)*batchsize], y_train[i*batchsize:(i+1)*batchsize]
+                yield X_train[lperm[i]], y_train[lperm[i]]
 
 
 if __name__ == '__main__':
-    ldays = list_days_generator(2016, 11, 1, 12)
-    simpleDataGenerator(ldays, 0.25, 100, 5)
+    ldays = list_days_generator(2016, 11, 12, 12)
+    gen = simpleDataGenerator(ldays, 0.25, 100, 5)
+    for d in gen:
+        pass

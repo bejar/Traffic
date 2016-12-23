@@ -16,7 +16,6 @@ SimpleModels
 :Date:  20/12/2016
 """
 
-from keras import backend as K
 from keras.constraints import maxnorm
 from keras.layers import Dense
 from keras.layers import Dropout

@@ -43,28 +43,28 @@ if __name__ == '__main__':
               'test': ldaysTs,
               'zfactor': 0.25,
               'model': smodel,
-              'dpconvo': 0.3,
-              'dpfull': 0.7,
+              'dpconvo': 0.4,
+              'dpfull': 0.6,
               'convofields': [3, 3],
-              'fulllayers': [128, 64],
+              'fulllayers': [64, 32],
               'classweight': transweights(classweight),
               'epochs': 100,
               'lrate': 0.005,
               'decay': 0.005/100,
-              'batchsize': 100,
+              'batchsize': 25,
               'momentum': 0.9}
 
-    generator = None
-    generator = simpleDataGenerator(ldaysTr, z_factor, config['batchsize'], groups=4)
-    samples_epoch = 33000
+    generator = True
 
-    if generator is None:
+    if not generator:
         train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)
         config['input_shape'] = train[0][0].shape
         config['nexamples'] = train[0].shape[0]
         config['num_classes'] = num_classes
     else:
         train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
+        datagen = simpleDataGenerator(ldaysTr, z_factor, num_classes, config['batchsize'], groups=4)
+        samples_epoch = 34000
         config['input_shape'] = test[0][0].shape
         config['num_classes'] = num_classes
         config['nexamples'] = samples_epoch
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     # Compile model
 
-    train_model(model, config, train, test, test_labels, generator=generator, samples_epoch=samples_epoch)
+    train_model(model, config, train, test, test_labels, generator=datagen, samples_epoch=samples_epoch)
 
 
 
