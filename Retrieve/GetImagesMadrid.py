@@ -121,16 +121,20 @@ if __name__ == '__main__':
 
         try:
             tram = requests.get(niveles).content
-            with open(status_path_MAD + todaypath + '/' + '%s-niveles.kml' % (ptime), 'wb') as handler:
+            with open(status_path_MAD + todaypath + '/' + '%s-niveles.kml' % ptime, 'wb') as handler:
                     handler.write(tram)
         except ChunkedEncodingError:
+            pass
+        except ConnectionError:
             pass
 
         try:
             tram = requests.get(intensidades).content
-            with open(status_path_MAD + todaypath + '/' + '%s-intensidades.kml' % (ptime), 'wb') as handler:
+            with open(status_path_MAD + todaypath + '/' + '%s-intensidades.kml' % ptime, 'wb') as handler:
                     handler.write(tram)
         except ChunkedEncodingError:
+            pass
+        except ConnectionError:
             pass
 
         print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))

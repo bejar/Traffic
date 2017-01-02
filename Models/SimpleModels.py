@@ -39,13 +39,14 @@ def simple_model(smodel, config):
     input_shape = config['input_shape']
     num_classes = config['num_classes']
     fulllayer = config['fulllayers']
+    convolayer = config['convolayers']
 
     if smodel == 1:
         # Model 1
         model = Sequential()
-        model.add(Convolution2D(32, convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
         model.add(MaxPooling2D(pool_size=(4, 4)))
         model.add(Flatten())
         model.add(Dense(fulllayer[-1], activation='relu', W_constraint=maxnorm(3))) #512
@@ -54,17 +55,17 @@ def simple_model(smodel, config):
     elif smodel == 2:
         # Model 2
         model = Sequential()
-        model.add(Convolution2D(32, convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield[0], convofield[0], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, convofield[1], convofield[1], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(64, convofield[1], convofield[1], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(128, convofield[1], convofield[1], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(128, convofield[1], convofield[1], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
@@ -76,13 +77,13 @@ def simple_model(smodel, config):
     elif smodel == 3:
         # Model 3
         model = Sequential()
-        model.add(Convolution2D(32, convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield[0], convofield[0], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, convofield[1], convofield[1], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(64, convofield[1], convofield[1], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-1], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
@@ -94,9 +95,9 @@ def simple_model(smodel, config):
     elif smodel == 4:
         # Model 4
         model = Sequential()
-        model.add(Convolution2D(32, convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(32, convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
         model.add(MaxPooling2D(pool_size=(4, 4)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))

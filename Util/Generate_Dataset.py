@@ -46,9 +46,9 @@ def get_day_images_data(day, cpatt=None):
     camdic = {}
 
     if cpatt is not None:
-        ldir = glob.glob(cameras_path + day + '/*' + cpatt + '*.gif')
+        ldir = sorted(glob.glob(cameras_path + day + '/*' + cpatt + '*.gif'))
     else:
-        ldir = glob.glob(cameras_path + day + '/*.gif')
+        ldir = sorted(glob.glob(cameras_path + day + '/*.gif'))
 
     camdic = {}
 
@@ -510,7 +510,7 @@ def list_days_generator(year, month, iday, fday):
 if __name__ == '__main__':
     #generate_classification_dataset_two('20161101')
 
-    days = list_days_generator(2016, 12, 17, 20)
+    days = list_days_generator(2016, 12, 29, 31)
 
     z_factor = 0.25
     for day in days:

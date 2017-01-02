@@ -74,7 +74,7 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def train_model_batch(model, config, ldaysTr, test, test_labels):
+def train_model_batch(model, config, test, test_labels):
     """
     Trains the model using Keras batch method
 
@@ -90,7 +90,7 @@ def train_model_batch(model, config, ldaysTr, test, test_labels):
     classweight = detransweights(config['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
-
+    ldaysTr = config['train']
     # Train Epochs
     logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
     for epoch in range(config['epochs']):
@@ -105,12 +105,12 @@ def train_model_batch(model, config, ldaysTr, test, test_labels):
                 tloss.append(loss[0])
                 tacc.append(loss[1])
         #print('Loss %2.3f Acc %2.3f' % (np.mean(tloss), np.mean(tacc)))
-        logs['loss'] = np.mean(tloss)
-        logs['acc'] = np.mean(tacc)
-
+        logs['loss'] = float(np.mean(tloss))
+        logs['acc'] = float(np.mean(tacc))
+        
         scores = model.evaluate(test[0], test[1], verbose=0)
-        logs['loss'] = scores[0]
-        logs['acc'] = scores[1]
+        logs['val_loss'] = scores[0]
+        logs['val_acc'] = scores[1]
 
         dblog.on_epoch_end(epoch, logs=logs)
 

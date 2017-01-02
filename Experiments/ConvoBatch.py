@@ -35,27 +35,28 @@ __author__ = 'bejar'
 if __name__ == '__main__':
 
 
-    ldaysTr = list_days_generator(2016, 11, 23, 23)
-    ldaysTs = list_days_generator(2016, 11, 24, 24)
+    ldaysTr = list_days_generator(2016, 11, 1, 30) 
+    ldaysTs = list_days_generator(2016, 12, 1, 1)
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
 
     smodel = 3
-    classweight = {0: 1.5, 1: 1, 2: 2.0, 3: 3.0, 4: 4.0}
+    classweight = {0: 2.0, 1: 1.0, 2: 3.0, 3: 6.0, 4: 9.0}
 
     config = {'train': ldaysTr,
               'test': ldaysTs,
               'zfactor': 0.25,
               'model': smodel,
-              'dpconvo': 0.4,
-              'dpfull': 0.6,
+              'dpconvo': 0.2,
+              'dpfull': 0.4,
               'convofields': [3, 3],
               'fulllayers': [64, 32],
+              'convolayers': [128,64,32],
               'classweight': transweights(classweight),
-              'epochs': 3,
+              'epochs': 200,
               'lrate': 0.005,
-              'decay': 0.005/100,
-              'batchsize': 25,
+              'decay': 0.005/200,
+              'batchsize': 200,
               'momentum': 0.9}
 
     _, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
@@ -65,6 +66,6 @@ if __name__ == '__main__':
 
     model = simple_model(smodel, config)
 
-    train_model_batch(model, config, ldaysTr, test, test_labels)
+    train_model_batch(model, config, test, test_labels)
 
 

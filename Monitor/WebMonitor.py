@@ -151,7 +151,7 @@ def graphic():
     :return:
     """
 
-    lstyles = [':', '-', '--', '-.'] *3
+    lstyles = ['-', '-', ':', ':'] *3
     payload = request.form['graph']
 
     client = MongoClient(mongoconnection.server)

@@ -51,16 +51,18 @@ if __name__ == '__main__':
               'epochs': 100,
               'lrate': 0.005,
               'decay': 0.005/100,
-              'batchsize': 25,
+              'batchsize': 100,
               'momentum': 0.9}
 
-    generator = True
+    generator = False
 
     if not generator:
         train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)
         config['input_shape'] = train[0][0].shape
         config['nexamples'] = train[0].shape[0]
         config['num_classes'] = num_classes
+        datagen = None
+        samples_epoch = train[0].shape[0]
     else:
         train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
         datagen = simpleDataGenerator(ldaysTr, z_factor, num_classes, config['batchsize'], groups=4)
