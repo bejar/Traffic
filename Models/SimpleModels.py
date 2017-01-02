@@ -83,7 +83,7 @@ def simple_model(smodel, config):
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-1], convofield[1], convofield[1], activation='relu', border_mode='same'))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))

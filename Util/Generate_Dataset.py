@@ -507,11 +507,32 @@ def list_days_generator(year, month, iday, fday):
         ldays.append("%d%d%02d" % (year, month, v))
     return ldays
 
+def info_dataset(ldaysTr, z_factor):
+    """
+    Prints counts of the labels of the dataset
+
+    :param ldaysTr:
+    :param z_factor:
+    :return:
+    """
+
+    y_train = []
+    for day in ldaysTr:
+        data = np.load(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor))
+        print(day, Counter(data))
+        y_train.extend(data)
+    print('TOTAL=', Counter(list(y_train)))
+
+
+
+
 if __name__ == '__main__':
     #generate_classification_dataset_two('20161101')
 
-    days = list_days_generator(2016, 12, 29, 31)
+    days = list_days_generator(2016, 12, 1, 31)+list_days_generator(2016, 11, 1, 30)
 
     z_factor = 0.25
-    for day in days:
-        generate_data_day(day, z_factor)
+    # for day in days:
+    #     generate_data_day(day, z_factor)
+
+    info_dataset(days, z_factor)

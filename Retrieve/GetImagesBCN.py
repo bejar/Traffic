@@ -51,24 +51,24 @@ while True:
             with open(status_path + todaypath + '/' + '%s-dadesitineraris.data' % (ptime), 'wb') as handler:
                     handler.write(tram)
 
-            if (state % 3) == 0:
-                print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
-                for cam in Cameras:
-                    img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
-                    with open(cameras_path + todaypath + '/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
-                        handler.write(img_data)
+            #if (state % 3) == 0:
+            print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
+            for cam in Cameras:
+                img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
+                with open(cameras_path + todaypath + '/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
+                    handler.write(img_data)
 
             inform_webservice('BCN', 0)
-            state += 1
-            if state > 1002:
-                state = 0
+            # state += 1
+            # if state > 1002:
+            #     state = 0
         else:
             print('Service not available')
             inform_webservice('BCN', 2)
     except Exception:
         pass
 
-    time.sleep(5 * 60)
+    time.sleep(15 * 60)
 
 
 

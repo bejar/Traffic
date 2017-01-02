@@ -25,7 +25,9 @@
         <th>Upd Time</th>
         <th>Epoch</th>
         <th>Acc</th>
+        <th>+/-</th>
         <th>Val Acc</th>
+        <th>+/-</th>
         <th>Graph</th>
         <th>Model</th>
     </tr>
@@ -38,7 +40,17 @@
 
         <td>{{data[net]['epoch']}}</td>
         <td>{{data[net]['acc']}}</td>
+        {% if {{data[net]['acc_dir']}} %}
+        <td>+</td>
+       {% else %}
+        <td>-</td>
+        {% endif %}
         <td>{{data[net]['val_acc']}}</td>
+        {% if {{data[net]['val_acc_dir']}} %}
+        <td>+</td>
+       {% else %}
+        <td>-</td>
+        {% endif %}
         <td>
             <form action="/Graph" method="post">
             <button type="submit" name="graph"  value={{net}}> Graph </button>
