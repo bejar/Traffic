@@ -40,13 +40,13 @@
 
         <td>{{data[net]['epoch']}}</td>
         <td>{{data[net]['acc']}}</td>
-        {% if {{data[net]['acc_dir']}} %}
+        {% if data[net]['acc_dir'] %}
         <td>+</td>
        {% else %}
         <td>-</td>
         {% endif %}
         <td>{{data[net]['val_acc']}}</td>
-        {% if {{data[net]['val_acc_dir']}} %}
+        {% if data[net]['val_acc_dir'] %}
         <td>+</td>
        {% else %}
         <td>-</td>

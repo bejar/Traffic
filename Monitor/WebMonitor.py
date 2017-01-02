@@ -70,8 +70,8 @@ def info():
             res[v['_id']]['host'] = v['host']
             res[v['_id']]['upd'] = v['time_upd']
             res[v['_id']]['init'] = v['time_init']
-            res[v['_id']]['acc_dir'] =  v['acc'][-1] > v['acc'][-1]
-            res[v['_id']]['val_acc_dir'] =  v['val_acc'][-1] > v['val_acc'][-1]
+            res[v['_id']]['acc_dir'] =  v['acc'][-1] > v['acc'][-2]
+            res[v['_id']]['val_acc_dir'] =  v['val_acc'][-1] > v['val_acc'][-2]
 
 
     vals = col.find({'done': True, 'final_val_acc': {'$gt': 0.7}},
