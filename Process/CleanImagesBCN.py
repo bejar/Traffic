@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    day = '20170101'
+    day = '20170102'
     for cam in Cameras:
 
         ldir = glob.glob(cameras_path + day + '/*%s.gif'%cam)

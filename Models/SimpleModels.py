@@ -98,7 +98,7 @@ def simple_model(smodel, config):
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
-        model.add(MaxPooling2D(pool_size=(4, 4)))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
         model.add(Dense(fulllayer[-2], activation='relu', W_constraint=maxnorm(3)))

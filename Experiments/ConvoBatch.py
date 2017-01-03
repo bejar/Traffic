@@ -40,18 +40,19 @@ if __name__ == '__main__':
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
 
-    smodel = 3
-    classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 3.0}
+    smodel = 4
+    classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}
 
     config = {'train': ldaysTr,
               'test': ldaysTs,
+              'reblanced': False,
               'zfactor': 0.25,
               'model': smodel,
               'dpconvo': 0.2,
-              'dpfull': 0.3,
+              'dpfull': 0.4,
               'convofields': [3, 3],
-              'fulllayers': [128, 64],
-              'convolayers': [128, 64, 32],
+              'fulllayers': [64, 32],
+              'convolayers': [128, 64, 64],
               'classweight': transweights(classweight),
               'epochs': 200,
               'lrate': 0.005,

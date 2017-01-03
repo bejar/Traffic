@@ -25,7 +25,6 @@ from keras import backend as K
 
 from keras.optimizers import SGD
 from keras.utils import np_utils
-K.set_image_dim_ordering('th')
 from Util.Generate_Dataset import generate_dataset, load_generated_dataset
 from sklearn.metrics import confusion_matrix, classification_report
 from Util.DBLog import DBLog
@@ -33,9 +32,9 @@ from Util.DBConfig import mongoconnection
 from Util.DataGenerators import dayGenerator
 from numpy.random import shuffle
 import numpy as np
-
 __author__ = 'bejar'
 
+K.set_image_dim_ordering('th')
 
 def transweights(weights):
     wtrans = {}
@@ -91,6 +90,7 @@ def train_model_batch(model, config, test, test_labels):
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
     ldaysTr = config['train']
+    reb = config['rebalanced']
     # Train Epochs
     logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
     for epoch in range(config['epochs']):
@@ -99,7 +99,7 @@ def train_model_batch(model, config, test, test_labels):
         tacc = []
         # Train Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'])
+            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
             for p in perm:
                 loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
                 tloss.append(loss[0])

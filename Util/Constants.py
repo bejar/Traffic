@@ -25,6 +25,7 @@ cameras_path = '/home/bejar/storage/Data/Traffic/Cameras/'
 status_path = '/home/bejar/storage/Data/Traffic/Status/'
 results_path = '/home/bejar/storage/Data/Traffic/Results'
 dataset_path = '/home/bejar/storage/Data/Traffic/Datasets/'
+process_path = '/home/bejar/storage/Data/Traffic/Process/'
 
 # Madrid Data
 data_path_MAD = '/home/bejar/storage/Data/TrafficMAD/'
