@@ -41,18 +41,18 @@ if __name__ == '__main__':
     camera = None  #'Ronda' #Cameras[0]
 
     smodel = 4
-    classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}
+    classweight = {0: 1.0, 1: 1.0, 2: 1.0, 3: 2.0, 4: 2.0}
 
     config = {'train': ldaysTr,
               'test': ldaysTs,
-              'reblanced': False,
+              'rebalanced': True,
               'zfactor': 0.25,
               'model': smodel,
               'dpconvo': 0.2,
-              'dpfull': 0.4,
+              'dpfull': 0.2,
               'convofields': [3, 3],
               'fulllayers': [64, 32],
-              'convolayers': [128, 64, 64],
+              'convolayers': [128, 64, 32],
               'classweight': transweights(classweight),
               'epochs': 200,
               'lrate': 0.005,

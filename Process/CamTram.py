@@ -6,7 +6,7 @@ CamTram
 
 :Description: CamTram
 
-    Tramos asociados a las camaras y el nombre del tramo, se guardan los dos tramos mas cercanos
+    Street segment associated to the cameras and name of the segment, the two closest segments are stored
 
 :Authors: bejar
     
@@ -24,6 +24,7 @@ from Util.Constants import data_path
 class CamTram:
 
     ct = None
+
     def __init__(self):
         """
 

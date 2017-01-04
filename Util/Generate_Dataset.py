@@ -32,9 +32,12 @@ from PIL import Image
 from scipy.ndimage import zoom
 from sklearn.decomposition import IncrementalPCA
 
-from Util.Constants import cameras_path,data_path, dataset_path, process_path
+from Util.Constants import cameras_path, data_path, dataset_path, process_path
 
 import os.path
+
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 __author__ = 'bejar'
 
 
@@ -488,6 +491,17 @@ def generate_splitted_data_day(day, z_factor, method='two', log=False):
                 if np.sum(image == 254) < 100000:
                     del image
                     im = Image.open(cameras_path + day + '/' + str(t) + '-' + cam + '.gif').convert('RGB')
+
+                    # if l == 1:
+                    #     fig = plt.figure()
+                    #     fig.set_figwidth(30)
+                    #     fig.set_figheight(30)
+                    #     sp1 = fig.add_subplot(1, 1, 1)
+                    #     sp1.imshow(im)
+                    #     plt.title(str(t) + ' ' + cam)
+                    #     plt.show()
+                    #     plt.close()
+
                     data = np.asarray(im)
                     data = data[5:235, 5:315, :].astype('float32')
                     data /= 255.0
@@ -529,6 +543,7 @@ def generate_rebalanced_data_day(day, z_factor, pclasses):
             ldata.append(ddata[c][sel])
             llabels.append(np.zeros(nsel)+c)
 
+    print(np.concatenate(llabels).shape)
     np.save(dataset_path + 'rdata-D%s-Z%0.2f.npy' % (day, z_factor), np.concatenate(ldata))
     np.save(dataset_path + 'rlabels-D%s-Z%0.2f.npy' % (day, z_factor), np.concatenate(llabels))
 
@@ -592,15 +607,15 @@ def info_dataset(ldaysTr, z_factor, reb=False):
 if __name__ == '__main__':
     #generate_classification_dataset_two('20161101')
 
-    days = list_days_generator(2016, 11, 1, 30)
+    days = list_days_generator(2016, 11, 2, 2)
 
     z_factor = 0.25
-    # for day in days:
-    #     generate_splitted_data_day(day, z_factor)
-
     for day in days:
-        print(day)
-        generate_rebalanced_data_day(day, z_factor, {0:0.4, 1:0.5, 2:1, 3:1, 4:1})
+        generate_splitted_data_day(day, z_factor)
 
-    info_dataset(days, z_factor, reb=True)
+    # for day in days:
+    #     print(day)
+    #     generate_rebalanced_data_day(day, z_factor, {0:0.4, 1:0.5, 2:1, 3:1, 4:1})
+    #
+    # info_dataset(days, z_factor, reb=True)
 

@@ -88,7 +88,6 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
                 yield X_train[lperm[i]], y_train[lperm[i]]
 
 
-
 def dayGenerator(day, z_factor, nclasses, batchsize, reb=False):
     """
     Load the data for a day and return a random permutation for
@@ -104,7 +103,11 @@ def dayGenerator(day, z_factor, nclasses, batchsize, reb=False):
 
 
     X_train = data.transpose((0,3,1,2))
-    y_trainO = [i -1 for i in labels]
+    # For now the generated datasets not rebalanced has labels [1..maxclass]
+    if not reb:
+        y_trainO = [i -1 for i in labels]
+    else:
+        y_trainO = labels
     y_train = np_utils.to_categorical(y_trainO, nclasses)
     perm = range(X_train.shape[0])
     shuffle(perm)

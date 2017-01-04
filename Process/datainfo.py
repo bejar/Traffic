@@ -9,7 +9,7 @@ datainfo
     Computes the itinerary that is closest to the camera
 
     This does not take into consideration the direction the camera is facing and that each itinerary has
-    two directions. To select the correct itinerary both directions should be stores, this complicates
+    two directions. To select the correct itinerary both directions should be stored, this complicates
     how to select the data of status for the camera.
 
 :Authors: bejar
