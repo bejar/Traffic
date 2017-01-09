@@ -26,6 +26,7 @@
         <th>Done</th>
         <th>Graph</th>
         <th>Model</th>
+        <th>Report</th>
          <th>Delete</th>
    </tr>
     {% for net in data|sort %}
@@ -45,7 +46,13 @@
                <button type="submit" name="model"  value={{net}}> Model</button>
             </form>
         </td>
-       <td>
+        <td>
+           <form action="/Report" method="post">
+               <button type="submit" name="model"  value={{net}}> Report</button>
+            </form>
+
+        </td>
+      <td>
            <form action="/Delete" method="post">
                <button type="submit" name="delete"  value={{net}}> Delete</button>
             </form>

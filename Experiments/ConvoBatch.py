@@ -34,18 +34,17 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
 
-
     ldaysTr = list_days_generator(2016, 11, 1, 30) 
     ldaysTs = list_days_generator(2016, 12, 1, 2)
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
 
     smodel = 4
-    classweight = {0: 1.0, 1: 1.0, 2: 1.0, 3: 2.0, 4: 2.0}
+    classweight = {0: 2.0, 1: 1.0, 2: 4.0, 3: 8.0, 4: 16.0}
 
     config = {'train': ldaysTr,
               'test': ldaysTs,
-              'rebalanced': True,
+              'rebalanced': False,
               'zfactor': 0.25,
               'model': smodel,
               'dpconvo': 0.2,
@@ -54,7 +53,7 @@ if __name__ == '__main__':
               'fulllayers': [64, 32],
               'convolayers': [128, 64, 32],
               'classweight': transweights(classweight),
-              'epochs': 200,
+              'epochs': 256,
               'lrate': 0.005,
               'decay': 0.005/200,
               'batchsize': 200,

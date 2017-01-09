@@ -236,6 +236,45 @@ def model():
             '<br>' + \
            end
 
+
+@app.route('/Report', methods=['GET','POST'])
+def report():
+    """
+    Returns a web page with the classification report
+
+    :return:
+    """
+    payload = request.form['model']
+
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+
+    vals = col.find_one({'_id': int(payload)}, {'report':1, 'confusion':1})
+
+    head = """
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Keras NN Config </title>
+  </head>
+<body>
+"""
+    end = '</body></html>'
+
+    if 'report' in vals:
+        return head + \
+               '<br><h2>Report:</h2><pre>' + vals['report'] + \
+               '</pre><br><br><h2>Confusion:</h2><pre>' + vals['confusion'] +'</pre><br><br>' + \
+               end
+
+    else:
+        return 'No report'
+
+
+
+
 @app.route('/BConfig', methods=['GET','POST'])
 def config():
     """

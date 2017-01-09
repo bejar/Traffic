@@ -105,9 +105,20 @@ def train_model_batch(model, config, test, test_labels):
                 tloss.append(loss[0])
                 tacc.append(loss[1])
         #print('Loss %2.3f Acc %2.3f' % (np.mean(tloss), np.mean(tacc)))
+        # logs['loss'] = float(np.mean(tloss))
+        # logs['acc'] = float(np.mean(tacc))
+
+        # Test Batches
+        for day in ldaysTr:
+            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
+            for p in perm:
+                loss = model.test_on_batch(X_train[p], y_train[p], class_weight=classweight)
+                tloss.append(loss[0])
+                tacc.append(loss[1])
+
         logs['loss'] = float(np.mean(tloss))
         logs['acc'] = float(np.mean(tacc))
-        
+
         scores = model.evaluate(test[0], test[1], verbose=0)
         logs['val_loss'] = scores[0]
         logs['val_acc'] = scores[1]

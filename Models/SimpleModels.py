@@ -27,9 +27,24 @@ from keras.models import Sequential
 __author__ = 'bejar'
 
 
+def add_full_layer(model, fullsize, dropout, classes):
+    """
+    adds to the model a set of full layers and a final layer for the classes
+
+    :param model:
+    :param fullsize:
+    :param dropout:
+    :return:
+    """
+    for size in fullsize:
+        model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)))
+        model.add(Dropout(dropout))
+    model.add(Dense(classes, activation='softmax'))
+
+
 def simple_model(smodel, config):
     """
-    Simple convolotional models
+    Simple convolutional models
     :param smodel:
     :return:
     """
@@ -49,9 +64,7 @@ def simple_model(smodel, config):
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
         model.add(MaxPooling2D(pool_size=(4, 4)))
         model.add(Flatten())
-        model.add(Dense(fulllayer[-1], activation='relu', W_constraint=maxnorm(3))) #512
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
+        add_full_layer(model, fulllayer, dropoutfull, num_classes)
     elif smodel == 2:
         # Model 2
         model = Sequential()
@@ -69,11 +82,7 @@ def simple_model(smodel, config):
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
-        model.add(Dense(fulllayer[-2], activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(fulllayer[-1], activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
+        add_full_layer(model, fulllayer, dropoutfull, num_classes)
     elif smodel == 3:
         # Model 3
         model = Sequential()
@@ -87,11 +96,7 @@ def simple_model(smodel, config):
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
-        model.add(Dense(fulllayer[-2], activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(fulllayer[-1], activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
+        add_full_layer(model, fulllayer, dropoutfull, num_classes)
     elif smodel == 4:
         # Model 4
         model = Sequential()
@@ -101,10 +106,7 @@ def simple_model(smodel, config):
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
-        model.add(Dense(fulllayer[-2], activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(fulllayer[-1], activation='relu', W_constraint=maxnorm(3))) #512
-        model.add(Dropout(dropoutfull))
-        model.add(Dense(num_classes, activation='softmax'))
+        add_full_layer(model, fulllayer, dropoutfull, num_classes)
+
 
     return model
