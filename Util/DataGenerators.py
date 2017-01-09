@@ -119,7 +119,7 @@ def dayGenerator(day, z_factor, nclasses, batchsize, reb=False):
                 gperm.append(perm[i + j])
         lperm.append(gperm)
 
-    return X_train, y_train, lperm, y_trainO
+    return X_train, y_train, lperm, np.array(y_trainO)
 
 if __name__ == '__main__':
     ldays = list_days_generator(2016, 11, 12, 12)
