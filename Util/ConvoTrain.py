@@ -99,7 +99,7 @@ def train_model_batch(model, config, test, test_labels):
         tacc = []
         # Train Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
+            X_train, y_train, perm, _ = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
             for p in perm:
                 loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
                 tloss.append(loss[0])
@@ -110,9 +110,9 @@ def train_model_batch(model, config, test, test_labels):
 
         # Test Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
+            X_train, _, perm, y_train = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
             for p in perm:
-                loss = model.test_on_batch(X_train[p], y_train[p], class_weight=classweight)
+                loss = model.test_on_batch(X_train[p], y_train[p])
                 tloss.append(loss[0])
                 tacc.append(loss[1])
 
