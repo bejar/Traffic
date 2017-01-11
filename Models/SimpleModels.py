@@ -42,7 +42,7 @@ def add_full_layer(model, fullsize, dropout, classes):
     model.add(Dense(classes, activation='softmax'))
 
 
-def simple_model(smodel, config):
+def simple_model(config):
     """
     Simple convolutional models
     :param smodel:
@@ -55,6 +55,7 @@ def simple_model(smodel, config):
     num_classes = config['num_classes']
     fulllayer = config['fulllayers']
     convolayer = config['convolayers']
+    smodel = config['model']
 
     if smodel == 1:
         # Model 1

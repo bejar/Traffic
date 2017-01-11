@@ -112,7 +112,7 @@ if __name__ == '__main__':
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes
 
-    model = simple_model(smodel, config)
+    model = simple_model(config)
 
     train_model_batch(model, config, test, test_labels)
 
