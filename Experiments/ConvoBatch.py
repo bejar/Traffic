@@ -61,8 +61,6 @@ if __name__ == '__main__':
     if args.batch:
         sconfig = load_config_file(args.config)
 
-        print (sconfig)
-
         config = json.loads(sconfig)
         config['decay'] =  config['lrate']/config['epochs']
 
@@ -77,9 +75,6 @@ if __name__ == '__main__':
         for y,m,di,df in config['test']:
             ldaysTs.extend(list_days_generator(y,m,di,df))
         config['test'] = ldaysTs
-
-
-        print(config)
     else:
         ldaysTr = list_days_generator(2016, 11, 1, 30)
         ldaysTs = list_days_generator(2016, 12, 1, 2)
