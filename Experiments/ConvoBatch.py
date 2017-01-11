@@ -81,7 +81,6 @@ if __name__ == '__main__':
 
         print(config)
     else:
-
         ldaysTr = list_days_generator(2016, 11, 1, 30)
         ldaysTs = list_days_generator(2016, 12, 1, 2)
         z_factor = 0.25
@@ -103,17 +102,18 @@ if __name__ == '__main__':
                   'classweight': transweights(classweight),
                   'epochs': 200,
                   'lrate': 0.005,
-                  'decay': 0.005/200,
                   'batchsize': 256,
                   'momentum': 0.9}
 
-    # _, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
-    #
-    # config['input_shape'] = test[0][0].shape
-    # config['num_classes'] = num_classes
-    #
-    # model = simple_model(smodel, config)
-    #
-    # train_model_batch(model, config, test, test_labels)
+        config['decay'] =  config['lrate']/config['epochs']
+
+    _, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
+
+    config['input_shape'] = test[0][0].shape
+    config['num_classes'] = num_classes
+
+    model = simple_model(smodel, config)
+
+    train_model_batch(model, config, test, test_labels)
 
 
