@@ -72,11 +72,11 @@ if __name__ == '__main__':
             ldaysTr.extend(list_days_generator(y,m,di,df))
         config['train'] = ldaysTr
 
-        ldaysTr = []
+        ldaysTs = []
 
         for y,m,di,df in config['test']:
-            ldaysTr.extend(list_days_generator(y,m,di,df))
-        config['test'] = ldaysTr
+            ldaysTs.extend(list_days_generator(y,m,di,df))
+        config['test'] = ldaysTs
 
 
         print(config)
@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
         config['decay'] =  config['lrate']/config['epochs']
 
-    _, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
+    _, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['zfactor'], gen=False, only_test=True)
 
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes
