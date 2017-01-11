@@ -25,6 +25,7 @@ from Process.CamTram import CamTram
 from Util.Constants import cameras_path, status_path
 from Util.DataTram import DataTram
 from collections import Counter
+from Util.Cameras import Cameras_ok
 
 import matplotlib.image as mpimg
 import numpy as np
@@ -37,7 +38,6 @@ from Util.Constants import cameras_path, data_path, dataset_path, process_path
 import os.path
 
 import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
 __author__ = 'bejar'
 
 
@@ -59,10 +59,11 @@ def get_day_images_data(day, cpatt=None):
     for f in sorted(ldir):
         name = f.split('.')[0].split('/')[-1]
         time, place = name.split('-')
-        if int(time) in camdic:
-            camdic[int(time)].append(place)
-        else:
-            camdic[int(time)] = [place]
+        if place in Cameras_ok:
+            if int(time) in camdic:
+                camdic[int(time)].append(place)
+            else:
+                camdic[int(time)] = [place]
 
     return camdic
 
@@ -607,11 +608,15 @@ def info_dataset(ldaysTr, z_factor, reb=False):
 if __name__ == '__main__':
     #generate_classification_dataset_two('20161101')
 
-    days = list_days_generator(2016, 11, 2, 2)
+    days = list_days_generator(2016, 12, 3, 31)
 
-    z_factor = 0.25
+    z_factor = 0.35
+
     for day in days:
-        generate_splitted_data_day(day, z_factor)
+        generate_data_day(day, z_factor)
+
+    # for day in days:
+    #     generate_splitted_data_day(day, z_factor)
 
     # for day in days:
     #     print(day)

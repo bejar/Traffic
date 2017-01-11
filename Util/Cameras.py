@@ -20,6 +20,37 @@ Cameras
 __author__ = 'bejar'
 
 
+Cameras_ok = [
+    'AragoPgGracia',
+    'BalmesGranVia',
+    'BalmesMitre',
+#    'DiagonalCiutatdeGranada',
+#    'DiagonalMCristina',
+    'GranViaBacRoda',
+    'GranViaMarina',
+    'MarinaPujades',
+    'MeridianaFelipII',
+    'MeridianaRioJaneiro',
+    'PlAntonioLopez',
+    'PlCatalunya',
+    'PlCerda',
+    'PlEspanya',
+    'PlMolina',
+    'PlPaissosCatalans',
+#    'PlPauVila',
+    'PlUrquinaona',
+    'RondaLitoralBadajoz',
+    'RondadeDaltCrtaEsplugues',
+    'RondadeDaltMeridiana',
+    'RondadeDaltSantGervasi',
+    'RondadeDaltVelodrom',
+    'RondaLitoralBonPastor',
+    'RondaLitoralMollFusta',
+    'RondaLitoralZonaFranca',
+    'TunelRovira'
+]
+
+
 Cameras = [
     'AragoPgGracia',
     'BalmesGranVia',

@@ -119,7 +119,7 @@ def logs():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find({},  {'final_acc':1, 'final_val_acc':1, 'time_init': 1, 'done':1})
+    vals = col.find({},  {'final_acc':1, 'final_val_acc':1, 'time_init': 1, 'time_end': 1, 'done':1})
     res = {}
     for v in vals:
         if 'time_init' in v:
@@ -133,7 +133,11 @@ def logs():
             else:
                 res[v['_id']]['val_acc'] = 0
             res[v['_id']]['init'] = v['time_init']
-            res[v['_id']]['done'] = v['done']
+            if 'time_end' in v:
+                res[v['_id']]['end'] = v['time_end']
+            else:
+                 res[v['_id']]['end'] = 'pending'
+
     return render_template('Logs.html', data=res)
 
 @app.route('/Delete', methods=['GET','POST'])

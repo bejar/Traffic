@@ -39,8 +39,8 @@ if __name__ == '__main__':
     z_factor = 0.25
     camera = None  #'Ronda' #Cameras[0]
 
-    smodel = 4
-    classweight = {0: 2.0, 1: 1.0, 2: 4.0, 3: 8.0, 4: 16.0}
+    smodel = 3
+    classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}
 
     config = {'train': ldaysTr,
               'test': ldaysTs,
@@ -53,10 +53,10 @@ if __name__ == '__main__':
               'fulllayers': [64, 32],
               'convolayers': [128, 64, 32],
               'classweight': transweights(classweight),
-              'epochs': 256,
+              'epochs': 200,
               'lrate': 0.005,
               'decay': 0.005/200,
-              'batchsize': 200,
+              'batchsize': 256,
               'momentum': 0.9}
 
     _, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
