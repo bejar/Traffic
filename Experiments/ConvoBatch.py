@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
         config['decay'] =  config['lrate']/config['epochs']
 
-    K.set_image_dim_ordering('th')
+    K.set_image_dim_ordering(config['imgord'])
 
     _, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['zfactor'], gen=False, only_test=True, imgord=config['imgord'])
 
