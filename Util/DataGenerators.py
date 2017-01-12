@@ -69,6 +69,9 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'
             limit = (data.shape[0]//batchsize) - 1
             if imgord == 'th':
                 X_train = data.transpose((0,3,1,2))
+            else:
+                X_train = data
+
             y_trainO = [i -1 for i in labels]
             y_train = np_utils.to_categorical(y_trainO, nclasses)
             perm = range(X_train.shape[0])
@@ -103,6 +106,8 @@ def dayGenerator(day, z_factor, nclasses, batchsize, reb=False, imgord='th'):
 
     if imgord == 'th':
         X_train = data.transpose((0,3,1,2))
+    else:
+        X_train = data
     # For now the generated datasets not rebalanced has labels [1..maxclass]
     if not reb:
         y_trainO = [i -1 for i in labels]
