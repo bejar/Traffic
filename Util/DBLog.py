@@ -65,7 +65,6 @@ class DBLog(Callback):
         for k, v in logs.items():
             send[k].append(v)
 
-        print(send)
         col.update({'_id':self.id}, {'$set': {'acc': send['acc']}})
         col.update({'_id':self.id}, {'$set': {'loss': send['loss']}})
         col.update({'_id':self.id}, {'$set': {'val_loss': send['val_loss']}})
