@@ -38,7 +38,8 @@ def add_full_layer(model, fullsize, dropout, classes):
     """
     for size in fullsize:
         model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)))
-        model.add(Dropout(dropout))
+        if dropout:
+            model.add(Dropout(dropout))
     model.add(Dense(classes, activation='softmax'))
 
 

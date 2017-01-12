@@ -21,8 +21,6 @@ __author__ = 'bejar'
 
 
 from keras import backend as K
-K.set_image_dim_ordering('th')
-
 
 from Models.SimpleModels import simple_model
 from Util.ConvoTrain import transweights, train_model_batch
@@ -102,7 +100,9 @@ if __name__ == '__main__':
 
         config['decay'] =  config['lrate']/config['epochs']
 
-    _, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['zfactor'], gen=False, only_test=True)
+    K.set_image_dim_ordering('th')
+
+    _, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['zfactor'], gen=False, only_test=True, imgord=config['imgord'])
 
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes

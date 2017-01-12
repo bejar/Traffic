@@ -12,4 +12,6 @@
 "epochs": 200,
 "lrate": 0.005,
 "batchsize": 256,
-"momentum": 0.9}
+"momentum": 0.9,
+"imgord": "th"
+}

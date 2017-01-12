@@ -19,6 +19,10 @@ BatchTrain
 
 __author__ = 'bejar'
 
+
+########################### Outdated, use ConvoBatch.py
+
+
 from keras import backend as K
 from pymongo import MongoClient
 

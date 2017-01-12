@@ -46,8 +46,7 @@ def load_days(days, z_factor, reb=False):
     return data, labels
 
 
-
-def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
+def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'):
     """
     Loops through the day files yielding a batch of examples
     Files are loaded in groups and batches are randomized
@@ -68,7 +67,8 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
             data, labels = load_days(lday, z_factor)
 
             limit = (data.shape[0]//batchsize) - 1
-            X_train = data.transpose((0,3,1,2))
+            if imgord == 'th':
+                X_train = data.transpose((0,3,1,2))
             y_trainO = [i -1 for i in labels]
             y_train = np_utils.to_categorical(y_trainO, nclasses)
             perm = range(X_train.shape[0])
@@ -88,7 +88,7 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
                 yield X_train[lperm[i]], y_train[lperm[i]]
 
 
-def dayGenerator(day, z_factor, nclasses, batchsize, reb=False):
+def dayGenerator(day, z_factor, nclasses, batchsize, reb=False, imgord='th'):
     """
     Load the data for a day and return a random permutation for
     generating the random batches
@@ -101,8 +101,8 @@ def dayGenerator(day, z_factor, nclasses, batchsize, reb=False):
     """
     data, labels = load_days([day], z_factor, reb=reb)
 
-
-    X_train = data.transpose((0,3,1,2))
+    if imgord == 'th':
+        X_train = data.transpose((0,3,1,2))
     # For now the generated datasets not rebalanced has labels [1..maxclass]
     if not reb:
         y_trainO = [i -1 for i in labels]

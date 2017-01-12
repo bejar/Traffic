@@ -99,7 +99,7 @@ def train_model_batch(model, config, test, test_labels):
         tacc = []
         # Train Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
+            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
             for p in perm:
                 loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
                 tloss.append(loss[0])
@@ -110,7 +110,7 @@ def train_model_batch(model, config, test, test_labels):
 
         # Test Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb)
+            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
             for p in perm:
                 loss = model.test_on_batch(X_train[p], y_train[p])
                 tloss.append(loss[0])
@@ -131,7 +131,7 @@ def train_model_batch(model, config, test, test_labels):
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True, only_test=False):
+def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True, only_test=False, imgord='th'):
     """
     Loads the train and test dataset
 
@@ -143,7 +143,8 @@ def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True, only_test=False):
             X_train, y_trainO = generate_dataset(ldaysTr,z_factor, method='two')
         else:
             X_train, y_trainO = load_generated_dataset(ldaysTr, z_factor)
-        X_train = X_train.transpose((0,3,1,2))
+        if imgord == 'th':
+            X_train = X_train.transpose((0,3,1,2))
         y_trainO = [i - 1 for i in y_trainO]
         y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
     else:
@@ -155,8 +156,8 @@ def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True, only_test=False):
     else:
         X_test, y_testO = load_generated_dataset(ldaysTs, z_factor)
 
-
-    X_test = X_test.transpose((0,3,1,2))
+    if imgord == 'th':
+        X_test = X_test.transpose((0,3,1,2))
     y_testO = [i -1 for i in y_testO]
     y_test = np_utils.to_categorical(y_testO, len(np.unique(y_testO)))
 
