@@ -158,7 +158,7 @@ def load_dataset(config, gen=True, only_test=False, imgord='th'):
     if gen:
         X_test, y_testO = generate_dataset(ldaysTs, z_factor, method='two')
     else:
-        X_test, y_testO = load_generated_dataset(ldaysTs, z_factor)
+        X_test, y_testO = load_generated_dataset(datapath, ldaysTs, z_factor)
 
     if imgord == 'th':
         X_test = X_test.transpose((0,3,1,2))

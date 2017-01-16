@@ -23,7 +23,6 @@ from collections import Counter
 import matplotlib.image as mpimg
 import numpy as np
 from PIL import Image
-from Process.CamTram import CamTram
 from Util.Cameras import Cameras_ok
 from Util.Constants import cameras_path, data_path, dataset_path, process_path
 from Util.Constants import cameras_path, status_path
