@@ -39,9 +39,9 @@ def add_full_layer(model, fullsize, regfull, classes):
     """
     for size in fullsize:
         if regfull[0] == 'l1':
-            model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)), W_regularizer=l1(regfull[1]))
+            model.add(Dense(size, activation='relu', W_constraint=maxnorm(3), W_regularizer=l1(regfull[1])))
         if regfull[0] == 'l2':
-            model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)), W_regularizer=l2(regfull[1]))
+            model.add(Dense(size, activation='relu', W_constraint=maxnorm(3), W_regularizer=l2(regfull[1])))
         if regfull[0] == 'drop':
             model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)))
             model.add(Dropout(regfull[1]))
