@@ -47,7 +47,7 @@ if __name__ == '__main__':
               'zfactor': 0.25,
               'model': smodel,
               'dpconvo': 0.4,
-              'dpfull': 0.6,
+              'regfull': ['drop', 0.6],
               'convofields': [3, 3],
               'fulllayers': [64, 32],
               'classweight': transweights(classweight),

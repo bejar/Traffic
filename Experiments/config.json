@@ -4,7 +4,7 @@
 "zfactor": 0.25,
 "model": 4,
 "dpconvo": 0.2,
-"dpfull": 0.2,
+"regfull": ["l1", 0.2],
 "convofields": [3, 3],
 "fulllayers": [64, 32],
 "convolayers": [128, 64, 32],

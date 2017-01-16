@@ -23,23 +23,29 @@ from keras.layers import Flatten
 from keras.layers.convolutional import Convolution2D
 from keras.layers.convolutional import MaxPooling2D
 from keras.models import Sequential
+from keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 
 
-def add_full_layer(model, fullsize, dropout, classes):
+def add_full_layer(model, fullsize, regfull, classes):
     """
     adds to the model a set of full layers and a final layer for the classes
 
     :param model:
     :param fullsize:
-    :param dropout:
+    :param regfull:
     :return:
     """
     for size in fullsize:
-        model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)))
-        if dropout:
-            model.add(Dropout(dropout))
+        if regfull[0] == 'l1':
+            model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)), W_regularizer=l1(regfull[1]))
+        if regfull[0] == 'l2':
+            model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)), W_regularizer=l2(regfull[1]))
+        if regfull[0] == 'drop':
+            model.add(Dense(size, activation='relu', W_constraint=maxnorm(3)))
+            model.add(Dropout(regfull[1]))
+
     model.add(Dense(classes, activation='softmax'))
 
 
@@ -51,7 +57,7 @@ def simple_model(config):
     """
     convofield = config['convofields']
     dropoutconvo = config['dpconvo']
-    dropoutfull = config['dpfull']
+    regfull = config['regfull']
     input_shape = config['input_shape']
     num_classes = config['num_classes']
     fulllayer = config['fulllayers']
@@ -66,9 +72,9 @@ def simple_model(config):
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
         model.add(MaxPooling2D(pool_size=(4, 4)))
         model.add(Flatten())
-        add_full_layer(model, fulllayer, dropoutfull, num_classes)
+        add_full_layer(model, fulllayer, regfull, num_classes)
     elif smodel == 2:
-        # Model 2
+        # Model 2 - Six convolutionals
         model = Sequential()
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
@@ -84,9 +90,9 @@ def simple_model(config):
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
-        add_full_layer(model, fulllayer, dropoutfull, num_classes)
+        add_full_layer(model, fulllayer, regfull, num_classes)
     elif smodel == 3:
-        # Model 3
+        # Model 3 - Four convolutionals
         model = Sequential()
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
@@ -98,9 +104,9 @@ def simple_model(config):
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
-        add_full_layer(model, fulllayer, dropoutfull, num_classes)
+        add_full_layer(model, fulllayer, regfull, num_classes)
     elif smodel == 4:
-        # Model 4
+        # Model 4 - Two convolutionals
         model = Sequential()
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
@@ -108,7 +114,7 @@ def simple_model(config):
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
-        add_full_layer(model, fulllayer, dropoutfull, num_classes)
+        add_full_layer(model, fulllayer, regfull, num_classes)
 
 
     return model
