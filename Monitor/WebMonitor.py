@@ -205,7 +205,7 @@ def graphic():
 
         return render_template('graphview.html', plot_url=plot_url)
     else:
-        return None
+        return ""
 
 
 @app.route('/Model', methods=['GET','POST'])
@@ -284,8 +284,6 @@ def report():
 
     else:
         return 'No report'
-
-
 
 
 @app.route('/BConfig', methods=['GET','POST'])
