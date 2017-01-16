@@ -21,7 +21,7 @@ from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Flatten
 from keras.layers.convolutional import Convolution2D
-from keras.layers.convolutional import MaxPooling2D
+from keras.layers.convolutional import MaxPooling2D, AveragePooling2D
 from keras.models import Sequential
 from keras.regularizers import l1, l2
 
@@ -48,6 +48,18 @@ def add_full_layer(model, fullsize, regfull, classes):
 
     model.add(Dense(classes, activation='softmax'))
 
+def add_pooling(model, method, psize):
+    """
+    adds pooling to the model
+    :param model:
+    :param method:
+    :param stride:
+    :return:
+    """
+    if method == 'max':
+        model.add(MaxPooling2D(pool_size=psize))
+    if method == 'average':
+        model.add(AveragePooling2D(pool_size=psize))
 
 def simple_model(config):
     """
@@ -55,13 +67,19 @@ def simple_model(config):
     :param smodel:
     :return:
     """
-    convofield = config['convofields']
-    dropoutconvo = config['dpconvo']
-    regfull = config['regfull']
     input_shape = config['input_shape']
     num_classes = config['num_classes']
-    fulllayer = config['fulllayers']
+
     convolayer = config['convolayers']
+    convofield = config['convofields']
+    dropoutconvo = config['dpconvo']
+    pmethod = config['pool'][0]
+    psize = (config['pool'][1], config['pool'][2])
+
+
+    fulllayer = config['fulllayers']
+    regfull = config['regfull']
+
     smodel = config['model']
 
     if smodel == 1:
@@ -70,7 +88,7 @@ def simple_model(config):
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
-        model.add(MaxPooling2D(pool_size=(4, 4)))
+        add_pooling(model, pmethod, psize)
         model.add(Flatten())
         add_full_layer(model, fulllayer, regfull, num_classes)
     elif smodel == 2:
@@ -79,15 +97,15 @@ def simple_model(config):
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        add_pooling(model, pmethod, psize)
         model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        add_pooling(model, pmethod, psize)
         model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        add_pooling(model, pmethod, psize)
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
         add_full_layer(model, fulllayer, regfull, num_classes)
@@ -97,11 +115,11 @@ def simple_model(config):
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        add_pooling(model, pmethod, psize)
         model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        add_pooling(model, pmethod, psize)
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
         add_full_layer(model, fulllayer, regfull, num_classes)
@@ -111,10 +129,9 @@ def simple_model(config):
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
         model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        add_pooling(model, pmethod, psize)
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
         add_full_layer(model, fulllayer, regfull, num_classes)
-
 
     return model
