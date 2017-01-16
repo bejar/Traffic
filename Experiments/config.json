@@ -1,4 +1,6 @@
-{"train": [[2016,11,1,30],[2016,12,1,31]],
+{
+  "datapath": "/home/bejar/storage/Data/Traffic/Datasets/",
+ "train": [[2016,11,1,30],[2016,12,1,31]],
 "test": [[2016, 12, 1,2]],
 "rebalanced": false,
 "zfactor": 0.25,

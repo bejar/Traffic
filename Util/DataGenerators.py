@@ -25,7 +25,7 @@ from Util.Constants import  dataset_path
 from Util.Generate_Dataset import list_days_generator
 from keras.utils import np_utils
 
-def load_days(days, z_factor, reb=False):
+def load_days(datapath, days, z_factor, reb=False):
     """
     loads and contatenates files from a list of days
     :param days:
@@ -39,9 +39,9 @@ def load_days(days, z_factor, reb=False):
         fnamed = 'r' + fnamed
         fnamel = 'r' + fnamel
     for day in days:
-        data = np.load(dataset_path + fnamed + '-D%s-Z%0.2f.npy' % (day, z_factor))
+        data = np.load(datapath + fnamed + '-D%s-Z%0.2f.npy' % (day, z_factor))
         ldata.append(data)
-        labels.extend(np.load(dataset_path + fnamel + '-D%s-Z%0.2f.npy' % (day, z_factor)))
+        labels.extend(np.load(datapath + fnamel + '-D%s-Z%0.2f.npy' % (day, z_factor)))
     data = np.concatenate(ldata)
     return data, labels
 
@@ -91,7 +91,7 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'
                 yield X_train[lperm[i]], y_train[lperm[i]]
 
 
-def dayGenerator(day, z_factor, nclasses, batchsize, reb=False, imgord='th'):
+def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord='th'):
     """
     Load the data for a day and return a random permutation for
     generating the random batches
@@ -102,7 +102,7 @@ def dayGenerator(day, z_factor, nclasses, batchsize, reb=False, imgord='th'):
     :param batchsize:
     :return:
     """
-    data, labels = load_days([day], z_factor, reb=reb)
+    data, labels = load_days(datapath, [day], z_factor, reb=reb)
 
     if imgord == 'th':
         X_train = data.transpose((0,3,1,2))

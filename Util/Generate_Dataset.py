@@ -211,7 +211,6 @@ def generate_dataset_PCA(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method
             dataset = generate_classification_dataset_two(day, cpatt=cpatt)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
-                # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if l != 0 and l != 6:
                     image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                     if np.sum(image == 254) < 100000: # This avoids the "not Available data" image
@@ -303,7 +302,6 @@ def generate_dataset(ldaysTr, z_factor, method='one', cpatt=None):
             dataset = generate_classification_dataset_two(day, cpatt=cpatt)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
-                # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if l != 0 and l != 6:
                     image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                     if np.sum(image == 254) < 100000: # This avoids the "not Available data" image
@@ -349,7 +347,6 @@ def save_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='
             dataset = generate_classification_dataset_two(day, cpatt=cpatt)
         for t in dataset:
             for cam, l, _, _ in dataset[t]:
-                # print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if l != 0 and l != 6:
                     image = mpimg.imread(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                     if np.sum(image == 254) < 100000:
@@ -375,8 +372,6 @@ def save_daily_dataset(ldaysTr, ldaysTs, z_factor, PCA=True, ncomp=100, method='
     del X_train
 
     # ------------- Test Set ------------------
-
-
     for day in ldaysTs:
         ldataTs = []
         llabelsTs = []
@@ -549,7 +544,7 @@ def generate_rebalanced_data_day(day, z_factor, pclasses):
     np.save(dataset_path + 'rlabels-D%s-Z%0.2f.npy' % (day, z_factor), np.concatenate(llabels))
 
 
-def load_generated_dataset(ldaysTr, z_factor):
+def load_generated_dataset(datapath, ldaysTr, z_factor):
     """
     Load the already generated datasets
 
@@ -561,9 +556,9 @@ def load_generated_dataset(ldaysTr, z_factor):
     ldata = []
     y_train = []
     for day in ldaysTr:
-        data = np.load(dataset_path + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
+        data = np.load(datapath + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
         ldata.append(data)
-        y_train.extend(np.load(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
+        y_train.extend(np.load(datapath + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
     X_train = np.concatenate(ldata)
 
     return X_train, y_train

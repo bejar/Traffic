@@ -26,6 +26,7 @@ from Models.SimpleModels import simple_model
 from Util.ConvoTrain import transweights, train_model_batch
 from Util.Generate_Dataset import list_days_generator
 from Util.ConvoTrain import load_dataset
+from Util.Constants import dataset_path
 
 import json
 import argparse
@@ -82,7 +83,8 @@ if __name__ == '__main__':
         smodel = 3
         classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}
 
-        config = {'train': ldaysTr,
+        config = { "datapath": dataset_path,
+                   'train': ldaysTr,
                   'test': ldaysTs,
                   'rebalanced': False,
                   'zfactor': 0.25,
@@ -103,7 +105,7 @@ if __name__ == '__main__':
 
     K.set_image_dim_ordering(config['imgord'])
 
-    _, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['zfactor'], gen=False, only_test=True, imgord=config['imgord'])
+    _, test, test_labels, num_classes = load_dataset(config, gen=False, only_test=True, imgord=config['imgord'])
 
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes

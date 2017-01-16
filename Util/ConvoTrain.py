@@ -99,7 +99,7 @@ def train_model_batch(model, config, test, test_labels):
         tacc = []
         # Train Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
+            X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
             for p in perm:
                 loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
                 tloss.append(loss[0])
@@ -110,7 +110,7 @@ def train_model_batch(model, config, test, test_labels):
 
         # Test Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
+            X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
             for p in perm:
                 loss = model.test_on_batch(X_train[p], y_train[p])
                 tloss.append(loss[0])
@@ -131,18 +131,22 @@ def train_model_batch(model, config, test, test_labels):
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def load_dataset(ldaysTr, ldaysTs, z_factor, gen=True, only_test=False, imgord='th'):
+def load_dataset(config, gen=True, only_test=False, imgord='th'):
     """
     Loads the train and test dataset
 
     :return:
     """
+    ldaysTr = config['train']
+    ldaysTs = config['test']
+    z_factor = config['zfactor']
+    datapath = config['datapath']
 
     if not only_test:
         if gen:
-            X_train, y_trainO = generate_dataset(ldaysTr,z_factor, method='two')
+            X_train, y_trainO = generate_dataset(ldaysTr, z_factor, method='two')
         else:
-            X_train, y_trainO = load_generated_dataset(ldaysTr, z_factor)
+            X_train, y_trainO = load_generated_dataset(datapath, ldaysTr, z_factor)
         if imgord == 'th':
             X_train = X_train.transpose((0,3,1,2))
         y_trainO = [i - 1 for i in y_trainO]
