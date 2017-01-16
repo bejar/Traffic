@@ -45,9 +45,6 @@ port = 8850
 
 app = Flask(__name__)
 
-
-
-
 @app.route('/Monitor')
 def info():
     """
@@ -153,7 +150,19 @@ def delete():
 
     col.remove({'_id': int(payload)})
 
-    return str(payload) + ' Removed'
+    head = """
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Keras NN Delete </title>
+   <meta http-equiv="refresh" content="3;http://%s:%d/Logs" />
+  </head>
+<body>
+""" % (hostname, port)
+    end = '</body></html>'
+
+
+    return head + str(payload) + ' Removed' + end
 
 @app.route('/Graph', methods=['GET','POST'])
 def graphic():
