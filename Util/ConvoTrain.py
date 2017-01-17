@@ -72,7 +72,7 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def train_model_batch(model, config, test, test_labels):
+def train_model_batch(model, config, test, test_labels, acctrain=False):
     """
     Trains the model using Keras batch method
 
@@ -106,13 +106,17 @@ def train_model_batch(model, config, test, test_labels):
                 tloss.append(loss[0])
                 tacc.append(loss[1])
 
-        # Test Batches
-        for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
-            for p in perm:
-                loss = model.test_on_batch(X_train[p], y_train[p])
-                tloss.append(loss[0])
-                tacc.append(loss[1])
+        # If acctrain is true then test all the train with the retrained model to obtain the real loss and acc after training
+        if acctrain:
+            tloss = []
+            tacc = []
+            # Test Batches
+            for day in ldaysTr:
+                X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
+                for p in perm:
+                    loss = model.test_on_batch(X_train[p], y_train[p])
+                    tloss.append(loss[0])
+                    tacc.append(loss[1])
 
         logs['loss'] = float(np.mean(tloss))
         logs['acc'] = float(np.mean(tacc))
