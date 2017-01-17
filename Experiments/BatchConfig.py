@@ -6,7 +6,7 @@ BatchConfig
 
 :Description: BatchConfig
 
-    stores in the database configs so can be retrieved by a training process
+    stores in the database configs so they can be retrieved by a training process
 
 :Authors: bejar
     
@@ -16,6 +16,8 @@ BatchConfig
 :Created on: 20/12/2016 14:26 
 
 """
+
+########################### Outdated, idea abandoned for now
 
 from pymongo import MongoClient
 from Util.DBConfig import mongoconnection

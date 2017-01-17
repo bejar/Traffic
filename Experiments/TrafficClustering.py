@@ -4,9 +4,9 @@
 TrafficClustering
 *************
 
-:Description: TrafficClustering
+Some experiments clustering the images, outdated
 
-    
+:Description: TrafficClustering
 
 :Authors: bejar
     

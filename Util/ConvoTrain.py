@@ -20,18 +20,17 @@ ConvoTrain
 __author__ = 'bejar'
 
 
-import numpy as np
 from keras import backend as K
 
 from keras.optimizers import SGD
 from keras.utils import np_utils
-from Util.Generate_Dataset import generate_dataset, load_generated_dataset
 from sklearn.metrics import confusion_matrix, classification_report
 from Util.DBLog import DBLog
 from Util.DBConfig import mongoconnection
 from Util.DataGenerators import dayGenerator
 from numpy.random import shuffle
 import numpy as np
+
 __author__ = 'bejar'
 
 K.set_image_dim_ordering('th')
@@ -91,12 +90,14 @@ def train_model_batch(model, config, test, test_labels):
 
     ldaysTr = config['train']
     reb = config['rebalanced']
+
     # Train Epochs
     logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
     for epoch in range(config['epochs']):
         shuffle(ldaysTr)
         tloss = []
         tacc = []
+
         # Train Batches
         for day in ldaysTr:
             X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
@@ -104,9 +105,6 @@ def train_model_batch(model, config, test, test_labels):
                 loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
                 tloss.append(loss[0])
                 tacc.append(loss[1])
-        #print('Loss %2.3f Acc %2.3f' % (np.mean(tloss), np.mean(tacc)))
-        # logs['loss'] = float(np.mean(tloss))
-        # logs['acc'] = float(np.mean(tacc))
 
         # Test Batches
         for day in ldaysTr:
@@ -131,7 +129,7 @@ def train_model_batch(model, config, test, test_labels):
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def load_dataset(config, gen=True, only_test=False, imgord='th'):
+def load_dataset(config, only_test=False, imgord='th'):
     """
     Loads the train and test dataset
 
@@ -143,10 +141,7 @@ def load_dataset(config, gen=True, only_test=False, imgord='th'):
     datapath = config['datapath']
 
     if not only_test:
-        if gen:
-            X_train, y_trainO = generate_dataset(ldaysTr, z_factor, method='two')
-        else:
-            X_train, y_trainO = load_generated_dataset(datapath, ldaysTr, z_factor)
+        X_train, y_trainO = load_generated_dataset(datapath, ldaysTr, z_factor)
         if imgord == 'th':
             X_train = X_train.transpose((0,3,1,2))
         y_trainO = [i - 1 for i in y_trainO]
@@ -155,10 +150,7 @@ def load_dataset(config, gen=True, only_test=False, imgord='th'):
         X_train = None,
         y_train = None
 
-    if gen:
-        X_test, y_testO = generate_dataset(ldaysTs, z_factor, method='two')
-    else:
-        X_test, y_testO = load_generated_dataset(datapath, ldaysTs, z_factor)
+    X_test, y_testO = load_generated_dataset(datapath, ldaysTs, z_factor)
 
     if imgord == 'th':
         X_test = X_test.transpose((0,3,1,2))
@@ -169,4 +161,24 @@ def load_dataset(config, gen=True, only_test=False, imgord='th'):
     num_classes = y_test.shape[1]
 
     return (X_train, y_train), (X_test, y_test), y_testO, num_classes
+
+
+def load_generated_dataset(datapath, ldaysTr, z_factor):
+    """
+    Load the already generated datasets
+
+    :param ldaysTr:
+    :param ldaysTs:
+    :param z_factor:
+    :return:
+    """
+    ldata = []
+    y_train = []
+    for day in ldaysTr:
+        data = np.load(datapath + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
+        ldata.append(data)
+        y_train.extend(np.load(datapath + 'labels-D%s-Z%0.2f.npy' % (day, z_factor)))
+    X_train = np.concatenate(ldata)
+
+    return X_train, y_train
 

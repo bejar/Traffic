@@ -22,8 +22,23 @@ __author__ = 'bejar'
 from numpy.random import shuffle
 import numpy as np
 from Util.Constants import  dataset_path
-from Util.Generate_Dataset import list_days_generator
 from keras.utils import np_utils
+
+
+def list_days_generator(year, month, iday, fday):
+    """
+    Generates a list of days
+
+    :param year:
+    :param month:
+    :param iday:
+    :param fday:
+    :return:
+    """
+    ldays = []
+    for v in range(iday, fday+1):
+        ldays.append("%d%d%02d" % (year, month, v))
+    return ldays
 
 def load_days(datapath, days, z_factor, reb=False):
     """
@@ -108,13 +123,14 @@ def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord
         X_train = data.transpose((0,3,1,2))
     else:
         X_train = data
+
     # For now the generated datasets not rebalanced has labels [1..maxclass]
     if not reb:
         y_trainO = [i -1 for i in labels]
     else:
         y_trainO = labels
     y_train = np_utils.to_categorical(y_trainO, nclasses)
-    perm = range(X_train.shape[0])
+    perm = [i for i in range(X_train.shape[0])]  # so shuffle works on python 3
     shuffle(perm)
     lperm = []
     for i in range(0, len(perm), batchsize):

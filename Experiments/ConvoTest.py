@@ -6,7 +6,9 @@ ConvoTest
 
 :Description: ConvoTest
 
-    
+    Trains a model loading all data in memory
+
+    The code is outdated and not practical given the size of the data
 
 :Authors: bejar
     
@@ -26,7 +28,7 @@ K.set_image_dim_ordering('th')
 
 from Models.SimpleModels import simple_model
 from Util.ConvoTrain import transweights, train_model, load_dataset
-from Util.Generate_Dataset import list_days_generator
+from Util.DataGenerators import list_days_generator
 from Util.DataGenerators import simpleDataGenerator
 __author__ = 'bejar'
 
@@ -60,14 +62,14 @@ if __name__ == '__main__':
     generator = False
 
     if not generator:
-        train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False)
+        train, test, test_labels, num_classes = load_dataset(ldaysTr, z_factor)
         config['input_shape'] = train[0][0].shape
         config['nexamples'] = train[0].shape[0]
         config['num_classes'] = num_classes
         datagen = None
         samples_epoch = train[0].shape[0]
     else:
-        train, test, test_labels, num_classes = load_dataset(ldaysTr, ldaysTs, z_factor, gen=False, only_test=True)
+        train, test, test_labels, num_classes = load_dataset(ldaysTr, only_test=True)
         datagen = simpleDataGenerator(ldaysTr, z_factor, num_classes, config['batchsize'], groups=4)
         samples_epoch = 34000
         config['input_shape'] = test[0][0].shape

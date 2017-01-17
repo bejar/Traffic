@@ -4,12 +4,12 @@
 ConvoBatch
 *************
 
+  Trains a model according to a configuration file (--batch) or the harcoded config object
+  Model is trained using the train_on_batch method from Keras model, so only a day is loaded in memory at a time
+
 :Description: ConvoBatch
 
-    
-
 :Authors: bejar
-    
 
 :Version: 
 
@@ -24,7 +24,7 @@ from keras import backend as K
 
 from Models.SimpleModels import simple_model
 from Util.ConvoTrain import transweights, train_model_batch
-from Util.Generate_Dataset import list_days_generator
+from Util.DataGenerators import list_days_generator
 from Util.ConvoTrain import load_dataset
 from Util.Constants import dataset_path
 
@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     K.set_image_dim_ordering(config['imgord'])
 
-    _, test, test_labels, num_classes = load_dataset(config, gen=False, only_test=True, imgord=config['imgord'])
+    _, test, test_labels, num_classes = load_dataset(config, only_test=True, imgord=config['imgord'])
 
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes

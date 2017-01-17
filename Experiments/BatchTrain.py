@@ -53,12 +53,12 @@ if __name__ == '__main__':
                 generator = None
 
             if generator is None:
-                train, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['z_factor'], gen=False)
+                train, test, test_labels, num_classes = load_dataset(config['train'], config['z_factor'])
                 config['input_shape'] = train[0][0].shape
                 config['nexamples'] = train[0].shape[0]
                 config['num_classes'] = num_classes
             else:
-                train, test, test_labels, num_classes = load_dataset(config['train'], config['test'], config['z_factor'], gen=False, only_test=True)
+                train, test, test_labels, num_classes = load_dataset(config['train'], only_test=True)
                 config['input_shape'] = test[0][0].shape
                 config['num_classes'] = num_classes
                 config['nexamples'] = config['samples_epoch']

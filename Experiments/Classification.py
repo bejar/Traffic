@@ -6,7 +6,8 @@ Classification
 
 :Description: Classification
 
-    Classification experiment
+    Initial experiment using SVM and Random Forest, now outdated, shouhd be updated for loading the generated dataset
+    instead of generating it from the images
 
 :Authors: bejar
     
