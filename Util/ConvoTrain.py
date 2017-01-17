@@ -107,6 +107,7 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
                 tacc.append(loss[1])
 
         # If acctrain is true then test all the train with the retrained model to obtain the real loss and acc after training
+        # in the end the real measure of generalization is obtained with the independent test
         if acctrain:
             tloss = []
             tacc = []
