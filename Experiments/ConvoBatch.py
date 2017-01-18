@@ -83,21 +83,23 @@ if __name__ == '__main__':
         smodel = 3
         classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}
 
-        config = { "datapath": dataset_path,
+        config = { 'datapath': dataset_path,
+                   'savepath': '/home/bejar/storage/Data/Traffic/Models/',
                    'train': ldaysTr,
                   'test': ldaysTs,
                   'rebalanced': False,
                   'zfactor': 0.25,
                   'model': smodel,
                   'dpconvo': 0.2,
-                  'regfull': 0.2,
-                  'regularize': 'drop',
+                  'regfull': ['drop', 0.2],
                   'convofields': [3, 3],
                   'fulllayers': [64, 32],
                   'convolayers': [128, 64, 32],
+                  'pool': ['max', 2, 2],
                   'classweight': transweights(classweight),
                   'epochs': 200,
                   'lrate': 0.005,
+                  'optimizer':'sdg',
                   'batchsize': 256,
                   'momentum': 0.9}
 

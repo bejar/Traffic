@@ -89,7 +89,7 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
         optimizer = Adadelta()
     elif config['optimizer'] == 'adam':
         optimizer = Adam()
-    else: # default SGD
+    else:  # default SGD
         optimizer = SGD(lr=config['lrate'], momentum=config['momentum'], decay=config['lrate'] / config['momentum'],
                         nesterov=False)
 
@@ -161,7 +161,7 @@ def load_dataset(config, only_test=False, imgord='th'):
 
     if not only_test:
         X_train, y_trainO = load_generated_dataset(datapath, ldaysTr, z_factor)
-        # Data generated in theano order
+        # Data already generated in theano order
         # if imgord == 'th':
         #     X_train = X_train.transpose((0,3,1,2))
         y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
@@ -171,7 +171,7 @@ def load_dataset(config, only_test=False, imgord='th'):
 
     X_test, y_testO = load_generated_dataset(datapath, ldaysTs, z_factor)
 
-    # Data generated in theano order
+    # Data already generated in theano order
     # if imgord == 'th':
     #     X_test = X_test.transpose((0,3,1,2))
     y_test = np_utils.to_categorical(y_testO, len(np.unique(y_testO)))

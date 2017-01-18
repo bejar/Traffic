@@ -40,6 +40,7 @@ def list_days_generator(year, month, iday, fday):
         ldays.append("%d%d%02d" % (year, month, v))
     return ldays
 
+
 def load_days(datapath, days, z_factor, reb=False):
     """
     loads and contatenates files from a list of days
@@ -110,7 +111,7 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'
 
 def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord='th'):
     """
-    Load the data for a day and return a random permutation for
+    Load the data for a day and returns a random permutation for
     generating the random batches
 
     :param day:
