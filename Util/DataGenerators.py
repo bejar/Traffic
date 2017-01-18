@@ -82,12 +82,14 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'
             data, labels = load_days(lday, z_factor)
 
             limit = (data.shape[0]//batchsize) - 1
-            if imgord == 'th':
-                X_train = data.transpose((0,3,1,2))
-            else:
-                X_train = data
+            X_train = data
+            # Data generated in Theano order
+            # if imgord == 'th':
+            #     X_train = data.transpose((0,3,1,2))
+            # else:
+            #     X_train = data
 
-            y_trainO = [i -1 for i in labels]
+            y_trainO = labels
             y_train = np_utils.to_categorical(y_trainO, nclasses)
             perm = range(X_train.shape[0])
             shuffle(perm)
@@ -119,16 +121,15 @@ def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord
     """
     data, labels = load_days(datapath, [day], z_factor, reb=reb)
 
-    if imgord == 'th':
-        X_train = data.transpose((0,3,1,2))
-    else:
-        X_train = data
+    # Data generated in Theano order
+    # if imgord == 'th':
+    #     X_train = data.transpose((0,3,1,2))
+    # else:
+    #     X_train = data
 
-    # For now the generated datasets not rebalanced has labels [1..maxclass]
-    if not reb:
-        y_trainO = [i -1 for i in labels]
-    else:
-        y_trainO = labels
+    X_train = data
+    y_trainO = labels
+
     y_train = np_utils.to_categorical(y_trainO, nclasses)
     perm = [i for i in range(X_train.shape[0])]  # so shuffle works on python 3
     shuffle(perm)

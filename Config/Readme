@@ -1,0 +1,22 @@
+Configuration for training is read from a config.json file
+
+ "datapath": path where the data is
+ "savepath": if is not false is the path where to save the trained model each epoch
+ "train": Train days, list of lists of 4 elements [year, month, begin day, end day]
+ "test": idem as train
+ "rebalanced": use the rebalanced version of the data
+ "zfactor": zoom factor for the images
+ "model": number of the network to train (in the future can introduce other information)
+ "convolayers": list of sizes of the convolutional layers, for now it depends on the models in SimpleModels
+ "convofields": list of two elements of the sizes of the filters of the convolutions
+ "dpconvo": dropout of the convolutional layers
+ "pool": type of pooling fot the convolutional layers ["max"|"average", stride, stride]
+ "fulllayers": list of the sizes of the full layer, for now it depends on the models in SimpleModels
+ "regfull": Regularization of the full layers ["l1"|"l2"|"drop", dropout],
+ "classweight": Dictionary for the weights of the classes (class has to be a string {"0": 1.0, "1": 1.0, ...}
+ "optimizer": optimizer "sdg"|"adagrad"|"adadelta"|"adam"
+ "lrate": learning rate
+ "batchsize": batch size
+ "momentum": momentum
+ "epochs": number of epochs
+ "imgord": image order, now only theano ordering is used "th", in case of using tensorflow "tf" data has to be generated again in that order

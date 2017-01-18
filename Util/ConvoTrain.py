@@ -138,6 +138,9 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
 
         dblog.on_epoch_end(epoch, logs=logs)
 
+        if config['savepath']:
+            model.save(config['savepath'] + '/' + str(DBLog.id) + '.h5')
+
     scores = model.evaluate(test[0], test[1], verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
     y_pred = model.predict_classes(test[0], verbose=0)
@@ -157,9 +160,9 @@ def load_dataset(config, only_test=False, imgord='th'):
 
     if not only_test:
         X_train, y_trainO = load_generated_dataset(datapath, ldaysTr, z_factor)
-        if imgord == 'th':
-            X_train = X_train.transpose((0,3,1,2))
-        y_trainO = [i - 1 for i in y_trainO]
+        # Data generated in theano order
+        # if imgord == 'th':
+        #     X_train = X_train.transpose((0,3,1,2))
         y_train = np_utils.to_categorical(y_trainO, len(np.unique(y_trainO)))
     else:
         X_train = None,
@@ -167,9 +170,9 @@ def load_dataset(config, only_test=False, imgord='th'):
 
     X_test, y_testO = load_generated_dataset(datapath, ldaysTs, z_factor)
 
-    if imgord == 'th':
-        X_test = X_test.transpose((0,3,1,2))
-    y_testO = [i -1 for i in y_testO]
+    # Data generated in theano order
+    # if imgord == 'th':
+    #     X_test = X_test.transpose((0,3,1,2))
     y_test = np_utils.to_categorical(y_testO, len(np.unique(y_testO)))
 
 

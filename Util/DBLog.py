@@ -27,8 +27,9 @@ import socket
 from keras.utils.visualize_util import model_to_dot
 
 class DBLog(Callback):
-    '''Callback used to stream events to a DB
-    '''
+    """
+    Callback used to stream events to a DB
+    """
 
     def __init__(self, database, config, model, modelj):
         super(Callback, self).__init__()
