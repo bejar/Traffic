@@ -139,7 +139,7 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
         dblog.on_epoch_end(epoch, logs=logs)
 
         if config['savepath']:
-            model.save(config['savepath'] + '/' + str(DBLog.id) + '.h5')
+            model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
 
     scores = model.evaluate(test[0], test[1], verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
@@ -174,7 +174,6 @@ def load_dataset(config, only_test=False, imgord='th'):
     # if imgord == 'th':
     #     X_test = X_test.transpose((0,3,1,2))
     y_test = np_utils.to_categorical(y_testO, len(np.unique(y_testO)))
-
 
     num_classes = y_test.shape[1]
 
