@@ -123,7 +123,8 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
             tacc = []
             # Test Batches
             for day in ldaysTr:
-                X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
+                X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'],
+                                                      config['batchsize'], reb=reb, imgord=config['imgord'])
                 for p in perm:
                     loss = model.test_on_batch(X_train[p], y_train[p])
                     tloss.append(loss[0])
