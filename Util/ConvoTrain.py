@@ -22,7 +22,7 @@ __author__ = 'bejar'
 
 from keras import backend as K
 
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adagrad, Adadelta, Adam
 from keras.utils import np_utils
 from sklearn.metrics import confusion_matrix, classification_report
 from Util.DBLog import DBLog
@@ -83,8 +83,17 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
     :return:
     """
 
-    sgd = SGD(lr=config['lrate'], momentum=config['momentum'], decay=config['lrate']/config['momentum'], nesterov=False)
-    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+    if config['optimizer'] == 'adagrad':
+        optimizer = Adagrad()
+    elif config['optimizer'] == 'adadelta':
+        optimizer = Adadelta()
+    elif config['optimizer'] == 'adam':
+        optimizer = Adam()
+    else: # default SGD
+        optimizer = SGD(lr=config['lrate'], momentum=config['momentum'], decay=config['lrate'] / config['momentum'],
+                        nesterov=False)
+
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     classweight = detransweights(config['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
@@ -107,7 +116,8 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
                 tacc.append(loss[1])
 
         # If acctrain is true then test all the train with the retrained model to obtain the real loss and acc after training
-        # in the end the real measure of generalization is obtained with the independent test
+        # los and accuracy during the training is not accurate, but, in the end, the real measure of generalization
+        #  is obtained with the independent test
         if acctrain:
             tloss = []
             tacc = []

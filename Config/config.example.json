@@ -12,9 +12,10 @@
 "fulllayers": [64, 32],
 "regfull": ["l1", 0.2],
 "classweight": {"0": 1.0, "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0},
-"epochs": 200,
+  "optimizer":"sdg",
 "lrate": 0.005,
 "batchsize": 256,
 "momentum": 0.9,
+ "epochs": 200,
 "imgord": "th"
 }
