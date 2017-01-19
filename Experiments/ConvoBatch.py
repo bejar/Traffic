@@ -65,13 +65,13 @@ if __name__ == '__main__':
 
         ldaysTr = []
 
-        for y, m, di, df in config['train']:
+        for y, m, di, df in config['traindata']:
             ldaysTr.extend(list_days_generator(y, m, di, df))
         config['train'] = ldaysTr
 
         ldaysTs = []
 
-        for y, m, di, df in config['test']:
+        for y, m, di, df in config['testdata']:
             ldaysTs.extend(list_days_generator(y, m, di, df))
         config['test'] = ldaysTs
     else:
