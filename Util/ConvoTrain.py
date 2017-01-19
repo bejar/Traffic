@@ -106,7 +106,8 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
                         nesterov=False)
 
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-    classweight = detransweights(config['classweight'])
+
+    classweight = detransweights(config['train']['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
     ldaysTr = config['traindata']

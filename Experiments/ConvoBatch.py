@@ -67,13 +67,13 @@ if __name__ == '__main__':
 
         for y, m, di, df in config['traindata']:
             ldaysTr.extend(list_days_generator(y, m, di, df))
-        config['train'] = ldaysTr
+        config['traindata'] = ldaysTr
 
         ldaysTs = []
 
         for y, m, di, df in config['testdata']:
             ldaysTs.extend(list_days_generator(y, m, di, df))
-        config['test'] = ldaysTs
+        config['testdata'] = ldaysTs
     else:
         ldaysTr = list_days_generator(2016, 11, 1, 30)
         ldaysTs = list_days_generator(2016, 12, 1, 2)

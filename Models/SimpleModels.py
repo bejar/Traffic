@@ -74,7 +74,7 @@ def simple_model(config):
     convofield = config['convolayers']['convofields']
     dropoutconvo = config['convolayers']['reg'][1]  # for now is always dropout
     pmethod = config['convolayers']['pool'][0]
-    psize = (config['convolayers']['pool'][1], config['pool'][2])
+    psize = (config['convolayers']['pool'][1], config['convolayers']['pool'][2])
 
 
     fulllayer = config['fulllayers']['sizes']

@@ -15,14 +15,14 @@
   {"sizes": [64, 32],
    "reg": ["l1", 0.2]},
  "optimizer":
-   {"method": "sdg",
+   {"method": "sgd",
     "params":
      {"lrate": 0.005,
       "momentum": 0.9
-      },
+      }},
  "train":
    {"batchsize": 256,
     "epochs": 200,
-    "classweight": {"0": 1.0, "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0}}},
+    "classweight": {"0": 1.0, "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0}},
  "imgord": "th"
 }
