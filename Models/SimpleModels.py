@@ -70,15 +70,15 @@ def simple_model(config):
     input_shape = config['input_shape']
     num_classes = config['num_classes']
 
-    convolayer = config['convolayers']
-    convofield = config['convofields']
-    dropoutconvo = config['dpconvo']
-    pmethod = config['pool'][0]
-    psize = (config['pool'][1], config['pool'][2])
+    convolayer = config['convolayers']['sizes']
+    convofield = config['convolayers']['convofields']
+    dropoutconvo = config['convolayers']['reg'][1]  # for now is always dropout
+    pmethod = config['convolayers']['pool'][0]
+    psize = (config['convolayers']['pool'][1], config['pool'][2])
 
 
-    fulllayer = config['fulllayers']
-    regfull = config['regfull']
+    fulllayer = config['fulllayers']['sizes']
+    regfull = config['fulllayers']['reg']
 
     smodel = config['model']
 

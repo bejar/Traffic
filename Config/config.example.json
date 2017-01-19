@@ -9,11 +9,11 @@
  "convolayers":
   {"sizes": [128, 64, 32],
    "convofields": [3, 3],
-   "dpconvo": 0.2,
+   "reg": ["drop", 0.2],
    "pool": ["max", 2, 2]},
  "fulllayers":
   {"sizes": [64, 32],
-   "regfull": ["l1", 0.2]},
+   "reg": ["l1", 0.2]},
  "optimizer":
    {"method": "sdg",
     "params":
