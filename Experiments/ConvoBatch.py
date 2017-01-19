@@ -1,4 +1,4 @@
-"""
+'''
 .. module:: ConvoBatch
 
 ConvoBatch
@@ -15,10 +15,9 @@ ConvoBatch
 
 :Created on: 23/12/2016 15:05 
 
-"""
+'''
 
 __author__ = 'bejar'
-
 
 from keras import backend as K
 
@@ -35,75 +34,87 @@ __author__ = 'bejar'
 
 
 def load_config_file(nfile):
-    """
+    '''
     Read the configuration from a json file
 
     :param nfile:
     :return:
-    """
+    '''
     fp = open('./' + nfile + '.json', 'r')
 
-    s = ""
+    s = ''
 
     for l in fp:
         s += l
 
     return s
 
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--batch', help="Ejecucion no interactiva", action='store_true', default=False)
-    parser.add_argument('--config', default='config', help="Configuracion del experimento")
+    parser.add_argument('--batch', help='Ejecucion no interactiva', action='store_true', default=False)
+    parser.add_argument('--config', default='config', help='Configuracion del experimento')
     args = parser.parse_args()
 
     if args.batch:
         sconfig = load_config_file(args.config)
 
         config = json.loads(sconfig)
-        config['decay'] =  config['lrate']/config['epochs']
+        # config['decay'] = config['lrate'] / config['epochs']
 
         ldaysTr = []
 
-        for y,m,di,df in config['train']:
-            ldaysTr.extend(list_days_generator(y,m,di,df))
+        for y, m, di, df in config['train']:
+            ldaysTr.extend(list_days_generator(y, m, di, df))
         config['train'] = ldaysTr
 
         ldaysTs = []
 
-        for y,m,di,df in config['test']:
-            ldaysTs.extend(list_days_generator(y,m,di,df))
+        for y, m, di, df in config['test']:
+            ldaysTs.extend(list_days_generator(y, m, di, df))
         config['test'] = ldaysTs
     else:
         ldaysTr = list_days_generator(2016, 11, 1, 30)
         ldaysTs = list_days_generator(2016, 12, 1, 2)
         z_factor = 0.25
-        camera = None  #'Ronda' #Cameras[0]
+        camera = None  # 'Ronda' #Cameras[0]
 
         smodel = 3
         classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}
 
-        config = { 'datapath': dataset_path,
-                   'savepath': '/home/bejar/storage/Data/Traffic/Models/',
-                   'train': ldaysTr,
-                  'test': ldaysTs,
-                  'rebalanced': False,
-                  'zfactor': 0.25,
-                  'model': smodel,
-                  'dpconvo': 0.2,
-                  'regfull': ['drop', 0.2],
-                  'convofields': [3, 3],
-                  'fulllayers': [64, 32],
-                  'convolayers': [128, 64, 32],
-                  'pool': ['max', 2, 2],
-                  'classweight': transweights(classweight),
-                  'epochs': 200,
-                  'lrate': 0.005,
-                  'optimizer':'sdg',
-                  'batchsize': 256,
-                  'momentum': 0.9}
+        config = {
+            'datapath': '/home/bejar/storage/Data/Traffic/Datasets/',
+            'savepath': '/home/bejar/storage/Data/Traffic/Models/',
+            'traindata': ldaysTr,
+            'testdata': ldaysTs,
+            'rebalanced': False,
+            'zfactor': 0.25,
+            'model': 4,
+            'convolayers':
+                {'sizes': [128, 64, 32],
+                 'convofields': [3, 3],
+                 'dpconvo': 0.2,
+                 'pool': ['max', 2, 2]},
+            'fulllayers':
+                {'sizes': [64, 32],
+                 'regfull': ['l1', 0.2]},
+            'optimizer':
+                {'method': 'sdg',
+                 'params':
+                     {'lrate': 0.005,
+                      'momentum': 0.9,
+                      }},
+            "train":
+                {"batchsize": 256,
+                 "epochs": 200,
+                 "classweight": transweights(classweight)},
 
-        config['decay'] =  config['lrate']/config['epochs']
+            'imgord': 'th'
+        }
+
+
+        # config['optimizer']['params']['decay'] = config['lrate'] / config['epochs']
 
     K.set_image_dim_ordering(config['imgord'])
 
@@ -115,5 +126,3 @@ if __name__ == '__main__':
     model = simple_model(config)
 
     train_model_batch(model, config, test, test_labels)
-
-

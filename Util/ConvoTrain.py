@@ -53,16 +53,27 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
 
     :return:
     """
-    sgd = SGD(lr=config['lrate'], momentum=config['momentum'], decay=config['lrate']/config['momentum'], nesterov=False)
-    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-    classweight = detransweights(config['classweight'])
+
+    if config['optimizer']['method'] == 'adagrad':
+        optimizer = Adagrad()
+    elif config['optimizer']['method'] == 'adadelta':
+        optimizer = Adadelta()
+    elif config['optimizer']['method'] == 'adam':
+        optimizer = Adam()
+    else:  # default SGD
+        params = config['optimizer']['method']['params']
+        optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
+                        nesterov=False)
+
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    classweight = detransweights(config['train']['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
     if generator is None:
-        model.fit(train[0], train[1], validation_data=(test[0], test[1]), nb_epoch=config['epochs'],
-                  batch_size=config['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
+        model.fit(train[0], train[1], validation_data=(test[0], test[1]), nb_epoch=config['train']['epochs'],
+                  batch_size=config['train']['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
     else:
-        model.fit_generator(generator, samples_per_epoch=samples_epoch, validation_data=(test[0], test[1]), nb_epoch=config['epochs'],
+        model.fit_generator(generator, samples_per_epoch=samples_epoch, validation_data=(test[0], test[1]), nb_epoch=config['train']['epochs'],
                    callbacks=[dblog], class_weight=classweight, verbose=0)
 
 
@@ -83,33 +94,34 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
     :return:
     """
 
-    if config['optimizer'] == 'adagrad':
+    if config['optimizer']['method'] == 'adagrad':
         optimizer = Adagrad()
-    elif config['optimizer'] == 'adadelta':
+    elif config['optimizer']['method'] == 'adadelta':
         optimizer = Adadelta()
-    elif config['optimizer'] == 'adam':
+    elif config['optimizer']['method'] == 'adam':
         optimizer = Adam()
     else:  # default SGD
-        optimizer = SGD(lr=config['lrate'], momentum=config['momentum'], decay=config['lrate'] / config['momentum'],
+        params = config['optimizer']['params']
+        optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
                         nesterov=False)
 
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     classweight = detransweights(config['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
 
-    ldaysTr = config['train']
+    ldaysTr = config['traindata']
     reb = config['rebalanced']
 
     # Train Epochs
     logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
-    for epoch in range(config['epochs']):
+    for epoch in range(config['train']['epochs']):
         shuffle(ldaysTr)
         tloss = []
         tacc = []
 
         # Train Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['batchsize'], reb=reb, imgord=config['imgord'])
+            X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['train']['batchsize'], reb=reb, imgord=config['imgord'])
             for p in perm:
                 loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
                 tloss.append(loss[0])
@@ -124,7 +136,7 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
             # Test Batches
             for day in ldaysTr:
                 X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'],
-                                                      config['batchsize'], reb=reb, imgord=config['imgord'])
+                                                      config['train']['batchsize'], reb=reb, imgord=config['imgord'])
                 for p in perm:
                     loss = model.test_on_batch(X_train[p], y_train[p])
                     tloss.append(loss[0])
@@ -154,8 +166,8 @@ def load_dataset(config, only_test=False, imgord='th'):
 
     :return:
     """
-    ldaysTr = config['train']
-    ldaysTs = config['test']
+    ldaysTr = config['traindata']
+    ldaysTs = config['testdata']
     z_factor = config['zfactor']
     datapath = config['datapath']
 
