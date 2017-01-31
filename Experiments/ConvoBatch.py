@@ -79,10 +79,7 @@ if __name__ == '__main__':
     else:
         ldaysTr = list_days_generator(2016, 11, 1, 30)
         ldaysTs = list_days_generator(2016, 12, 1, 2)
-        z_factor = 0.25
-        camera = None  # 'Ronda' #Cameras[0]
 
-        smodel = 3
         classweight = {0: 1.0, 1: 1.0, 2: 2.0, 3: 3.0, 4: 4.0}
 
         config = {
@@ -120,14 +117,15 @@ if __name__ == '__main__':
 
     K.set_image_dim_ordering(config['imgord'])
 
+    # Only the test set in memory, the training is loaded in batches
     _, test, test_labels, num_classes = load_dataset(config, only_test=True, imgord=config['imgord'])
 
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes
 
-    if args.cont is None:
+    if args.cont is None: # New model
         model = simple_model(config)
-    else:
+    else: # Retwork already trained
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
@@ -149,6 +147,5 @@ if __name__ == '__main__':
             config['fulllayers'] = vals['config']['fulllayers']
             config['cont'] = args.cont
             model = keras.models.load_model(models_path + args.cont + '.h5')
-
 
     train_model_batch(model, config, test, test_labels, cont=args.cont)
