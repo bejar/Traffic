@@ -57,7 +57,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch', help='Non interactive run', action='store_true', default=False)
     parser.add_argument('--config', default='config', help='Experiment configuration')
-    parser.add_argument('--cont', default=None, help='Continue existing experiment')
+    parser.add_argument('--resume', default=None, help='Resume existing experiment training')
     args = parser.parse_args()
 
     if args.batch:
@@ -123,16 +123,13 @@ if __name__ == '__main__':
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes
 
-    if args.cont is None: # New model
-        model = simple_model(config)
-    else: # Retwork already trained
+    if args.cont is not None:  # Retwork already trained
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
         vals = col.find_one({'_id': int(args.cont)}, {'config':1})
-        print(vals)
         if vals is None:
             raise ValueError('This experiment does not exist ' + args.cont)
         else:
@@ -147,5 +144,7 @@ if __name__ == '__main__':
             config['fulllayers'] = vals['config']['fulllayers']
             config['cont'] = args.cont
             model = keras.models.load_model(config['savepath'] + args.cont + '.h5')
+    else:  # New model
+        model = simple_model(config)
 
-    train_model_batch(model, config, test, test_labels, cont=args.cont)
+    train_model_batch(model, config, test, test_labels)
