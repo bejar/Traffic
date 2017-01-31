@@ -123,13 +123,13 @@ if __name__ == '__main__':
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes
 
-    if args.cont is not None:  # Retwork already trained
+    if args.resume is not None:  # Retwork already trained
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
-        vals = col.find_one({'_id': int(args.cont)}, {'config':1})
+        vals = col.find_one({'_id': int(args.resume)}, {'config':1})
         if vals is None:
             raise ValueError('This experiment does not exist ' + args.cont)
         else:
@@ -142,8 +142,8 @@ if __name__ == '__main__':
             config['model'] = vals['config']['model']
             config['convolayers'] = vals['config']['convolayers']
             config['fulllayers'] = vals['config']['fulllayers']
-            config['cont'] = args.cont
-            model = keras.models.load_model(config['savepath'] + args.cont + '.h5')
+            config['cont'] = args.resume
+            model = keras.models.load_model(config['savepath'] + args.resume + '.h5')
     else:  # New model
         model = simple_model(config)
 
