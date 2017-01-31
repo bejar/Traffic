@@ -146,6 +146,6 @@ if __name__ == '__main__':
             config['convolayers'] = vals['config']['convolayers']
             config['fulllayers'] = vals['config']['fulllayers']
             config['cont'] = args.cont
-            model = keras.models.load_model(models_path + args.cont + '.h5')
+            model = keras.models.load_model(config['savepath'] + args.cont + '.h5')
 
     train_model_batch(model, config, test, test_labels, cont=args.cont)
