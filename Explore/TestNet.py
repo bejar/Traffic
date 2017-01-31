@@ -64,7 +64,7 @@ if __name__ == '__main__':
     nclasses = 5
     modelid = '1484736764'
     z_factor = 0.25
-    days = list_days_generator(2016, 12, 2, 2)
+    days = list_days_generator(2016, 12, 1, 1)
     X, yO = load_generated_dataset(dataset_path, days, z_factor)
     y = np_utils.to_categorical(yO, nclasses)
     limages = []
@@ -81,8 +81,8 @@ if __name__ == '__main__':
     print(confusion_matrix(yO, y_pred))
     print(classification_report(yO, y_pred))
 
-    sel = np.array(yO) == 1
-    sel2 = np.array(y_pred) == 3
+    sel = np.array(yO) == 4
+    sel2 = np.array(y_pred) == 4
 
     for s, s2, l, p, im in zip(sel, sel2, yO, y_pred, limages):
         if s and s2:

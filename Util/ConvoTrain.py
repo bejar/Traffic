@@ -83,7 +83,7 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def train_model_batch(model, config, test, test_labels, acctrain=False):
+def train_model_batch(model, config, test, test_labels, acctrain=False, cont=None):
     """
     Trains the model using Keras batch method
 

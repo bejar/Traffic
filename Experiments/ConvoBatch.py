@@ -25,10 +25,12 @@ from Models.SimpleModels import simple_model
 from Util.ConvoTrain import transweights, train_model_batch
 from Util.DataGenerators import list_days_generator
 from Util.ConvoTrain import load_dataset
-from Util.Constants import dataset_path
-
+import keras.models
+from Util.Constants import models_path
 import json
 import argparse
+from pymongo import MongoClient
+from Util.DBConfig import mongoconnection
 
 __author__ = 'bejar'
 
@@ -53,13 +55,13 @@ def load_config_file(nfile):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--batch', help='Ejecucion no interactiva', action='store_true', default=False)
-    parser.add_argument('--config', default='config', help='Configuracion del experimento')
+    parser.add_argument('--batch', help='Non interactive run', action='store_true', default=False)
+    parser.add_argument('--config', default='config', help='Experiment configuration')
+    parser.add_argument('--cont', default=None, help='Continue existing experiment')
     args = parser.parse_args()
 
     if args.batch:
         sconfig = load_config_file(args.config)
-
         config = json.loads(sconfig)
         # config['decay'] = config['lrate'] / config['epochs']
 
@@ -123,6 +125,30 @@ if __name__ == '__main__':
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes
 
-    model = simple_model(config)
+    if args.cont is None:
+        model = simple_model(config)
+    else:
+        client = MongoClient(mongoconnection.server)
+        db = client[mongoconnection.db]
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        col = db[mongoconnection.col]
 
-    train_model_batch(model, config, test, test_labels)
+        vals = col.find_one({'_id': int(args.cont)}, {'config':1})
+        print(vals)
+        if vals is None:
+            raise ValueError('This experiment does not exist ' + args.cont)
+        else:
+            if config['zfactor'] != vals['config']['zfactor']:
+                raise ValueError('Incompatible Data')
+            weights = config['train']['classweight']
+            for w in weights:
+                if weights[w] != vals['config']['train']['classweight'][w]:
+                    raise ValueError('Incompatible class weights')
+            config['model'] = vals['config']['model']
+            config['convolayers'] = vals['config']['convolayers']
+            config['fulllayers'] = vals['config']['fulllayers']
+            config['cont'] = args.cont
+            model = keras.models.load_model(models_path + args.cont + '.h5')
+
+
+    train_model_batch(model, config, test, test_labels, cont=args.cont)
