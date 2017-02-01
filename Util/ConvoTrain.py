@@ -83,7 +83,7 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
 
-def train_model_batch(model, config, test, test_labels, acctrain=False):
+def train_model_batch(model, config, test, test_labels, acctrain=False, resume=None):
     """
     Trains the model using Keras batch method
 
@@ -102,20 +102,27 @@ def train_model_batch(model, config, test, test_labels, acctrain=False):
         optimizer = Adam()
     else:  # default SGD
         params = config['optimizer']['params']
-        optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
-                        nesterov=False)
+        if resume is None:  # New experiment
+            optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
+                            nesterov=False)
+            iepoch = 0
+        else: # Resume training
+            lrate = params['lrate'] - ((params['lrate'] / params['momentum']) * params['epochs_trained'])
+            optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
+                            nesterov=False)
+            iepoch = config['train']['epochs_trained']
 
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
     classweight = detransweights(config['train']['classweight'])
-    dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json())
+    dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
 
     ldaysTr = config['traindata']
     reb = config['rebalanced']
 
     # Train Epochs
     logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
-    for epoch in range(config['train']['epochs']):
+    for epoch in range(iepoch, config['train']['epochs']):
         shuffle(ldaysTr)
         tloss = []
         tacc = []

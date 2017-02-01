@@ -58,12 +58,12 @@ if __name__ == '__main__':
     parser.add_argument('--batch', help='Non interactive run', action='store_true', default=False)
     parser.add_argument('--config', default='config', help='Experiment configuration')
     parser.add_argument('--resume', default=None, help='Resume existing experiment training')
+    parser.add_argument('--retrain', default=None, help='Continue existing experiment training')
     args = parser.parse_args()
 
     if args.batch:
         sconfig = load_config_file(args.config)
         config = json.loads(sconfig)
-        # config['decay'] = config['lrate'] / config['epochs']
 
         ldaysTr = []
 
@@ -123,15 +123,16 @@ if __name__ == '__main__':
     config['input_shape'] = test[0][0].shape
     config['num_classes'] = num_classes
 
-    if args.resume is not None:  # Retwork already trained
+    resume = None
+    if args.retrain is not None:  # Retwork already trained
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
-        vals = col.find_one({'_id': int(args.resume)}, {'config':1})
+        vals = col.find_one({'_id': int(args.retrain)}, {'config':1})
         if vals is None:
-            raise ValueError('This experiment does not exist ' + args.cont)
+            raise ValueError('This experiment does not exist ' + args.retrain)
         else:
             if config['zfactor'] != vals['config']['zfactor']:
                 raise ValueError('Incompatible Data')
@@ -142,9 +143,24 @@ if __name__ == '__main__':
             config['model'] = vals['config']['model']
             config['convolayers'] = vals['config']['convolayers']
             config['fulllayers'] = vals['config']['fulllayers']
-            config['cont'] = args.resume
+            config['cont'] = args.retrain
+            model = keras.models.load_model(config['savepath'] + args.retrain + '.h5')
+    elif args.resume is not None: # Network interrupted
+        client = MongoClient(mongoconnection.server)
+        db = client[mongoconnection.db]
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        col = db[mongoconnection.col]
+
+        vals = col.find_one({'_id': int(args.retrain)}, {'config': 1, 'acc': 1})
+        if vals is None:
+            raise ValueError('This experiment does not exist ' + args.resume)
+        else:
+            config = vals['config']
+            config['train']['epochs_trained'] = len(config['acc'])
             model = keras.models.load_model(config['savepath'] + args.resume + '.h5')
+            resume = vals
+
     else:  # New model
         model = simple_model(config)
 
-    train_model_batch(model, config, test, test_labels)
+    train_model_batch(model, config, test, test_labels, resume=resume)

@@ -6,7 +6,9 @@ DBLog
 
 :Description: DBLog
 
-    
+    Logs the training of a network saving log info in a MongoDB,
+    if connection fails log info is not saved
+    if connection fails at the end of training log is saved in a json file
 
 :Authors: bejar
     
@@ -19,71 +21,119 @@ DBLog
 
 __author__ = 'bejar'
 
-
 from keras.callbacks import Callback
 import time
 from pymongo import MongoClient
 import socket
 from keras.utils.visualize_util import model_to_dot
+from pymongo.errors import ConnectionFailure
+import json
 
 class DBLog(Callback):
     """
     Callback used to stream events to a DB
     """
 
-    def __init__(self, database, config, model, modelj):
+    def __init__(self, database, config, model, modelj, resume=None):
         super(Callback, self).__init__()
-        self.id = int(time.time())
+
         self.mgdb = database
         self.config = config
-        client = MongoClient(self.mgdb.server)
-        db = client[self.mgdb.db]
-        db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
-        col = db[self.mgdb.col]
-        svgmodel = model_to_dot(model, show_shapes=True).create(prog='dot', format='svg')
 
-        col.insert({'_id': self.id,
-                    'host': socket.gethostname().split('.')[0],
-                    'model': modelj,
-                    'svgmodel': svgmodel,
-                    'config': self.config,
-                    'acc': [],
-                    'loss': [],
-                    'val_acc': [],
-                    'val_loss': [],
-                    'time_init': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
-                    'time_upd': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
-                    'done': False
-                    })
+        if resume is None:
+            self.id = int(time.time())
+            svgmodel = model_to_dot(model, show_shapes=True).create(prog='dot', format='svg')
+            self.backup = {'_id': self.id,
+                        'host': socket.gethostname().split('.')[0],
+                        'model': modelj,
+                        'svgmodel': svgmodel,
+                        'config': self.config,
+                        'acc': [],
+                        'loss': [],
+                        'val_acc': [],
+                        'val_loss': [],
+                        'time_init': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                        'time_upd': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                        'done': False
+                        }
+
+            try: # Try to save log in DB
+                client = MongoClient(self.mgdb.server)
+                db = client[self.mgdb.db]
+                db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
+                col = db[self.mgdb.col]
+                col.insert(self.backup)
+            except ConnectionFailure:
+                pass
+        else:
+            self.id = config['_id']
+            self.backup = resume
+            self.backup['host'] = socket.gethostname().split('.')[0]
+            self.backup['time_init'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+            self.backup['time_upd'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+            try: # Try to save log in DB
+                client = MongoClient(self.mgdb.server)
+                db = client[self.mgdb.db]
+                db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
+                col = db[self.mgdb.col]
+                col.update({'_id':self.id}, {'$set': {'host': self.backup['host']}})
+                col.update({'_id':self.id}, {'$set': {'time_init': self.backup['time_init']}})
+                col.update({'_id':self.id}, {'$set': {'time_upd': self.backup['time_upd']}})
+            except ConnectionFailure:
+                pass
+
 
     def on_epoch_end(self, epoch, logs={}):
-        client = MongoClient(self.mgdb.server)
-        db = client[self.mgdb.db]
-        db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
-        col = db[self.mgdb.col]
 
-        send = col.find_one({'_id':self.id}, {'acc':1, 'loss': 1, 'val_acc':1, 'val_loss':1})
         for k, v in logs.items():
-            send[k].append(v)
+            self.backup[k].append(v)
+        self.backup['time_upd'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
-        col.update({'_id':self.id}, {'$set': {'acc': send['acc']}})
-        col.update({'_id':self.id}, {'$set': {'loss': send['loss']}})
-        col.update({'_id':self.id}, {'$set': {'val_loss': send['val_loss']}})
-        col.update({'_id':self.id}, {'$set': {'val_acc': send['val_acc']}})
-        col.update({'_id':self.id}, {'$set': {'time_upd': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}})
+        try: # Try to save log in DB
+            client = MongoClient(self.mgdb.server)
+            db = client[self.mgdb.db]
+            db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
+            col = db[self.mgdb.col]
+
+            exists = col.find_one({'_id':self.id}, {'done':1})
+            if exists is not None:
+                col.update({'_id':self.id}, {'$set': {'acc': self.backup['acc']}})
+                col.update({'_id':self.id}, {'$set': {'loss': self.backup['loss']}})
+                col.update({'_id':self.id}, {'$set': {'val_loss': self.backup['val_loss']}})
+                col.update({'_id':self.id}, {'$set': {'val_acc': self.backup['val_acc']}})
+                col.update({'_id':self.id}, {'$set': {'time_upd': self.backup['time_upd']}})
+            else:
+                col.insert(self.backup)
+
+        except ConnectionFailure:
+            pass
 
     def on_train_end(self, logs={}):
 
-        client = MongoClient(self.mgdb.server)
-        db = client[self.mgdb.db]
-        db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
-        col = db[self.mgdb.col]
-        # send = col.find_one({'_id':self.id}, {'acc':1, 'val_acc':1})
-        col.update({'_id':self.id}, {'$set': {'done':True,
-                                              'time_end':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
-                                              'final_acc': logs['acc'],
-                                              'final_val_acc': logs['val_acc'],
-                                              }})
+        self.backup['done'] = True
+        self.backup['time_end'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        self.backup['final_acc'] = logs['acc']
+        self.backup['final_val_acc'] = logs['val_acc']
+
+        try: # Try to save log in DB
+            client = MongoClient(self.mgdb.server)
+            db = client[self.mgdb.db]
+            db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
+            col = db[self.mgdb.col]
+
+            exists = col.find_one({'_id':self.id}, {'done':1})
+            if exists is not None:
+                col.update({'_id':self.id}, {'$set': {'done': self.backup['done'],
+                                                      'time_end': self.backup['time_end'],
+                                                      'final_acc': self.backup['final_acc'] ,
+                                                      'final_val_acc': self.backup['final_val_acc'],
+                                                      }})
+            else:
+                col.insert(self.backup)
+
+        except ConnectionFailure:
+            pass
 
     def save_final_results(self, accuracy, confusion, report):
         """
@@ -92,16 +142,31 @@ class DBLog(Callback):
         :param report:
         :return:
         """
-        client = MongoClient(self.mgdb.server)
-        db = client[self.mgdb.db]
-        db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
-        col = db[self.mgdb.col]
-
         sconfusion = ""
         for i1 in range(confusion.shape[0]):
             for i2 in range(confusion.shape[1]):
-                sconfusion += "%4d " % confusion[i1,i2]
+                sconfusion += "%4d " % confusion[i1, i2]
             sconfusion += "\n"
 
+        self.backup['confusion'] = sconfusion
+        self.backup['report'] = report
+        self.backup['accuracy'] = accuracy
 
-        col.update({'_id':self.id}, {'$set': {'confusion': sconfusion, 'report': report, 'accuracy': accuracy}})
+        try: # Try to save log in DB
+            client = MongoClient(self.mgdb.server)
+            db = client[self.mgdb.db]
+            db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
+            col = db[self.mgdb.col]
+
+            exists = col.find_one({'_id':self.id}, {'done':1})
+            if exists is not None:
+                col.update({'_id':self.id}, {'$set': {'confusion': self.backup['confusion'],
+                                                      'report': self.backup['report'],
+                                                      'accuracy': self.backup['accuracy']
+                                                      }})
+            else:
+                col.insert(self.backup)
+
+        except ConnectionFailure:
+            with open(self.backup['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
+                json.dump(self.backup, outfile)
