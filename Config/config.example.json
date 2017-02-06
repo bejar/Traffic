@@ -18,7 +18,9 @@
    {"method": "sgd",
     "params":
      {"lrate": 0.005,
-      "momentum": 0.9
+      "momentum": 0.9,
+      "decay": true,
+      "nesterov": false
       }},
  "train":
    {"batchsize": 256,

@@ -103,6 +103,8 @@ if __name__ == '__main__':
                  'params':
                      {'lrate': 0.005,
                       'momentum': 0.9,
+                      'nesterov': False,
+                      'decay': True
                       }},
             "train":
                 {"batchsize": 256,

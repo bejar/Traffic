@@ -62,8 +62,12 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
         optimizer = Adam()
     else:  # default SGD
         params = config['optimizer']['method']['params']
-        optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
-                        nesterov=False)
+        if params['decay']:
+            decay = params['lrate'] / params['momentum']
+        else:
+            decay = 0
+        optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=decay,
+                        nesterov=params['nesterov'])
 
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     classweight = detransweights(config['train']['classweight'])
@@ -103,13 +107,22 @@ def train_model_batch(model, config, test, test_labels, acctrain=False, resume=N
     else:  # default SGD
         params = config['optimizer']['params']
         if resume is None:  # New experiment
-            optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
-                            nesterov=False)
+            if params['decay']:
+                decay = params['lrate'] / params['epochs']
+            else:
+                decay = 0
+            optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=decay,
+                            nesterov=params['nesterov'])
             iepoch = 0
         else: # Resume training
-            lrate = params['lrate'] - ((params['lrate'] / params['momentum']) * params['epochs_trained'])
-            optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=params['lrate'] / params['momentum'],
-                            nesterov=False)
+            lrate = params['lrate'] - ((params['lrate'] / params['epochs']) * params['epochs_trained'])
+            if params['decay']:
+                decay = params['lrate'] / params['epochs']
+            else:
+                decay = 0
+
+            optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=decay,
+                            nesterov=params['nesterov'])
             iepoch = config['train']['epochs_trained']
 
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
