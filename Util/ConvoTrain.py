@@ -63,7 +63,7 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
     else:  # default SGD
         params = config['optimizer']['method']['params']
         if params['decay']:
-            decay = params['lrate'] / params['momentum']
+            decay = params['lrate'] / params['epochs']
         else:
             decay = 0
         optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=decay,
