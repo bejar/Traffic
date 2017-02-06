@@ -63,7 +63,7 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
     else:  # default SGD
         params = config['optimizer']['method']['params']
         if params['decay']:
-            decay = params['lrate'] / params['epochs']
+            decay = params['lrate'] / config['train']['epochs']
         else:
             decay = 0
         optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=decay,
@@ -108,14 +108,14 @@ def train_model_batch(model, config, test, test_labels, acctrain=False, resume=N
         params = config['optimizer']['params']
         if resume is None:  # New experiment
             if params['decay']:
-                decay = params['lrate'] / params['epochs']
+                decay = params['lrate'] / config['train']['epochs']
             else:
                 decay = 0
             optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=decay,
                             nesterov=params['nesterov'])
             iepoch = 0
         else: # Resume training
-            lrate = params['lrate'] - ((params['lrate'] / params['epochs']) * params['epochs_trained'])
+            lrate = params['lrate'] - ((params['lrate'] / config['train']['epochs']) * params['epochs_trained'])
             if params['decay']:
                 decay = params['lrate'] / params['epochs']
             else:
