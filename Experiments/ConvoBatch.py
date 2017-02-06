@@ -114,7 +114,6 @@ if __name__ == '__main__':
             'imgord': 'th'
         }
 
-
         # config['optimizer']['params']['decay'] = config['lrate'] / config['epochs']
 
     K.set_image_dim_ordering(config['imgord'])
