@@ -19,7 +19,7 @@
     "params":
      {"lrate": 0.005,
       "momentum": 0.9,
-      "decay": true,
+      "decay": 0,
       "nesterov": false
       }},
  "train":

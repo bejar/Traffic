@@ -19,7 +19,9 @@ Configuration for training is read from a config.json file
  "optimizer":
         "method": optimizer "sdg"|"adagrad"|"adadelta"|"adam"
         "lrate": learning rate
+        "decay" : learning rate decay
         "momentum": momentum
+        "nesterov": use nesterov moment
  "train": Training parameters
         "batchsize": batch size
         "epochs": number of epochs
