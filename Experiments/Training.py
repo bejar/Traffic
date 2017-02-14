@@ -126,19 +126,20 @@ def train_model_batch(model, config, test, resume=None):
         shuffle(chunks)
 
         # Train Batches
-        # we keep only the loss and accuracy of the last chunk
+        lloss = []
+        lacc = []
         for chunk in chunks:
             train.load_chunk(chunk, config['train']['batchsize'])
 
             for p in train.perm:
                 loss, acc = model.train_on_batch(train.X_train[p], train.y_train[p], class_weight=classweight)
+                lloss.append(loss)
+                lacc.append(acc)
 
-        logs['loss'] = float(loss)
-        logs['acc'] = float(acc)
+        logs['loss'] = float(np.mean(lloss))
+        logs['acc'] = float(np.means(lacc))
 
-        scores = model.evaluate(test.X_train, test.y_train, verbose=0)
-        logs['val_loss'] = scores[0]
-        logs['val_acc'] = scores[1]
+        logs['val_loss'], logs['val_acc'] = model.evaluate(test.X_train, test.y_train, verbose=0)
 
         dblog.on_epoch_end(epoch, logs=logs)
 
@@ -150,7 +151,6 @@ def train_model_batch(model, config, test, resume=None):
     y_pred = model.predict_classes(test.X_train, verbose=0)
     dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred), classification_report(test.y_labels, y_pred))
     train.close()
-
 
 if __name__ == '__main__':
 

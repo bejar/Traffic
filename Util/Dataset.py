@@ -106,8 +106,8 @@ class Dataset:
             y_train = []
 
             for chunk in chunks:
-                X_train.append(self.handle[chunk + '/data'])
-                y_train.extend(self.handle[chunk + '/labels'])
+                X_train.append(self.handle[chunk + '/data'][()])
+                y_train.extend(self.handle[chunk + '/labels'][()])
 
             self.nclasses = len(np.unique(y_train))
             self.X_train = np.concatenate(X_train)
@@ -126,8 +126,8 @@ class Dataset:
         if self.nclasses is None:
             raise Exception('Number of classes not initialized')
         if self.handle is not None:
-            self.X_train = self.handle[chunk + '/data']
-            tlabels = self.handle[chunk + '/labels']
+            self.X_train = self.handle[chunk + '/data'][()]
+            tlabels = self.handle[chunk + '/labels'][()]
             self.y_train = np_utils.to_categorical(tlabels, self.nclasses)
             if self.X_train.shape[0] % batchsize != 0:
                 raise Exception('Chunksize not a multiple of batchsize')
