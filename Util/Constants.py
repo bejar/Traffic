@@ -29,6 +29,7 @@ process_path = '/home/bejar/storage/Data/Traffic/Process/'
 models_path = '/home/bejar/storage/Data/Traffic/Models/'
 
 
+
 # Madrid Data
 data_path_MAD = '/home/bejar/storage/Data/TrafficMAD/'
 cameras_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Cameras/'
