@@ -41,6 +41,19 @@ def list_days_generator(year, month, iday, fday):
     return ldays
 
 
+def name_days_generator(year, month, iday, fday):
+    """
+    Generates a string with the dates
+
+    :param year:
+    :param month:
+    :param iday:
+    :param fday:
+    :return:
+    """
+    ldays = list_days_generator(year, month, iday, fday)
+    return "%s" % ldays[0] + "%s" % ldays[-1]
+
 def load_days(datapath, days, z_factor, reb=False):
     """
     loads and contatenates files from a list of days
@@ -143,6 +156,8 @@ def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord
         lperm.append(gperm)
 
     return X_train, y_train, lperm
+
+
 
 if __name__ == '__main__':
     ldays = list_days_generator(2016, 11, 12, 12)
