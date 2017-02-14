@@ -137,7 +137,7 @@ def train_model_batch(model, config, test, resume=None):
                 lacc.append(acc)
 
         logs['loss'] = float(np.mean(lloss))
-        logs['acc'] = float(np.means(lacc))
+        logs['acc'] = float(np.mean(lacc))
 
         logs['val_loss'], logs['val_acc'] = model.evaluate(test.X_train, test.y_train, verbose=0)
 
@@ -151,6 +151,7 @@ def train_model_batch(model, config, test, resume=None):
     y_pred = model.predict_classes(test.X_train, verbose=0)
     dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred), classification_report(test.y_labels, y_pred))
     train.close()
+
 
 if __name__ == '__main__':
 
