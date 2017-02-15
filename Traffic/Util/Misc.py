@@ -36,6 +36,7 @@ def load_config_file(nfile):
 
     return s
 
+
 def transweights(weights):
     """
     Transforms class weights format from json to python
@@ -47,6 +48,7 @@ def transweights(weights):
         wtrans[str(v)] = weights[v]
     return wtrans
 
+
 def detransweights(weights):
     """
     Transforms class weights format from python to json
@@ -57,6 +59,7 @@ def detransweights(weights):
     for v in weights:
         wtrans[int(v)] = weights[v]
     return wtrans
+
 
 def list_days_generator(year, month, iday, fday):
     """

@@ -7,8 +7,8 @@ DBLog
 :Description: DBLog
 
     Logs the training of a network saving log info in a MongoDB,
-    if connection fails log info is not saved
-    if connection fails at the end of training log is saved in a json file
+    if connection fails at any epoch log info is not saved in the database
+    if connection fails at the end of training log is saved to a json file
 
 :Authors: bejar
     
@@ -28,6 +28,7 @@ import socket
 from keras.utils.visualize_util import model_to_dot
 from pymongo.errors import ConnectionFailure
 import json
+import numpy as np
 
 class DBLog(Callback):
     """
@@ -170,3 +171,16 @@ class DBLog(Callback):
         except ConnectionFailure:
             with open(self.backup['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
                 json.dump(self.backup, outfile)
+
+    def is_best_epoch(self):
+        """
+        Returns if the last accuracy for the TEST data is the highest accuracy value
+        Useful for deciding when to save the trained models
+
+        :return:
+        """
+
+        if len(self.config['val_acc']) > 1:
+            return(self.config['val_acc'][-1] > np.max(self.config['val_acc'][:-1]))
+        else:
+            return True

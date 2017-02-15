@@ -127,12 +127,12 @@ if __name__ == '__main__':
 
     # Only the test set in memory, the training is loaded in batches
     testdays = []
-    d = Dataset(config['datapath'], config['testdata'], config['zfactor'])
-    d.open()
-    d.in_memory()
+    test = Dataset(config['datapath'], config['testdata'], config['zfactor'])
+    test.open()
+    test.in_memory()
 
-    config['input_shape'] = d.input_shape
-    config['num_classes'] = d.nclasses
+    config['input_shape'] = test.input_shape
+    config['num_classes'] = test.nclasses
 
     resume = None
     if args.retrain is not None:  # Network already trained
@@ -174,5 +174,5 @@ if __name__ == '__main__':
     else:  # New model
         model = simple_model(config)
 
-    train_model_batch(model, config, d, resume=resume)
-    d.close()
+    train_model_batch(model, config, test, resume=resume)
+    test.close()

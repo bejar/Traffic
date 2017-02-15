@@ -27,10 +27,12 @@ import numpy as np
 from Traffic.Config.Constants import process_path
 from keras.utils import np_utils
 from numpy.random import shuffle
+from Traffic.Util.Misc import list_days_generator
 
 def name_days_file(ldays):
     """
     Generates a name file using the first and last day from the dataset
+    It is assumed that ldays is the list of training days from the configuration file
     :param ldays:
     :return:
     """
@@ -40,21 +42,6 @@ def name_days_file(ldays):
         p.extend(list_days_generator(year, month, iday, fday))
     return p[0] + '-' + p[-1]
 
-
-def list_days_generator(year, month, iday, fday):
-    """
-    Generates a list of days
-
-    :param year:
-    :param month:
-    :param iday:
-    :param fday:
-    :return:
-    """
-    ldays = []
-    for v in range(iday, fday + 1):
-        ldays.append("%d%d%02d" % (year, month, v))
-    return ldays
 
 class Dataset:
 
