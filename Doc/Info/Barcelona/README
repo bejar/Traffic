@@ -1,0 +1,17 @@
+Different files with information about how Barcelona codes its streets and gps coordinates
+
+Streets are grouped in "itineratios" (paths)
+Individual strees are divides in "trams" (segments)
+http://opendata.bcn.cat/opendata/en/catalog/TRANSPORT/transitrelaciotramsperitinerari/
+
+coordinates of Barcelona Transit cameras
+
+
+Traffic info:
+
+http://opendata.bcn.cat/opendata/en/catalog/TRANSPORT/itineraris/
+http://bigovopendata.bismart.com/opendata/en/catalog/ext/TRANSPORT/trams/
+
+Barcelona Traffic  web:
+
+http://com-shi-va.lameva.barcelona.cat/en/traffic

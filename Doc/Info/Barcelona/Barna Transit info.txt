@@ -1,0 +1,43 @@
+# Extracted from the open data web site of Barcelona city council (translated)
+
+* dadestram.data
+
+Transit information information in a street segment
+
+ (0 = no data, 1 = very fluid, 2 = fluid, 3 = dense, 4 = very dense, 5 = colapsed, 6 = traffic interruption).
+
+* dadesitineraris.data
+
+ Information of street segments with its time, La información de los tramos de tráfico con su tiempo actual, en relación al tiempo habitual y tiempo previsto en 15 minutos
+
+ 1#1#20080516104551#305#307#1#1#1
+ El primer valor hace referencia a la identificación.
+ El segundo indica si la información está disponible o no.
+ El tercer parámetro es la fecha y la hora, los minutos y los segundos.
+ Los valores 305 y 307 indican el tiempo actual y el tiempo previsto (siempre en segundos).
+ El dato siguiente, #1, es el tiempo de recorrido futuro.
+ El parámetro siguiente es el factor de referencia actual.
+ Finalmente, el último valor es la tendencia del tráfico (empeora, se mantiene...).
+
+
+-------------------------------------------
+# Extraido de la web de open data del ayuntamiento de Barcelona
+
+* dadestram.data
+
+Información del estado del tránsito en los tramos
+
+ (0 = sin datos, 1 = muy fluido, 2 = fluido, 3 = denso, 4 = muy denso, 5 = congestión, 6 = cortado).
+
+* dadesitineraris.data
+
+ La información de los tramos de tráfico con su tiempo actual, en relación al tiempo habitual y tiempo previsto en 15 minutos
+
+ 1#1#20080516104551#305#307#1#1#1
+ El primer valor hace referencia a la identificación.
+ El segundo indica si la información está disponible o no.
+ El tercer parámetro es la fecha y la hora, los minutos y los segundos.
+ Los valores 305 y 307 indican el tiempo actual y el tiempo previsto (siempre en segundos).
+ El dato siguiente, #1, es el tiempo de recorrido futuro.
+ El parámetro siguiente es el factor de referencia actual.
+ Finalmente, el último valor es la tendencia del tráfico (empeora, se mantiene...).

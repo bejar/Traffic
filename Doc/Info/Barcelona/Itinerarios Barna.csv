@@ -1,0 +1,286 @@
+1,0,Aragó de Meridiana a Pau Claris
+1,271,Aragó (Meridiana a Cartagena)
+1,272,Aragó (Cartagena a Diagonal)
+1,273,Aragó (Diagonal a Passeig de Sant Joan)
+1,274,Aragó (Passeig de Sant Joan a Pau Claris)
+2,0,Aragó de Pau Claris a Tarragona
+2,144,Aragó (Pau Claris a Balmes)
+2,145,Aragó (Balmes a Urgell)
+2,146,Aragó (Urgell a Tarragona)
+3,0,Guipúscoa de Meridiana a Cantàbria
+3,415,Guipúscoa (Meridiana a Bac de Roda)
+3,416,Guipúscoa (Bac de Roda a Cantàbria)
+4,0,Guipúscoa de Cantàbria a Meridiana
+4,270,Guipúscoa (Bac de Roda a Meridiana)
+4,350,Guipúscoa (Cantàbria a Bac de Roda)
+5,0,Gran Via de Pl. Cerdà a Pl. Espanya
+5,151,Gran Via (Pl. Cerdà a Moianés)
+5,153,Gran Via (Moianés a Pl. Espanya)
+6,0,Gran Via de Pl. Espanya a Passeig de Gràcia
+6,155,Gran Via (Pl. Espanya a Entença)
+6,156,Gran Via (Entença a Urgell)
+6,157,Gran Via (Urgell a Pl. Universitat)
+6,158,Gran Via (Pl. Universitat a Passeig de Gràcia)
+7,0,Gran Via de Passeig de Gràcia a Pl. de les Glòries
+7,275,Gran Via (Passeig de Gràcia a Roger de Llúria)
+7,276,Gran Via (Roger de Llúria a Pl. Tetuan)
+7,277,Gran Via (Pl. Tetuan a Marina)
+7,278,Gran Via (Marina a Pl de les Glòries)
+8,0,Gran Via de Pl. de les Glòries a Ronda Litoral
+8,279,Gran Via (Pl. de les Glòries a Bac de Roda)
+8,351,Gran Via (Bac de Roda a Rambla de Prim)
+8,353,Gran Via (Rambla de Prim a Ronda del Litoral)
+9,0,Gran Via de Ronda Litoral a Marina
+9,280,Gran Via (Bac de Roda a Pl. de les Glòries)
+9,352,Gran Via (Rambla de Prim a Bac de Roda)
+9,354,Gran Via (Ronda del Litoral a Rambla de Prim)
+9,431,Gran Via (Pl. Glòries a Marina)
+10,0,Gran Via de Pl. Espanya a Pl. Cerdà
+10,152,Gran Via (Moianés a Pl. Cerdà)
+10,154,Gran Via (Pl. Espanya a Moianés)
+11,0,Balmes de Av. Tibidabo a Pl. Molina
+11,66,Balmes (Av. Tibidabo a Mitre)
+11,68,Balmes (Mitre a Pl. Molina)
+12,0,Balmes de Pl. Molina a Diagonal
+12,70,Balmes (Pl. Molina a Travessera de Gràcia)
+12,71,Balmes (Travessera de Gràcia a Diagonal)
+13,0,Balmes de Diagonal a Pl. Catalunya
+13,122,Balmes (Diagonal a Aragó)
+13,123,Balmes (Aragó a Gran Via)
+13,176,Balmes (Gran Via a Pl. Catalunya)
+14,0,Balmes de Pl. Molina a Av. Tibidabo
+14,67,Balmes (Mitre a Av. Tibidabo)
+14,69,Balmes (Pl. Molina a Mitre)
+15,0,Diagonal de Ronda de Dalt a Pl. Maria Cristina
+15,1,Diagonal (Ronda de Dalt a Doctor Marañón)
+15,3,Diagonal (Doctor Marañón a Pl. Pius XII)
+15,5,Diagonal (Pl. Pius XII a Pl. Maria Cristina)
+16,0,Diagonal de Pl. Maria Cristina a Pl. Francesc Macià
+16,7,Diagonal (Pl. Maria Cristina a Numància)
+16,9,Diagonal (Entença a Francesc Macià)
+16,401,Diagonal (Numància a Entença)
+17,0,Diagonal de Pl. Francesc Macià a Passeig de Gràcia
+17,103,Diagonal (Pl. Francesc Macià a Balmes)
+17,105,Diagonal (Balmes a Pl Joan Carles I)
+18,0,Diagonal de Passeg de Gràcia a Pl. de les Glòries
+18,256,Diagonal (Pl. Joan Carles I a Passeig de Sant Joan)
+18,258,Diagonal (Passeig de Sant Joan a Marina)
+18,260,Diagonal (Marina a Pl. de les Glòries)
+19,0,Diagonal de Pl. de les Glòries a Rambla de Prim
+19,423,Diagonal (Pl. Glòries a Bac de Roda)
+19,425,Diagonal (Bac de Roda a Rambla de Prim)
+20,0,Diagonal de Rambla de Prim a Pl. de les Glòries
+20,424,Diagonal (Bac de Roda a Pl. Glòries)
+20,426,Diagonal (Rambla de Prim a Bac de Roda)
+21,0,Diagonal de PL. de les Glòries a Passeig de Gràcia
+21,257,Diagonal (Passeig de Sant Joan a Pl. Joan Carles I)
+21,259,Diagonal (Marina a Passeig de Sant Joan)
+21,261,Diagonal (Pl. de les Glòries a Marina)
+22,0,Diagonal de Passeig de Gràcia a Pl. Francesc Macià
+22,104,Diagonal (Balmes a Pl. Francesc Macià)
+22,106,Diagonal (Pl. Joan Carles I a Balmes)
+23,0,Diagonal de Pl. Francesc Macià a Pl. Maria Cristina
+23,8,Diagonal (Numància a Pl. Maria Cristina)
+23,10,Diagonal (Francesc Macià a Entença)
+23,402,Diagonal (Entença a Numància)
+24,0,Diagonal de Pl. Maria Cristina a Ronda de Dalt
+24,2,Diagonal (Doctor Marañón a Ronda de Dalt)
+24,4,Diagonal (Pl. Pius XII a Doctor Marañón)
+24,6,Diagonal (Pl. Maria Cristina a Pl. Pius XII)
+25,0,Meridiana de Ronda de Dalt a Felip II
+25,325,Meridiana (Fabra i Puig a Felip II)
+25,327,Meridiana (Passeig Valldaura a Fabra i Puig)
+25,329,Meridiana (Ronda de Dalt a Passeig Valldaura)
+26,0,Meridiana de Felip II a Pl. de les Glòries
+26,321,Meridiana (Aragó a Pl. de les Glòries)
+26,323,Meridiana (Felip II a Aragó)
+27,0,Meridiana de Pl. de les Glòries a Felip II
+27,320,Meridiana (Pl. de les Glòries a Aragó)
+27,322,Meridiana (Aragó a Felip II)
+28,0,Meridiana de Felip II a Ronda de Dalt
+28,324,Meridiana (Felip II a Fabra i Puig)
+28,326,Meridiana (Fabra i Puig a Passeig Valldaura)
+28,328,Meridiana (Passeig Valldaura a Ronda de Dalt)
+29,0,Paral·lel sentit Pl. Espanya
+29,163,Paral.lel (Entença a Pl. Espanya)
+29,165,Paral.lel (Calàbria a Entença)
+29,167,Paral.lel (Ronda de Sant Pau a Calàbria)
+29,169,Paral.lel (Josep Carner a Ronda de Sant Pau)
+30,0,Paral·lel sentit Josep Carner
+30,162,Paral.lel (Pl. Espanya a Entença)
+30,164,Paral.lel (Entença a Calàbria)
+30,166,Paral.lel (Calàbria a Ronda de Sant Pau)
+30,168,Paral.lel (Ronda de Sant Pau a Josep Carner)
+31,0,Pau Claris de Còrsega a Pl. Urquinaona
+31,180,Pau Claris (Còrsega a Mallorca)
+31,181,Pau Claris (Mallorca a Aragó)
+31,182,Pau Claris (Aragó a Gran Via)
+31,183,Pau Claris (Gran Via a Pl. Urquinaona)
+32,0,Via Laietana de Pl. Urquinaona a Pl. Antonio López
+32,184,Via Laietana (Pl. Uruiqnaona a Jaume I)
+32,186,Via Laietana (Jaume I a Pl. Antonio López)
+33,0,Via Laietana de Pl. Antonio López a Pl. Urquinaona
+33,185,Via Laietana (Jaume I a Pl. Urquinaona)
+33,187,Via Laietana (Pl. Antonio López a Jaume I)
+34,0,Roger de Llúria de Pl. Urquinaona a Diagonal
+34,188,Roger de Llúria (Pl. Urquinaona a Aragó)
+34,189,Roger de Llúria (Aragó a Diagonal)
+35,0,Urgell de Paral·lel a Gran Via
+35,171,Ronda de Sant Pau (Paral.lel a Ronda de Sant Antoni)
+35,172,Urgell (Ronda de Sant Pau a Gran Via)
+36,0,Urgell de Gran Via a Paris
+36,117,Urgell (Gran Via a Aragó)
+36,118,Urgell (Aragó a Av. Sarrià)
+37,0,Av. Sarrià de Paris a Pl. Prat de la Riba
+37,54,Av. Sarrià (Diagonal a Pl. Prat de la Riba)
+37,119,Av. Sarrià (Urgell a Diagonal)
+38,0,Numància de Diagonal a Pl. Països Catalans
+38,107,Numància (Diagonal a Travessera de les Corts)
+38,108,Numància (Travessera de les Corts a Berlin)
+38,109,Numància (Berlin a Pl. Països Catalans)
+39,0,Tarragona de Pl. Països Catalans a Pl. Espanya
+39,110,Tarragona (Pl. Països Catalans a Aragó)
+39,111,Tarragona (Aragó a Pl.Espanya)
+40,0,Ronda del Mig de Ronda Litoral a Pl. Cerdà
+40,148,Passeig de la Zona Franca (Foc a Pl. Cerdà)
+40,150,Passeig de la Zona Franca (Ronda del Litoral a Foc)
+41,0,Ronda del Mig de Pl. Cerdà a Via Augusta
+41,45,Mitre (Pl. Prat de la Riba a Via Augusta)
+41,47,Carles III (Pl. Maria Cristina a Pl. Prat de la Riba)
+41,49,Carles III (Travessera de les Corts a Pl. Maria Cristina)
+41,51,Carles III (Carrer de Sants a Travessera de les Corts)
+41,53,Carles III (Pl. Cerdà a Carrer de Sants)
+42,0,Ronda del Mig de Via Augusta a Pl. Lesseps
+42,97,Mitre (Via Augusta a Balmes)
+42,99,Mitre (Balmes a Pl. Lesseps)
+43,0,Ronda del Mig de Pl. Lesseps a Túnel de la Rovira
+43,233,Travessera de Dalt (Pl. Lesseps a Escorial)
+43,235,Ronda Guinardó (Escorial a Túnel de la Rovira)
+44,0,Ronda del Mig de Túnel de la Rovira a Passeig Maragall
+44,237,Ronda Guinardó (Túnel de la Rovira a Oblit)
+44,427,Ronda Guinardó (Oblit a Passeig de Maragall)
+45,0,Ronda del Mig de Passeig Maragall a Meridiana
+45,308,Ramon Albó (Passeig Maragall a Escòcia)
+45,309,Arnau d'Oms (Escòcia a Fabra i Puig)
+45,428,Av. Rio de Janeiro (Fabra i Puig a Passeig de Valldaura)
+45,429,Av. Rio de Janeiro (Passeig de Valldaura a Meridiana)
+46,0,Ronda del Mig de Túnel de la Rovira a Pl. Lesseps
+46,234,Travessera de Dalt (Escorial a Pl. Lesseps)
+46,236,Ronda Guinardó (Túnel de la Rovira a Escorial)
+47,0,Ronda del Mig de Pl. Lesseps a Via Augusta
+47,98,Mitre (Balmes a Via Augusta)
+47,100,Mitre (Pl. Lesseps a Balmes)
+48,0,Ronda del Mig de Via Augusta a Pl. Cerdà
+48,44,Mitre (Via Augusta a Pl. Prat de la Riba)
+48,46,Carles III (Pl. Prat de la Riba a Pl. Maria Cristina)
+48,48,Carles III (Pl. Maria Cristina a Travessera de les Corts)
+48,50,Carles III (Travessera de les Corts a Carrer de Sans)
+48,52,Carles III (Carrer de Sants a Pl. Cerdà)
+49,0,Ronda del Mig de Pl. Cerdà a Ronda Litoral
+49,147,Passeig de la Zona Franca (Pl. Cerdà a Foc)
+49,149,Passeig de la Zona Franca (Foc a Ronda del Litoral)
+50,0,Via Augusta de P.Bonanova a Mitre
+50,38,Via Augusta (Ronda de Dalt a Passeig Bonanova)
+50,40,Via Augusta (Passeig Bonanova a Vergós)
+50,42,Via Augusta (Vergós a Mitre)
+51,0,Via Augusta de Mitre a Pl. Molina
+51,72,Via Augusta (Mitre a Muntaner)
+51,74,Via Augusta (Muntaner a Pl. Molina)
+52,0,Via Augusta de Pl. Molina a Mitre
+52,73,Via Augusta (Muntaner a Mitre)
+52,75,Via Augusta (Pl. Molina a Muntaner)
+53,0,Via Augusta de Mitre a P. Bonanova
+53,39,Via Augusta (Passeig Bonanova a Ronda de Dalt)
+53,41,Via Augusta (Vergós a Passeig Bonanova)
+53,43,Via Augusta (Mitre a Vergós)
+54,0,Av. Estatut de Ronda de Dalt a Túnel de la Rovira
+54,217,Av. Estatut de Catalunya (Ronda de Dalt a Av. Can Marcet)
+54,219,Av. Estatut de Catalunya (Av. Can Marcet a Lisboa)
+54,221,Rambla del Carmel (Lisboa a Túnel de la Rovira)
+55,0,Túnel de la Rovira de Rambla del Carmel a Ronda del Mig
+55,223,Túnel de la Rovira (Rambla del Carmel a Ronda Guinardó)
+56,0,Lepant de Ronda del Mig a Gran Via
+56,211,Lepant (Ronda Guinardó a Maria Claret)
+56,212,Lepant (Maria Claret a Aragó)
+56,213,Lepant (Aragó a Gran Via)
+57,0,Padilla de Gran Via a Ronda del Mig
+57,214,Padilla (Gran Via a Aragó)
+57,215,Padilla (Aragó a Maria Claret)
+57,216,Padilla (Maria Claret a Ronda Guinardó)
+58,0,Túnel de la Rovira de Ronda del Mig a Rambla del Carmel
+58,224,Túnel de la Rovira (Ronda Guinardó a Rambla del Carmel)
+59,0,Av. Estatut de Túnel de la Rovira a Ronda de Dalt
+59,218,Av. Estatut de Catalunya (Av. Can Marcet a Ronda de Dalt)
+59,220,Av. Estatut de Catalunya (Lisboa a Av. Can Marcet)
+59,222,Ciències (Túnel de la Rovira a Lisboa)
+60,0,Marina de Pl. dels Voluntaris a Diagonal
+60,207,Marina (Pl. Voluntaris a Av. Icària)
+60,208,Marina (Av. Icària a Av. Meridiana)
+60,209,Marina (Av. Meridiana a Gran Via)
+60,210,Marina (Gran Via a Diagonal)
+61,0,Marina de Gran Via a Pl. dels Voluntaris
+61,404,Marina (Meridiana a Av. Icària)
+61,405,Marina (Av. Icària a Pl. Voluntaris)
+61,422,Marina (Gran Via a Meridiana)
+62,0,Bac de Roda de Passeig de Garcia Fària a Gran Via
+62,315,Bac de Roda (Ronda Litoral a Pere IV)
+62,316,Bac de Roda (Pere IV a Gran Via)
+63,0,Bac de Roda / Felip II de Gran Via a Meridiana
+63,317,Bac de Roda (Gran Via a Clot)
+63,318,Felip II (Clot a Meridiana)
+64,0,Felip II de Meridiana a Ronda del Mig
+64,319,Felip II (Meridiana a Ramon Albó)
+65,0,Ronda de Dalt de Diagonal a Sant Gervasi
+65,513,Ronda de Dalt (Foix a Bellesguard)
+65,515,Ronda de Dalt (Carretera d'Esplugues a Foix)
+65,517,Ronda de Dalt (Diagonal a Carretera d'Esplugues)
+66,0,Ronda de Dalt de Sant Gervasi a Av. Estatut
+66,507,Ronda de Dalt (Av. Jordà a Av. Estatut de Catalunya)
+66,509,Ronda de Dalt (Pl. d'Alfons Comín a Av. Jordà)
+66,511,Ronda de Dalt (Bellesguard a Pl. Alfons Comín)
+67,0,Ronda de Dalt d'Av. Estatut a Nus de la Trinitat
+67,501,Ronda de Dalt (Via Júlia a Nus de la Trinitat)
+67,503,Ronda de Dalt (Pl. Karl Marx a Via Júlia)
+67,505,Ronda de Dalt (Av. Estatut de Catalunya a Pl. Karl Marx)
+68,0,Ronda de Dalt de Nus de la Trinitat a Av. Estatut
+68,502,Ronda de Dalt (Nus de la Trinitat a Via Júlia)
+68,504,Ronda de Dalt (Via Júlia a Pl. Karl Marx)
+68,506,Ronda de Dalt (Pl. Karl Marx a Av. Estatut de Catalunya)
+69,0,Ronda de Dalt d'Av. Estatut a Sant Gervasi
+69,508,Ronda de Dalt (Av. Estatut de Catalunya a Av. Jordà)
+69,510,Ronda de Dalt (Av. Jordà a Pl. d'Alfons Comín)
+69,512,Ronda de Dalt (Pl. Alfons Comín a Bellesguard)
+70,0,Ronda de Dalt de Sant Gervasi a Diagonal
+70,514,Ronda de Dalt (Bellesguard a Foix)
+70,516,Ronda de Dalt (Foix a Carretera d'Esplugues)
+70,518,Ronda de Dalt (Carretera d'Esplugues a Diagonal)
+71,0,Ronda Litoral de Nus de la Trinitat a Rambla de Prim
+71,528,Ronda del Litoral (Gran Via a Rambla de Prim)
+71,532,Ronda Litoral (Potosí a Gran Via)
+71,534,Ronda Litoral (Nus de la Trinitat a Potosí)
+72,0,Ronda Litoral de Rambla de Prim a Josep Carner
+72,522,Ronda del Litoral (Pl. dels Voluntaris a Miramar)
+72,524,Ronda del Litoral (Bac de Roda a Pl. dels Voluntaris)
+72,526,Ronda del Litoral (Rambla de Prim a Bac de Roda)
+73,0,Ronda Litoral de Josep Carner a Estació de Can Tunis
+73,520,Ronda del Litoral (Miramar a Passeig de la Zona Franca)
+73,530,Ronda Litoral (Passeig de la Zona Franca a Estació de Can Tunis)
+74,0,Ronda Litoral d'Estació de Can Tunis a Josep Carner
+74,519,Ronda del Litoral (Passeig de la Zona Franca a Miramar)
+74,529,Ronda Litoral (Estació de Can Tunis a Passeig de la Zona Franca)
+75,0,Ronda Litoral de Josep Carner a Rambla de Prim
+75,521,Ronda del Litoral (Miramar a Pl. dels Voluntaris)
+75,523,Ronda del Litoral (Pl. dels Voluntaris a Bac de Roda)
+75,525,Ronda del Litoral (Bac de Roda a Rambla de Prim)
+76,0,Ronda Litoral de Rambla de Prim a Nus de la Trinitat
+76,527,Ronda del Litoral (Rambla de Prim a Gran Via)
+76,531,Ronda Litoral (Gran Via a Potosí)
+76,533,Ronda Litoral (Potosí a Nus de la Trinitat)
+77,0,Aribau de Pl. Universitat a Via Augusta
+77,63,Aribau (Diagonal - Via Augusta)
+77,120,Aribau (Pl. Universitat a Aragó)
+77,121,Aribau (Aragó a Diagonal)
+78,0,Maria Claret de Meridiana a Passeig de Sant Joan
+78,251,Maria Claret (Av. Meridiana a Passeig de Maragall)
+78,418,Maria Claret (Passeig de Maragall a Lepant)
+78,419,Maria Claret (Lepant a Passeig de Sant Joan)
