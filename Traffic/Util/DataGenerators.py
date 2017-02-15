@@ -19,10 +19,9 @@ DataGenerators
 
 __author__ = 'bejar'
 
-from numpy.random import shuffle
 import numpy as np
-from Util.Constants import  dataset_path
 from keras.utils import np_utils
+from numpy.random import shuffle
 
 
 def list_days_generator(year, month, iday, fday):

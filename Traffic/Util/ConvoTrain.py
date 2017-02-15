@@ -19,17 +19,15 @@ ConvoTrain
 
 __author__ = 'bejar'
 
-
+import numpy as np
+from Traffic.Callback.DBLog import DBLog
+from Traffic.Util.DataGenerators import dayGenerator
+from Traffic.Private.DBConfig import mongoconnection
 from keras import backend as K
-
 from keras.optimizers import SGD, Adagrad, Adadelta, Adam
 from keras.utils import np_utils
-from sklearn.metrics import confusion_matrix, classification_report
-from Util.DBLog import DBLog
-from Util.DBConfig import mongoconnection
-from Util.DataGenerators import dayGenerator
 from numpy.random import shuffle
-import numpy as np
+from sklearn.metrics import confusion_matrix, classification_report
 
 __author__ = 'bejar'
 

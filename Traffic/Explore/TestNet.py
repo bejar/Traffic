@@ -18,17 +18,17 @@ TestNet
 
 """
 
-from Util.Constants import models_path, dataset_path, cameras_path
-from Util.ConvoTrain import load_generated_dataset
-from Util.DataGenerators import list_days_generator
-import numpy as np
-from keras.utils import np_utils
-from sklearn.metrics import confusion_matrix, classification_report
+import pickle
+
 import keras.models
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-import pickle
-
+import numpy as np
+from Traffic.Config.Constants import models_path, dataset_path, cameras_path
+from Util.ConvoTrain import load_generated_dataset
+from Util.DataGenerators import list_days_generator
+from keras.utils import np_utils
+from sklearn.metrics import confusion_matrix, classification_report
 
 __author__ = 'bejar'
 

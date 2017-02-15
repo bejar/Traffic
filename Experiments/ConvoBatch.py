@@ -21,18 +21,17 @@ ConvoBatch
 
 __author__ = 'bejar'
 
-from keras import backend as K
-
-from Models.SimpleModels import simple_model
-from Util.ConvoTrain import transweights, train_model_batch
-from Util.DataGenerators import list_days_generator
-from Util.ConvoTrain import load_dataset
-import keras.models
-from Util.Constants import models_path
-import json
 import argparse
+import json
+
+import keras.models
+from Traffic.Models.SimpleModels import simple_model
+from Traffic.Private.DBConfig import mongoconnection
+from Traffic.Util.ConvoTrain import load_dataset
+from Traffic.Util.ConvoTrain import transweights, train_model_batch
+from Traffic.Util.DataGenerators import list_days_generator
+from keras import backend as K
 from pymongo import MongoClient
-from Util.DBConfig import mongoconnection
 
 __author__ = 'bejar'
 

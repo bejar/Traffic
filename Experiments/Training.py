@@ -20,22 +20,20 @@ ConvoBatch
 
 __author__ = 'bejar'
 
-from keras import backend as K
-from Models.SimpleModels import simple_model
-from Util.ConvoTrain import load_dataset
-import keras.models
-import json
 import argparse
-from pymongo import MongoClient
-from Util.Dataset import Dataset
-from keras.optimizers import SGD, Adagrad, Adadelta, Adam
-from sklearn.metrics import confusion_matrix, classification_report
-from Util.DBLog import DBLog
-from Util.DBConfig import mongoconnection
-from Util.DataGenerators import dayGenerator
-from numpy.random import shuffle
-import numpy as np
+import json
 
+import keras.models
+import numpy as np
+from Traffic.Callback.DBLog import DBLog
+from Traffic.Data.Dataset import Dataset
+from Traffic.Models.SimpleModels import simple_model
+from Traffic.Private.DBConfig import mongoconnection
+from keras import backend as K
+from keras.optimizers import SGD, Adagrad, Adadelta, Adam
+from numpy.random import shuffle
+from pymongo import MongoClient
+from sklearn.metrics import confusion_matrix, classification_report
 
 __author__ = 'bejar'
 

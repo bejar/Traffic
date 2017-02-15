@@ -21,9 +21,10 @@ Dataset
 __author__ = 'bejar'
 
 import os.path
-from Util.Constants import process_path
+
 import h5py
 import numpy as np
+from Traffic.Config.Constants import process_path
 from keras.utils import np_utils
 from numpy.random import shuffle
 

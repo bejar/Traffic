@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Keras Training Status Page</title>
+
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Keras Pending Batch</h1>
+
+<br>
+
+<p>Net</p>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Host</th>
+        <th>Config</th>
+    </tr>
+    {% for net in data|sort %}
+    <tr>
+        <td> {{net}}</td>
+        <td>{{data[net]['host']}}</td>
+       <td>
+           <form action="/BConfig" method="post">
+               <button type="submit" name="config"  value={{net}}> Config</button>
+            </form>
+
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+</body>
+</html>

@@ -17,7 +17,8 @@ Logger
 """
 
 import logging
-from Util.Constants import results_path
+
+from Traffic.Config.Constants import results_path
 
 __author__ = 'bejar'
 
