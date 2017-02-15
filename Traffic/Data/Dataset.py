@@ -28,7 +28,6 @@ from Traffic.Config.Constants import process_path
 from keras.utils import np_utils
 from numpy.random import shuffle
 
-
 def name_days_file(ldays):
     """
     Generates a name file using the first and last day from the dataset

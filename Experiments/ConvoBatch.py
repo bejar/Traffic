@@ -32,25 +32,10 @@ from Traffic.Util.ConvoTrain import transweights, train_model_batch
 from Traffic.Util.DataGenerators import list_days_generator
 from keras import backend as K
 from pymongo import MongoClient
+from Traffic.Util.Misc import load_config_file, transweights
 
 __author__ = 'bejar'
 
-
-def load_config_file(nfile):
-    '''
-    Read the configuration from a json file
-
-    :param nfile:
-    :return:
-    '''
-    fp = open('./' + nfile + '.json', 'r')
-
-    s = ''
-
-    for l in fp:
-        s += l
-
-    return s
 
 
 if __name__ == '__main__':

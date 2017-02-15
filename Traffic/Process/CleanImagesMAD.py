@@ -19,7 +19,7 @@ CleanImages
 
 import filecmp
 import os
-from Utilities.Constants import cameras_path_MAD, data_path_MAD
+from Traffic.Config.Constants import cameras_path_MAD, data_path_MAD
 import glob
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -28,7 +28,7 @@ import csv
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    day = '20170213'
+    day = '20170214'
 
     lcameras = []
     with open(data_path_MAD + 'MAD_cameras.txt', 'r') as csvfile:
@@ -47,18 +47,6 @@ if __name__ == '__main__':
             if filecmp.cmp(lfiles[i], lfiles[i+1], shallow=False):
                 ldel.append(lfiles[i+1])
                 print('R=', lfiles[i+1])
-
-                # image1 = mpimg.imread(lfiles[i])
-                # image2 = mpimg.imread(lfiles[i+1])
-                # fig = plt.figure()
-                # fig.set_figwidth(60)
-                # fig.set_figheight(30)
-                # sp1 = fig.add_subplot(1,2,1)
-                # sp1.imshow(image1)
-                # sp1 = fig.add_subplot(1,2,2)
-                # sp1.imshow(image2)
-                # plt.show()
-                # plt.close()
         for f in ldel:
             print('Removing=', f)
             os.remove(f)

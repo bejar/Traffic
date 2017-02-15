@@ -34,48 +34,9 @@ from keras.optimizers import SGD, Adagrad, Adadelta, Adam
 from numpy.random import shuffle
 from pymongo import MongoClient
 from sklearn.metrics import confusion_matrix, classification_report
+from Traffic.Util.Misc import load_config_file,  detransweights
 
 __author__ = 'bejar'
-
-
-
-def load_config_file(nfile):
-    '''
-    Read the configuration from a json file
-
-    :param nfile:
-    :return:
-    '''
-    fp = open('./' + nfile + '.json', 'r')
-
-    s = ''
-
-    for l in fp:
-        s += l
-
-    return s
-
-def transweights(weights):
-    """
-    Transforms class weights format from json to python
-    :param weights:
-    :return:
-    """
-    wtrans = {}
-    for v in weights:
-        wtrans[str(v)] = weights[v]
-    return wtrans
-
-def detransweights(weights):
-    """
-    Transforms class weights format from python to json
-    :param weights:
-    :return:
-    """
-    wtrans = {}
-    for v in weights:
-        wtrans[int(v)] = weights[v]
-    return wtrans
 
 
 def train_model_batch(model, config, test, resume=None):

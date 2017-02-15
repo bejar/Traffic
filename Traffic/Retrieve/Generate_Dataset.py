@@ -27,31 +27,9 @@ from Traffic.Process.CamTram import CamTram
 import pickle
 import h5py
 from Traffic.Data.TrImage import TrImage
+from Traffic.Util.Misc import list_days_generator, name_days_file, dist_time
 
 __author__ = 'bejar'
-
-def list_days_generator(year, month, iday, fday):
-    """
-    Generates a list of days
-    :param year:
-    :param month:
-    :param iday:
-    :param fday:
-    :return:
-    """
-    ldays = []
-    for v in range(iday, fday+1):
-        ldays.append("%d%d%02d" % (year, month, v))
-    return ldays
-
-
-def name_days_file(ldays):
-    """
-    Generates a name file using the first and last day from the dataset
-    :param ldays:
-    :return:
-    """
-    return ldays[0] + '-' + ldays[-1]
 
 
 def info_dataset(path, ldaysTr, z_factor):
@@ -70,7 +48,6 @@ def info_dataset(path, ldaysTr, z_factor):
         print(day, Counter(data))
         y_train.extend(data)
     print('TOTAL=', Counter(list(y_train)), len(y_train))
-
 
 
 def get_day_images_data(day, cpatt=None):
@@ -112,18 +89,6 @@ def get_day_predictions(day):
     for f in sorted(ldir):
         ldata.append(DataTram(f))
     return ldata
-
-def dist_time(time1, time2):
-    """
-    distance between two hours
-
-    :param time1:
-    :param time2:
-    :return:
-    """
-    t1 = (time1 % 100) + (60 * ((time1 // 100) % 100))
-    t2 = (time2 % 100) + (60 * ((time2 // 100) % 100))
-    return t2 - t1
 
 
 def generate_classification_dataset_one(day, cpatt=None):
