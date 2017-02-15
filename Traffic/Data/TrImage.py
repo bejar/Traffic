@@ -91,7 +91,7 @@ class TrImage():
         plt.close()
 
 if __name__ == '__main__':
-    from Utilities.Constants import cameras_path
+    from Traffic.Util.Constants import cameras_path
     image = TrImage(cameras_path + '/20161101/201611011453-RondaLitoralZonaFranca.gif', z_factor=0.25, crop=(5,5,5,5))
     print image.data.shape
     image.show()

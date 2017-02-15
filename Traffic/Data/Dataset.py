@@ -146,12 +146,24 @@ class Dataset:
         return self.chunks, self.chunk_size
 
 if __name__ == '__main__':
-    d = Dataset(process_path, [[2016, 12, 1, 2]], 0.25, nclasses=5)
+    import matplotlib.pyplot as plt
+    d = Dataset(process_path, [[2016, 11, 1, 30]], 0.25, nclasses=5)
     d.open()
-    # chunks, _ = d.chunks()
+    chunks, _ = d.chunks()
     # for chunk in chunks:
     #     d.load_chunk(chunk, 256)
     #     print d.perm
-    d.in_memory()
-    print d.input_shape
+    # d.in_memory()
+    d.load_chunk(chunks[0], 128)
+
+    print (d.X_train[0].transpose((1,2,0))).shape
+
+    fig = plt.figure()
+    fig.set_figwidth(10)
+    fig.set_figheight(10)
+    sp1 = fig.add_subplot(1,1,1)
+    sp1.imshow(d.X_train[100].transpose((1,2,0)))
+    plt.show()
+    plt.close()
+
     d.close()

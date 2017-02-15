@@ -473,7 +473,7 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25):
 if __name__ == '__main__':
 
     # days = list_days_generator(2016, 11, 1, 30) + list_days_generator(2016, 12, 1, 3)
-    days = list_days_generator(2016, 11, 1, 5)
+    days = list_days_generator(2016, 11, 1, 30)
     z_factor = 0.25
 
     # Old day datafiles generation
