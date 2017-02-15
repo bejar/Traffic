@@ -41,18 +41,14 @@ def list_days_generator(year, month, iday, fday):
     return ldays
 
 
-def name_days_generator(year, month, iday, fday):
+def name_days_file(ldays):
     """
     Generates a string with the dates
 
-    :param year:
-    :param month:
-    :param iday:
-    :param fday:
+    :param ldays:
     :return:
     """
-    ldays = list_days_generator(year, month, iday, fday)
-    return "%s" % ldays[0] + "%s" % ldays[-1]
+    return ldays[0] + '-' + ldays[-1]
 
 def load_days(datapath, days, z_factor, reb=False):
     """
@@ -75,10 +71,13 @@ def load_days(datapath, days, z_factor, reb=False):
     return data, labels
 
 
-def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'):
+def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
     """
     Loops through the day files yielding a batch of examples
-    Files are loaded in groups and batches are randomized
+    Files are loaded in groups to save loading time and batches are randomized
+
+    NOTE: Something weird is happening with training with generators so this is not used currently
+
     :param days:
     :return:
     """
@@ -97,11 +96,6 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'
 
             limit = (data.shape[0]//batchsize) - 1
             X_train = data
-            # Data generated in Theano order
-            # if imgord == 'th':
-            #     X_train = data.transpose((0,3,1,2))
-            # else:
-            #     X_train = data
 
             y_trainO = labels
             y_train = np_utils.to_categorical(y_trainO, nclasses)
@@ -115,8 +109,6 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups, imgord='th'
                         gperm.append(perm[i + j])
                 lperm.append(gperm)
 
-            # for i in range(limit):
-            #     yield X_train[i*batchsize:(i+1)*batchsize], y_train[i*batchsize:(i+1)*batchsize]
 
             for i in range(limit):
                 yield X_train[lperm[i]], y_train[lperm[i]]
@@ -135,11 +127,6 @@ def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord
     """
     data, labels = load_days(datapath, [day], z_factor, reb=reb)
 
-    # Data generated in Theano order
-    # if imgord == 'th':
-    #     X_train = data.transpose((0,3,1,2))
-    # else:
-    #     X_train = data
 
     X_train = data
     y_trainO = labels

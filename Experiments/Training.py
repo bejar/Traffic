@@ -119,7 +119,7 @@ def train_model_batch(model, config, test, resume=None):
     chunks, _ = train.chunks()
 
     # Train Epochs
-    logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
+    logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
 
     for epoch in range(iepoch, config['train']['epochs']):
 

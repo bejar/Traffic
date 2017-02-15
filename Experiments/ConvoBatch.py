@@ -5,6 +5,8 @@ ConvoBatch
 *************
 
   Trains a model according to a configuration file (--batch) or the harcoded config object
+
+  It uses the files for each individual day
   Model is trained using the train_on_batch method from Keras model, so only a day is loaded in memory at a time
 
 :Description: ConvoBatch
