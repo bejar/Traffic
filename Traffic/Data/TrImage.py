@@ -25,30 +25,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 import PIL
 from PIL import Image
+import os
 
 __author__ = 'bejar'
 
 
 class TrImage():
 
-    def __init__(self, pimage, z_factor, crop=(0,0,0,0)):
+    def __init__(self):
         """
         Loads an image, checks if it is not the "service not available" image, applies the image crop and computes the soomed image
 
         :param pimage:
         """
+        self.bcnnoserv = np.asarray(Image.open(os.getcwd()+'/../Data/BCNnoservice.gif'))
+        self.correct = False
+        self.data = None
+        self.trans = False
 
-        img = Image.open(pimage)
-        img = img.crop((crop[0], crop[2], img.size[0]-crop[1], img.size[1]-crop[3]))
+    def load_image(self, pimage):
+        """
+        Loads an image from a file
+        :param pimage:
+        :return:
+        """
+        self.data = Image.open(pimage)
+        self.trans = False
 
-        if np.sum(np.asarray(img) == 254) < 100000:  # is not the "Service not available" image (only works for Barcelona)
-            img = img.resize((int(z_factor * img.size[0]), int(z_factor * img.size[1])), PIL.Image.ANTIALIAS).convert('RGB')
-            self.data = np.asarray(img)/255.0  # Normalize to [0-1] range
-        else:
-            self.correct = False
-            self.data = None
-
-    def correct(self):
+    def is_correct(self):
         """
         Returns of the image is correct or has enough quality
 
@@ -58,14 +62,40 @@ class TrImage():
         """
         # Do image checking
 
+        if self.data is not None and not self.trans:
+            self.correct = True
+            self.correct = self.correct and not np.all(np.asarray(self.data) == self.bcnnoserv) # Checks if it is no service image for BCN
+        else:
+            raise Exception('Image already transformed')
         return self.correct
 
-    def getData(self):
+    def transform_image(self, z_factor, crop=(0,0,0,0)):
         """
-        Returns the image as a
+        Performs the transformation of the image
+
+        The idea is to check if the image is correct before applying the transformation
+
+        :param z_factor:
+        :param crop:
         :return:
         """
+        if self.data is not None and not self.trans:
+            img = self.data.crop((crop[0], crop[2], self.data.size[0]-crop[1], self.data.size[1]-crop[3]))
+            img = img.resize((int(z_factor * img.size[0]), int(z_factor * img.size[1])), PIL.Image.ANTIALIAS).convert('RGB')
+            self.data = np.asarray(img)/255.0  # Normalize to [0-1] range
+        else:
+            raise Exception('Image already transformed')
         return self.data
+
+    def get_data(self):
+        """
+        Returns the data from the image, if it is not transformed yet
+        :return:
+        """
+        if self.data is not None and self.trans:
+            return self.data
+        else:
+            raise Exception('Image not yet transformed')
 
     def dataAugmentation(self):
         """
@@ -74,6 +104,10 @@ class TrImage():
         Possibilities: horizontal flip, (zoom in + crop) parts of the image
         :return:
         """
+        if self.data is not None and self.trans:
+            pass
+        else:
+            raise Exception('Image not yet transformed')
 
         return None
 
@@ -91,7 +125,19 @@ class TrImage():
         plt.close()
 
 if __name__ == '__main__':
-    from Traffic.Util.Constants import cameras_path
-    image = TrImage(cameras_path + '/20161101/201611011453-RondaLitoralZonaFranca.gif', z_factor=0.25, crop=(5,5,5,5))
-    print image.data.shape
+    from Traffic.Config.Constants import cameras_path
+    image = TrImage()
+    image.load_image(cameras_path + '/20161101/201611011453-RondaLitoralZonaFranca.gif')
     image.show()
+    if image.is_correct():
+        im = image.transform_image(z_factor=0.5, crop=(5,5,5,5))
+        print im.shape
+        image.show()
+    image.load_image(cameras_path + '/20161101/201611010004-PlPauVila.gif')
+    image.show()
+    if image.is_correct():
+        im = image.transform_image(z_factor=0.5, crop=(5,5,5,5))
+        print im.shape
+        image.show()
+    else:
+        print('Incorrect Image')

@@ -29,7 +29,7 @@ class CamTram:
 
         """
         self.ct = {}
-        f = open('./CameraTram.txt', 'r')
+        f = open('../Process/CameraTram.txt', 'r')
 
         for line in f:
             cam, tram1, tram2, name1, name2 = line.split(',')

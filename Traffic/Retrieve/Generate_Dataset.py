@@ -45,7 +45,7 @@ def info_dataset(path, ldaysTr, z_factor):
     fname = 'labels'
     for day in ldaysTr:
         data = np.load(path + fname + '-D%s-Z%0.2f.npy' % (day, z_factor))
-        print(day, Counter(data))
+        print(day, Counter(data), data.shape[0])
         y_train.extend(data)
     print('TOTAL=', Counter(list(y_train)), len(y_train))
 
@@ -205,7 +205,7 @@ def generate_dataset(ldaysTr, z_factor, method='one', cpatt=None):
     ldata = []
     llabels = []
     limages = []
-
+    image = TrImage()
     for day in ldaysTr:
         if method == 'one':
             dataset = generate_classification_dataset_one(day, cpatt=cpatt)
@@ -215,14 +215,11 @@ def generate_dataset(ldaysTr, z_factor, method='one', cpatt=None):
             for cam, l, _, _ in dataset[t]:
                 if l != 0 and l != 6:
 
-                    image = TrImage(cameras_path + day + '/' + str(t) + '-' + cam + '.gif', z_factor=z_factor,
-                                    crop=(5, 5, 5, 5))
-                    if image.correct():
-                        ldata.append(image.getData())
+                    image.load_image(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                    if image.is_correct():
+                        ldata.append(image.transform_image(z_factor=z_factor, crop=(5, 5, 5, 5)))
                         llabels.append(l)
                         limages.append(day + '/' + str(t) + '-' + cam)
-
-
 
     print(Counter(llabels))
 
@@ -256,7 +253,7 @@ def generate_data_day(day, z_factor, method='two', mxdelay=60, log=False):
 
                 image = TrImage(cameras_path + day + '/' + str(t) + '-' + cam + '.gif', z_factor=z_factor, crop=(5,5,5,5))
                 if image.correct():
-                    ldata.append(image.getData())
+                    ldata.append(image.get_data())
                     llabels.append(l)
                     limages.append(day + '/' + str(t) + '-' + cam)
 
@@ -330,14 +327,15 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     llabels = []
     limages = []
     dataset = generate_image_labels(day, mxdelay=mxdelay, onlyfuture=onlyfuture)
+    image = TrImage()
     for t in dataset:
         for cam, l in dataset[t]:
             if l != 0 and l != 6:
                 if log:
                     print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
-                image = TrImage(cameras_path + day + '/' + str(t) + '-' + cam + '.gif', z_factor=z_factor, crop=(5,5,5,5))
-                if image.correct():
-                    ldata.append(image.getData())
+                image.load_image(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
+                if image.is_correct():
+                    ldata.append(image.transform_image(z_factor=z_factor, crop=(5,5,5,5)))
                     llabels.append(l)
                     limages.append(day + '/' + str(t) + '-' + cam)
 
@@ -465,7 +463,7 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25):
         sfile.require_dataset(namechunk + '/' + 'labels', y_train.shape, dtype='i',
                               data=y_train, compression='gzip')
 
-        sfile.require_dataset(namechunk + '/' + 'imgpath', (len(imgpath),1), dtype='S100',
+        sfile.require_dataset(namechunk + '/' + 'imgpath', (len(imgpath), 1), dtype='S100',
                               data=imgpath, compression='gzip')
         sfile.flush()
     sfile.close()
@@ -474,20 +472,18 @@ if __name__ == '__main__':
 
     # days = list_days_generator(2016, 11, 1, 30) + list_days_generator(2016, 12, 1, 3)
     days = list_days_generator(2016, 11, 1, 30)
-    z_factor = 0.25
+    z_factor = 0.35
 
     # Old day datafiles generation
     # for day in days:
     #     generate_data_day(day, z_factor, method='two', mxdelay=60)
 
-
     # Uncomment to view information of day datafiles (examples per class)
     # info_dataset(process_path, days, z_factor)
 
-
     # Uncomment to generate files for a list of days
-    # for day in days:
-    #     generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=15, onlyfuture=False, imgordering='th')
+    for day in days:
+        generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=15, onlyfuture=False, imgordering='th')
 
     # Uncoment to generate a HDF5 file for a list of days
     generate_training_dataset(process_path, days, chunk= 1024, z_factor=z_factor)

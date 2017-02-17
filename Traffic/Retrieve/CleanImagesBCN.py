@@ -27,7 +27,7 @@ import glob
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    day = '20170214'
+    day = '20170216'
     for cam in Cameras:
 
         ldir = glob.glob(cameras_path + day + '/*%s.gif'%cam)
