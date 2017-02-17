@@ -266,7 +266,7 @@ def graphic():
         plot_url = base64.b64encode(img.getvalue())
         plt.close()
 
-        return render_template('Graphview.html', plot_url=plot_url)
+        return render_template('Graphview.html', plot_url=plot_url, acc=vals['acc'][-1], vacc=vals['val_acc'][-1], id=payload, ep=len(vals['acc']))
     else:
         return ""
 

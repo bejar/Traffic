@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <title>Keras Training Graph</title>
 
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
 <body>
+<h2>Keras Training Graph </h2>
 
+<br>
+<table>
+    <tr>   <td>Experiment</td><td>{{id}}</td> </tr>
+    <tr>   <td>Epoch</td><td>{{ep}}</td></tr>
+    <tr>   <td>Tr Acc</td><td>{{acc}}</td></tr>
+    <tr>   <td>Val Acc</td><td>{{vacc}}</td></tr>
+</table>
 
-<p>Keras Training Graph </p>
+<br>
 <img src="data:image/png;base64, {{ plot_url }}">
 
 </body>
