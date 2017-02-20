@@ -143,4 +143,4 @@ def dist_time(time1, time2):
 
 
 if __name__ == '__main__':
-    print list_range_days_generator('20161101', '20170205')
+    print (list_range_days_generator('20161101', '20170205'))
