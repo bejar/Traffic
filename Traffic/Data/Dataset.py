@@ -45,7 +45,7 @@ def name_days_file(ldays):
 
 class Dataset:
 
-    def __init__(self, datapath, ldays, zfactor, nclasses=None):
+    def __init__(self, datapath, ldays, zfactor, imgord='th', nclasses=None):
         """
         Checks if the file exists
 
@@ -55,7 +55,7 @@ class Dataset:
         :param nclases:
         """
 
-        self.fname =  datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f' % zfactor + '.hdf5'
+        self.fname =  datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f-%s' % (zfactor, imgord) + '.hdf5'
 
         if not os.path.isfile(self.fname):
             raise Exception('Data file does not exists')

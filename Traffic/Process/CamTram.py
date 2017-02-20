@@ -19,6 +19,7 @@ CamTram
 
 __author__ = 'bejar'
 
+from Traffic.Config.Constants import info_path
 
 class CamTram:
 
@@ -29,7 +30,7 @@ class CamTram:
 
         """
         self.ct = {}
-        f = open('../Process/CameraTram.txt', 'r')
+        f = open(info_path + '/CameraTram.txt', 'r')
 
         for line in f:
             cam, tram1, tram2, name1, name2 = line.split(',')

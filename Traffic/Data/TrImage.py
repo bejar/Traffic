@@ -6,9 +6,18 @@ TrImage
 
 :Description: TrImage
 
-    Class to read and process Traffic Images
+    Class to read and process Traffic Images.
+    For now only the images from Barcelona are considered for checking no service image
 
-    For now only the images from Barcelona are considered
+    The process is always:
+
+    Create the object once
+
+    for each image
+        load the image
+        check if it is correct
+        transform the image crop+zoom (the object returns the data)
+
 
 :Authors: bejar
     
@@ -25,7 +34,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import PIL
 from PIL import Image
-import os
+from Traffic.Config.Constants import info_path
 
 __author__ = 'bejar'
 
@@ -34,11 +43,12 @@ class TrImage():
 
     def __init__(self):
         """
-        Loads an image, checks if it is not the "service not available" image, applies the image crop and computes the soomed image
+        Object to process camera images.
+        It loads no services images
 
         :param pimage:
         """
-        self.bcnnoserv = np.asarray(Image.open(os.getcwd()+'/../Data/BCNnoservice.gif'))
+        self.bcnnoserv = np.asarray(Image.open(info_path + 'BCNnoservice.gif'))
         self.correct = False
         self.data = None
         self.trans = False
@@ -64,7 +74,8 @@ class TrImage():
 
         if self.data is not None and not self.trans:
             self.correct = True
-            self.correct = self.correct and not np.all(np.asarray(self.data) == self.bcnnoserv) # Checks if it is no service image for BCN
+            # Checks if it is no service image for BCN
+            self.correct = self.correct and not np.all(np.asarray(self.data) == self.bcnnoserv)
         else:
             raise Exception('Image already transformed')
         return self.correct
@@ -97,7 +108,7 @@ class TrImage():
         else:
             raise Exception('Image not yet transformed')
 
-    def dataAugmentation(self):
+    def data_augmentation(self):
         """
         Generates variarions of the original image, now does nothing
 

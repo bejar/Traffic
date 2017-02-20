@@ -21,7 +21,7 @@ import glob
 from collections import Counter
 import numpy as np
 from Traffic.Config.Cameras import Cameras_ok
-from Traffic.Config.Constants import cameras_path, data_path, dataset_path, process_path,  status_path
+from Traffic.Config.Constants import cameras_path, dataset_path, process_path,  status_path
 from Traffic.Data.DataTram import DataTram
 from Traffic.Process.CamTram import CamTram
 import pickle
@@ -76,6 +76,7 @@ def get_day_images_data(day, cpatt=None):
                 camdic[int(time)] = [place]
 
     return camdic
+
 
 def get_day_predictions(day):
     """
@@ -342,18 +343,16 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     X_train = np.array(ldata)
     if imgordering == 'th':
         X_train = X_train.transpose((0,3,1,2)) # Theano image ordering
-    print(X_train.shape)
 
     llabels = [i - 1 for i in llabels]  # change labels from 1-5 to 0-4
-    print(Counter(llabels))
-    np.save(path + 'data-D%s-Z%0.2f.npy' % (day, z_factor), X_train)
+    np.save(path + 'data-D%s-Z%0.2f-%s.npy' % (day, z_factor, imgordering), X_train)
     np.save(path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor), np.array(llabels))
     output = open(path + 'images-D%s-Z%0.2f.pkl' % (day, z_factor), 'wb')
     pickle.dump(limages, output)
     output.close()
 
 
-def load_generated_day(datapath, day, z_factor):
+def load_generated_day(datapath, day, z_factor, imgordering='th'):
     """
     Load the dataset for a given day returns a data matrix, a list of labels an a list
     of the names of the files of the examples
@@ -364,7 +363,7 @@ def load_generated_day(datapath, day, z_factor):
     :return:
     """
 
-    X_train = np.load(datapath + 'data-D%s-Z%0.2f.npy' % (day, z_factor))
+    X_train = np.load(datapath + 'data-D%s-Z%0.2f-%s.npy' % (day, z_factor, imgordering))
     y_train = np.load(datapath + 'labels-D%s-Z%0.2f.npy' % (day, z_factor))
     output = open(datapath + 'images-D%s-Z%0.2f.pkl' % (day, z_factor), 'rb')
     img_path = pickle.load(output)
@@ -409,7 +408,7 @@ def chunkify(lchunks, size):
     return lcut
 
 
-def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25):
+def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th'):
     """
     Generates an hdf5 file for a list of days with blocks of data for training
     It need the files for each day, the data is grouped and chunked in same sized
@@ -430,7 +429,7 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25):
     lsave = chunkify(nlabels, chunk)
 
     nf = name_days_file(ldays)
-    sfile = h5py.File(datapath + '/Data-%s-Z%0.2f.hdf5'% (nf, z_factor), 'w')
+    sfile = h5py.File(datapath + '/Data-%s-Z%0.2f-%s.hdf5'% (nf, z_factor, imgordering), 'w')
 
     prev = {}
     for nchunk, save in enumerate(lsave):
@@ -486,5 +485,5 @@ if __name__ == '__main__':
         generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=15, onlyfuture=False, imgordering='th')
 
     # Uncoment to generate a HDF5 file for a list of days
-    generate_training_dataset(process_path, days, chunk= 1024, z_factor=z_factor)
+    generate_training_dataset(process_path, days, chunk= 1024, z_factor=z_factor, imgordering='th')
 

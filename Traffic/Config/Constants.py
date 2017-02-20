@@ -27,7 +27,7 @@ results_path = '/home/bejar/storage/Data/Traffic/Results'
 dataset_path = '/home/bejar/storage/Data/Traffic/Datasets/'
 process_path = '/home/bejar/storage/Data/Traffic/Process/'
 models_path = '/home/bejar/storage/Data/Traffic/Models/'
-
+info_path = '/home/bejar/storage/Data/Traffic/Info/'  # Files used for processing the data
 
 
 # Madrid Data

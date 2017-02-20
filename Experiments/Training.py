@@ -73,7 +73,7 @@ def train_model_batch(model, config, test, resume=None):
     classweight = detransweights(config['train']['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
 
-    train = Dataset(config['datapath'], config['traindata'], config['zfactor'], nclasses=test.nclasses)
+    train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'], nclasses=test.nclasses)
     train.open()
     chunks, _ = train.chunks()
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     # Only the test set in memory, the training is loaded in batches
     testdays = []
-    test = Dataset(config['datapath'], config['testdata'], config['zfactor'])
+    test = Dataset(config['datapath'], config['testdata'], config['zfactor'], imgord=config['imgord'])
     test.open()
     test.in_memory()
 

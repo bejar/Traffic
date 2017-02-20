@@ -24,11 +24,17 @@ import glob
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import csv
+import argparse
 
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    day = '20170214'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--day', default=None, help='Day to clean')
+    args = parser.parse_args()
+
+    # day = '20170216'
+    day = args.day
 
     lcameras = []
     with open(data_path_MAD + 'MAD_cameras.txt', 'r') as csvfile:
