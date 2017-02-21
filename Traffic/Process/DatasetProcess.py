@@ -191,6 +191,7 @@ def generate_classification_dataset_two(day, cpatt=None, mxdelay=60):
 
     return assoc
 
+
 def generate_dataset(ldaysTr, z_factor, method='one', cpatt=None):
     """
     Generates a training and test datasets from the days in the parameters
