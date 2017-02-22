@@ -29,6 +29,7 @@ from keras.utils.visualize_util import model_to_dot
 from pymongo.errors import ConnectionFailure
 import json
 import numpy as np
+from numpy.random import randint
 
 class DBLog(Callback):
     """
@@ -42,7 +43,7 @@ class DBLog(Callback):
         self.config = config
 
         if resume is None:
-            self.id = int(time.time())
+            self.id = int(time.time()) + randint(0, 500)
             svgmodel = model_to_dot(model, show_shapes=True).create(prog='dot', format='svg')
             self.backup = {'_id': self.id,
                         'host': socket.gethostname().split('.')[0],

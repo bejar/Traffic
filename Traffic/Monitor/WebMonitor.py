@@ -25,15 +25,18 @@ import StringIO
 
 import bokeh.plotting as plt
 
-import  matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
 import base64
 import seaborn as sns
 
 from Traffic.Private.DBConfig import mongoconnection
 import pprint
 import time
-import matplotlib
-matplotlib.use('Agg')
+
 
 __author__ = 'bejar'
 
@@ -235,7 +238,8 @@ def graphic():
     :return:
     """
 
-    lstyles = ['-', '-', ':', ':'] *3
+    lstyles = ['-', '-', '-', '-'] *3
+    lcolors = ['r', 'g', 'b', 'y'] *3
     payload = request.form['graph']
 
     client = MongoClient(mongoconnection.server)
@@ -249,15 +253,17 @@ def graphic():
 
         img = StringIO.StringIO()
 
-        fig = plt.figure(figsize=(5,4),dpi=100)
+        fig = plt.figure(figsize=(10,8),dpi=200)
         axes = fig.add_subplot(1,1,1)
 
-        for v,lstyle in zip(sorted(vals), lstyles):
-            axes.plot(range(len(vals[v])),vals[v],lstyle, label=v)
+        for v, color, style in zip(sorted(vals), lcolors, lstyles):
+            axes.plot(range(len(vals[v])),vals[v], color + style, label=v)
 
         axes.set_xlabel('epoch')
         axes.set_ylabel('acc/loss')
         axes.set_title("Training/Test")
+        axes.yaxis.set_major_locator(ticker.MultipleLocator(0.1))
+        axes.xaxis.set_major_locator(ticker.MultipleLocator(25))
 
         plt.legend()
         plt.savefig(img, format='png')
