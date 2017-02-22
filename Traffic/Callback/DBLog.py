@@ -43,7 +43,7 @@ class DBLog(Callback):
         self.config = config
 
         if resume is None:
-            self.id = int(time.time()) + randint(0, 500)
+            self.id = int(time.time()) + randint(0, 50)
             svgmodel = model_to_dot(model, show_shapes=True).create(prog='dot', format='svg')
             self.backup = {'_id': self.id,
                         'host': socket.gethostname().split('.')[0],

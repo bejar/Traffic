@@ -32,7 +32,7 @@ import matplotlib.ticker as ticker
 
 import base64
 import seaborn as sns
-
+import numpy as np
 from Traffic.Private.DBConfig import mongoconnection
 import pprint
 import time
@@ -73,7 +73,7 @@ def info():
             tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S')) 
             
             tepoch = ((tmupd-tminit)/ (len(v['acc']) - epochdiscount))
-            ep = v['config']['train']['epochs'] - len(v['acc'])
+            ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
             id = int(tmupd+(tepoch*ep))
 
             # id is the approximated end time in seconds, so the table will be sorted that way

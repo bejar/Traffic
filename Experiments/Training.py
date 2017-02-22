@@ -39,6 +39,65 @@ from Traffic.Util.Misc import load_config_file,  detransweights
 __author__ = 'bejar'
 
 
+def train_model_batch_lrate_schedule(model, config, test):
+    """
+    Trains the model when there is a schedule of learning rates
+
+    :param model:
+    :param config:
+    :return:
+    """
+
+    dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
+    classweight = detransweights(config['train']['classweight'])
+    train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'],
+                    nclasses=test.nclasses)
+    train.open()
+    chunks, _ = train.chunks()
+
+    # For now only SDG
+    for lrate, nepochs in zip(config['optimizer']['params']['lrate'], config['train']['epochs']):
+        params = config['optimizer']['params']
+        optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=params['decay'],
+                        nesterov=params['nesterov'])
+
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+
+        # Train Epochs
+        logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
+
+        for epoch in range(nepochs):
+
+            shuffle(chunks)
+
+            # Train Batches
+            lloss = []
+            lacc = []
+            for chunk in chunks:
+                train.load_chunk(chunk, config['train']['batchsize'])
+
+                for p in train.perm:
+                    loss, acc = model.train_on_batch(train.X_train[p], train.y_train[p], class_weight=classweight)
+                    lloss.append(loss)
+                    lacc.append(acc)
+
+            logs['loss'] = float(np.mean(lloss))
+            logs['acc'] = float(np.mean(lacc))
+
+            logs['val_loss'], logs['val_acc'] = model.evaluate(test.X_train, test.y_train, verbose=0)
+
+            dblog.on_epoch_end(epoch, logs=logs)
+
+            if config['savepath']:
+                model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
+
+    scores = model.evaluate(test.X_train, test.y_train, verbose=0)
+    dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
+    y_pred = model.predict_classes(test.X_train, verbose=0)
+    dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred), classification_report(test.y_labels, y_pred))
+    train.close()
+
+
 def train_model_batch(model, config, test, resume=None):
     """
     Trains the model using Keras train batch method
@@ -49,6 +108,8 @@ def train_model_batch(model, config, test, resume=None):
     :param test_labels:
     :return:
     """
+
+
     if config['optimizer']['method'] == 'adagrad':
         optimizer = Adagrad()
     elif config['optimizer']['method'] == 'adadelta':
@@ -62,14 +123,14 @@ def train_model_batch(model, config, test, resume=None):
                             nesterov=params['nesterov'])
             iepoch = 0
         else: # Resume training
-            lrate = params['lrate'] - ((params['lrate'] / config['train']['epochs']) * params['epochs_trained'])
+            nlrate = params['lrate'] - ((params['lrate'] / config['train']['epochs']) * params['epochs_trained'])
 
-            optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=params['decay'],
+            optimizer = SGD(lr=nlrate, momentum=params['momentum'], decay=params['decay'],
                             nesterov=params['nesterov'])
             iepoch = config['train']['epochs_trained']
 
-    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     classweight = detransweights(config['train']['classweight'])
     dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
 
@@ -174,5 +235,8 @@ if __name__ == '__main__':
     else:  # New model
         model = simple_model(config)
 
-    train_model_batch(model, config, test, resume=resume)
+    if type(config['optimizer']['params']['lrate']) != list:
+        train_model_batch(model, config, test, resume=resume)
+    else:
+        train_model_batch_lrate_schedule(model, config, test)
     test.close()
