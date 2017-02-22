@@ -33,6 +33,7 @@ if __name__ == '__main__':
     parser.add_argument('--delay', default='15', help='Time Delay')
     parser.add_argument('--idate', default='20161101', help='First day')
     parser.add_argument('--fdate', default='20161130', help='Final day')
+    parser.add_argument('--augmentation', default=False, help='Use data augmentation')
 
     args = parser.parse_args()
 
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     print
     print 'Generating days ...'
     for day in days:
-        generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=mxdelay, onlyfuture=False, imgordering=imgord)
+        generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=mxdelay, onlyfuture=False, imgordering=imgord, augmentation=args.augmentation)
 
     print
     print 'Days info ...'

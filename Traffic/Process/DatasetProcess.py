@@ -319,7 +319,7 @@ def generate_image_labels(day, mxdelay=30, onlyfuture=True):
     return assoc
 
 
-def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=True, log=False, imgordering='th'):
+def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=True, log=False, imgordering='th', augmentation=False):
     """
     Generates a raw dataset for a day with a zoom factor (data and labels)
     :param z_factor:
@@ -340,6 +340,12 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
                     ldata.append(image.transform_image(z_factor=z_factor, crop=(5,5,5,5)))
                     llabels.append(l)
                     limages.append(day + '/' + str(t) + '-' + cam)
+                    if augmentation:
+                        aug = image.data_augmentation()
+                        for im in aug:
+                            ldata.append(im)
+                            llabels.append(l)
+                            limages.append(day + '/' + str(t) + '-' + cam)
 
     X_train = np.array(ldata)
     if imgordering == 'th':
