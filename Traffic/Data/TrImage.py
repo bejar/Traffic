@@ -116,11 +116,12 @@ class TrImage():
         :return:
         """
         if self.data is not None and self.trans:
+            flipped = np.fliplr(self.data)
             pass
         else:
             raise Exception('Image not yet transformed')
 
-        return None
+        return [flipped]
 
     def show(self):
         """
