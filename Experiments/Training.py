@@ -57,6 +57,7 @@ def train_model_batch_lrate_schedule(model, config, test):
 
     # For now only SDG
     for lrate, nepochs in zip(config['optimizer']['params']['lrate'], config['train']['epochs']):
+        print(lrate, nepochs)
         params = config['optimizer']['params']
         optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=params['decay'],
                         nesterov=params['nesterov'])

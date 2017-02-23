@@ -62,5 +62,5 @@ if __name__ == '__main__':
 
     print
     print 'Generating HDF5 file ...'
-    generate_training_dataset(process_path, days, chunk=chunk, z_factor=z_factor)
+    generate_training_dataset(process_path, days, chunk=chunk, z_factor=z_factor, imgordering=imgord)
 
