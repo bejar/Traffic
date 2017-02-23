@@ -32,7 +32,7 @@ from Traffic.Util.Misc import list_days_generator, name_days_file, dist_time
 __author__ = 'bejar'
 
 
-def info_dataset(path, ldaysTr, z_factor):
+def info_dataset(path, ldaysTr, z_factor, imgordering='th'):
     """
     Prints counts of the labels of the dataset for a list of days
 
@@ -44,8 +44,9 @@ def info_dataset(path, ldaysTr, z_factor):
     y_train = []
     fname = 'labels'
     for day in ldaysTr:
-        data = np.load(path + fname + '-D%s-Z%0.2f.npy' % (day, z_factor))
-        print(day, Counter(data), data.shape[0])
+        data = np.load(path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor))
+        X = np.load(path + 'data-D%s-Z%0.2f-%s.npy' % (day, z_factor, imgordering))
+        print(day, Counter(data), data.shape[0], X.shape)
         y_train.extend(data)
     print('TOTAL=', Counter(list(y_train)), len(y_train))
 
@@ -328,6 +329,7 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     ldata = []
     llabels = []
     limages = []
+
     dataset = generate_image_labels(day, mxdelay=mxdelay, onlyfuture=onlyfuture)
     image = TrImage()
     for t in dataset:
@@ -350,7 +352,6 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     X_train = np.array(ldata)
     if imgordering == 'th':
         X_train = X_train.transpose((0,3,1,2)) # Theano image ordering
-        print('Theano')
 
     llabels = [i - 1 for i in llabels]  # change labels from 1-5 to 0-4
     np.save(path + 'data-D%s-Z%0.2f-%s.npy' % (day, z_factor, imgordering), X_train)
@@ -443,7 +444,7 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
     for nchunk, save in enumerate(lsave):
         curr = {}
         for nday, nex in save:
-            curr[ldays[nday]] = [load_generated_day(datapath, ldays[nday], z_factor), nex, 0]
+            curr[ldays[nday]] = [load_generated_day(datapath, ldays[nday], z_factor, imgordering), nex, 0]
             if ldays[nday] in prev:
                 curr[ldays[nday]][2] += prev[ldays[nday]][1]
 
@@ -478,20 +479,20 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
 if __name__ == '__main__':
 
     # days = list_days_generator(2016, 11, 1, 30) + list_days_generator(2016, 12, 1, 3)
-    days = list_days_generator(2016, 11, 1, 30)
-    z_factor = 0.35
+    days = list_days_generator(2016, 12, 1, 2)
+    z_factor = 0.25
 
     # Old day datafiles generation
     # for day in days:
     #     generate_data_day(day, z_factor, method='two', mxdelay=60)
 
     # Uncomment to view information of day datafiles (examples per class)
-    # info_dataset(process_path, days, z_factor)
+    info_dataset(process_path, days, z_factor, imgordering='tf')
 
     # Uncomment to generate files for a list of days
-    for day in days:
-        generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=15, onlyfuture=False, imgordering='th')
+    # for day in days:
+    #     generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=15, onlyfuture=False, imgordering='th')
 
     # Uncoment to generate a HDF5 file for a list of days
-    generate_training_dataset(process_path, days, chunk= 1024, z_factor=z_factor, imgordering='th')
+    # generate_training_dataset(process_path, days, chunk= 1024, z_factor=z_factor, imgordering='th')
 

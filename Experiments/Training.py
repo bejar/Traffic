@@ -184,7 +184,6 @@ if __name__ == '__main__':
     sconfig = load_config_file(args.config)
     config = json.loads(sconfig)
 
-    print config['imgord']
     K.set_image_dim_ordering(config['imgord'])
 
     # Only the test set in memory, the training is loaded in batches
