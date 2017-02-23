@@ -57,7 +57,6 @@ def train_model_batch_lrate_schedule(model, config, test):
 
     # For now only SDG
     for lrate, nepochs in zip(config['optimizer']['params']['lrate'], config['train']['epochs']):
-        print(lrate, nepochs)
         params = config['optimizer']['params']
         optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=params['decay'],
                         nesterov=params['nesterov'])
@@ -185,6 +184,7 @@ if __name__ == '__main__':
     sconfig = load_config_file(args.config)
     config = json.loads(sconfig)
 
+    print config['imgord']
     K.set_image_dim_ordering(config['imgord'])
 
     # Only the test set in memory, the training is loaded in batches

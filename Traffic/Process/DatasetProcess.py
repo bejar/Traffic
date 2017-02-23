@@ -350,6 +350,7 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     X_train = np.array(ldata)
     if imgordering == 'th':
         X_train = X_train.transpose((0,3,1,2)) # Theano image ordering
+        print('Theano')
 
     llabels = [i - 1 for i in llabels]  # change labels from 1-5 to 0-4
     np.save(path + 'data-D%s-Z%0.2f-%s.npy' % (day, z_factor, imgordering), X_train)

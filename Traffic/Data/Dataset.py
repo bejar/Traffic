@@ -55,6 +55,7 @@ class Dataset:
         :param nclases:
         """
 
+        print imgord
         self.fname =  datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f-%s' % (zfactor, imgord) + '.hdf5'
 
         if not os.path.isfile(self.fname):
