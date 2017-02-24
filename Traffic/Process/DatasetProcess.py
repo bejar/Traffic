@@ -42,7 +42,6 @@ def info_dataset(path, ldaysTr, z_factor, imgordering='th'):
     """
 
     y_train = []
-    fname = 'labels'
     for day in ldaysTr:
         data = np.load(path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor))
         X = np.load(path + 'data-D%s-Z%0.2f-%s.npy' % (day, z_factor, imgordering))

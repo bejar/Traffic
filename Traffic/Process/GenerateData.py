@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     print
     print 'Days info ...'
-    info_dataset(process_path, days, z_factor)
+    info_dataset(process_path, days, z_factor, imgordering=imgord)
 
     print
     print 'Generating HDF5 file ...'
