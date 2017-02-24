@@ -17,4 +17,9 @@ __init__.py
 
 """
 
+from .DBLog import DBLog
+from .FileLog import FileLog
+
 __author__ = 'bejar'
+
+__all__ = ['DBLog', 'FileLog']

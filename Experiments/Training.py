@@ -25,7 +25,7 @@ import json
 
 import keras.models
 import numpy as np
-from Traffic.Callback.DBLog import DBLog
+from Traffic.Callback import DBLog, FileLog
 from Traffic.Data.Dataset import Dataset
 from Traffic.Models.SimpleModels import simple_model
 from Traffic.Private.DBConfig import mongoconnection
@@ -48,7 +48,11 @@ def train_model_batch_lrate_schedule(model, config, test):
     :return:
     """
 
-    dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
+    if 'log' not in config or config['log'] == 'db':
+        dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
+    else:
+        dblog = FileLog(config=config, modelj=model.to_json())
+
     classweight = detransweights(config['train']['classweight'])
     train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'],
                     nclasses=test.nclasses)
@@ -132,7 +136,10 @@ def train_model_batch(model, config, test, resume=None):
 
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     classweight = detransweights(config['train']['classweight'])
-    dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
+    if 'log' not in config or config['log'] == 'db':
+        dblog = DBLog(database=mongoconnection, config=config, model=model, modelj=model.to_json(), resume=resume)
+    else:
+        dblog = FileLog(config=config, modelj=model.to_json())
 
     train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'], nclasses=test.nclasses)
     train.open()

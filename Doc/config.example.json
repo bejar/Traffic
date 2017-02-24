@@ -26,5 +26,6 @@
    {"batchsize": 256,
     "epochs": 200,
     "classweight": {"0": 1.0, "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0}},
- "imgord": "th"
+ "imgord": "th",
+ "log": "db"
 }
