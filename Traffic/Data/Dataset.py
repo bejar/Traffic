@@ -113,10 +113,10 @@ class Dataset:
             raise Exception('Number of classes not initialized')
         if self.handle is not None:
             self.X_train = self.handle[chunk + '/data'][()]
-            tlabels = self.handle[chunk + '/labels'][()]
-            self.y_train = np_utils.to_categorical(tlabels, self.nclasses)
             if self.X_train.shape[0] % batchsize != 0:
                 raise Exception('Chunksize not a multiple of batchsize')
+            tlabels = self.handle[chunk + '/labels'][()]
+            self.y_train = np_utils.to_categorical(tlabels, self.nclasses)
 
             perm = [i for i in range(self.X_train.shape[0])]  # so shuffle works on python 3
             shuffle(perm)
