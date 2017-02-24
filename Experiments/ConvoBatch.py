@@ -22,7 +22,6 @@ ConvoBatch
 __author__ = 'bejar'
 
 import argparse
-import json
 
 import keras.models
 from Traffic.Models.SimpleModels import simple_model
@@ -48,8 +47,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.batch:
-        sconfig = load_config_file(args.config)
-        config = json.loads(sconfig)
+        config = load_config_file(args.config)
 
         ldaysTr = []
 

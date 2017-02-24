@@ -17,10 +17,12 @@ Misc
 
 """
 
+import json
+
 __author__ = 'bejar'
 
 
-def load_config_file(nfile):
+def load_config_file(nfile, abs=False):
     '''
     Read the configuration from a json file
 
@@ -28,14 +30,15 @@ def load_config_file(nfile):
     :return:
     '''
     ext = '.json' if 'json' not in nfile else ''
-    fp = open('./' + nfile + ext , 'r')
+    pre = '' if abs else './'
+    fp = open(pre + nfile + ext , 'r')
 
     s = ''
 
     for l in fp:
         s += l
 
-    return s
+    return json.loads(s)
 
 
 def transweights(weights):

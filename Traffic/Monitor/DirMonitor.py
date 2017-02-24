@@ -1,11 +1,14 @@
 """
-.. module:: WebMonitor
+.. module:: DirMonitor
 
 ConvoTest
 *************
 
-:Description: WebStatus
+:Description: DirMonitor
 
+ Monitors the training files in a directory
+
+ Mimicks WebMonitoy but without a database
 
 
 :Authors: bejar
@@ -18,12 +21,10 @@ ConvoTest
 """
 
 import socket
-
+import glob
 from flask import Flask, render_template, request
-from pymongo import MongoClient
 import StringIO
 
-import bokeh.plotting as plt
 
 import matplotlib
 matplotlib.use('Agg')
@@ -33,9 +34,11 @@ import matplotlib.ticker as ticker
 import base64
 import seaborn as sns
 import numpy as np
-from Traffic.Private.DBConfig import mongoconnection
 import pprint
 import time
+import argparse
+
+from Traffic.Util.Misc import load_config_file
 
 
 __author__ = 'bejar'
@@ -46,20 +49,25 @@ port = 8850
 
 app = Flask(__name__)
 
+def retrieve_all(datafiles):
+    """
+    Retrieves all .json files
+    :return:
+    """
+
+    return
+
 @app.route('/Monitor')
 def info():
     """
     Status de las ciudades
     """
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
 
-    vals = col.find({'done': False}, {'_id':1,'acc':1, 'loss': 1, 'val_acc':1, 'val_loss':1, 'host':1, 'time_upd':1, 'time_init': 1, 'config':1})
+    vals = [load_config_file(f, abs=True) for f in glob.glob(datafiles +'/*.json')]
 
     res = {}
     for v in vals:
+        print(v['acc'])
         if len(v['acc']) > 0:
 
             # if we are resuming a stopped training we have to discount the epochs of the previous training to
@@ -70,8 +78,8 @@ def info():
                 epochdiscount = v['config']['train']['epochs_trained']
 
             tminit = time.mktime(time.strptime(v['time_init'], '%Y-%m-%d %H:%M:%S'))
-            tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S')) 
-            
+            tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
+
             tepoch = ((tmupd-tminit)/ (len(v['acc']) - epochdiscount))
             ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
             id = int(tmupd+(tepoch*ep))
@@ -97,17 +105,7 @@ def info():
                 res[id]['acc_dir'] = True
                 res[id]['val_acc_dir'] = True
 
-
-
-    vals = col.find({'done': True, 'final_val_acc': {'$gt': 0.7}},
-                    {'_id': 1,'final_acc': 1, 'final_val_acc': 1, 'val_loss': 1})
-
     old = {}
-
-    for v in vals:
-        res[v['_id']] = {}
-        res[v['_id']]['final_acc'] = v['final_acc']
-        res[v['_id']]['final_val_acc'] = v['final_val_acc']
 
 
     return render_template('Monitor.html', data=res, old=old)
@@ -118,12 +116,8 @@ def logs():
     """
     Returns the logs in the DB
     """
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
 
-    vals = col.find({},  {'final_acc':1, 'final_val_acc':1, 'time_init': 1, 'time_end': 1, 'time_upd':1, 'acc':1,'done':1, 'mark':1, 'config':1})
+    vals = [load_config_file(f, abs=True) for f in glob.glob(datafiles +'/*.json')]
     res = {}
     for v in vals:
         if 'time_init' in v:
@@ -155,22 +149,6 @@ def mark():
     Marks an experiment
     :return:
     """
-    payload = request.form['mark']
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
-    vals = col.find_one({'_id': int(payload)},  {'mark':1, 'done':1})
-
-    text = ' Not Marked'
-    if vals['done']:
-        if not 'mark' in vals:
-            marked = True
-        else:
-            marked = not vals['mark']
-
-        col.update({'_id':vals['_id']},{'$set': {'mark': marked}})
-        text = ' Marked'
 
     head = """
     <!DOCTYPE html>
@@ -184,7 +162,7 @@ def mark():
     end = '</body></html>'
 
 
-    return head + str(payload) + text + end
+    return head + "No Marking Available" + end
 
 
 @app.route('/Delete', methods=['GET','POST'])
@@ -192,13 +170,6 @@ def delete():
     """
     Deletes a log
     """
-    payload = request.form['delete']
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
-
-    col.remove({'_id': int(payload)})
 
     head = """
     <!DOCTYPE html>
@@ -212,7 +183,7 @@ def delete():
     end = '</body></html>'
 
 
-    return head + str(payload) + ' Removed' + end
+    return head + 'No deleting Available' + end
 
 @app.route('/Graph', methods=['GET','POST'])
 def graphic():
@@ -226,21 +197,16 @@ def graphic():
     lcolors = ['r', 'g', 'b', 'y'] *3
     payload = request.form['graph']
 
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
-
-    vals = col.find_one({'_id': int(payload)}, {'acc':1, 'loss': 1, 'val_acc':1, 'val_loss':1})
+    vals = load_config_file(datafiles + payload + '.json', abs=True)
     if vals is not None:
-        del vals['_id']
+        nvals = ['acc', 'val_acc', 'loss', 'val_loss']
 
         img = StringIO.StringIO()
 
         fig = plt.figure(figsize=(10,8),dpi=200)
         axes = fig.add_subplot(1,1,1)
 
-        for v, color, style in zip(sorted(vals), lcolors, lstyles):
+        for v, color, style in zip(sorted(nvals), lcolors, lstyles):
             axes.plot(range(len(vals[v])),vals[v], color + style, label=v)
 
         axes.set_xlabel('epoch')
@@ -272,18 +238,10 @@ def model():
 
     payload = request.form['model']
 
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
+    vals = load_config_file(datafiles + payload + '.json', abs=True)
 
-    vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1, 'svgmodel':1})
     pp = pprint.PrettyPrinter(indent=4)
 
-    if 'svgmodel' in vals:
-        svgmodel = vals['svgmodel']
-    else:
-        svgmodel = ''
 
     head = """
     <!DOCTYPE html>
@@ -297,7 +255,7 @@ def model():
 
     return head + \
            '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=60).replace('\n', '<br>') + \
-           '<br><br><h2>Graph:</h2><br><br>' + svgmodel +'<br><br><h2>Net:</h2><br><br>'+ \
+           '<br><br><h2>Graph:</h2><br><br>'  +'<br><br><h2>Net:</h2><br><br>'+ \
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
             '<br>' + \
            end
@@ -312,12 +270,7 @@ def report():
     """
     payload = request.form['model']
 
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
-
-    vals = col.find_one({'_id': int(payload)}, {'report':1, 'confusion':1})
+    vals = load_config_file(datafiles + payload + '.json', abs=True)
 
     head = """
     <!DOCTYPE html>
@@ -341,5 +294,11 @@ def report():
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--datafiles', default='', help='Directory of files to monitor')
+    args = parser.parse_args()
+
+    datafiles = args.datafiles
     # The Flask Server is started
     app.run(host='0.0.0.0', port=port, debug=False)

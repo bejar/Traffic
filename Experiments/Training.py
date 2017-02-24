@@ -181,15 +181,13 @@ def train_model_batch(model, config, test, resume=None):
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='config', help='Experiment configuration')
     parser.add_argument('--resume', default=None, help='Resume existing experiment training')
     parser.add_argument('--retrain', default=None, help='Continue existing experiment training')
     args = parser.parse_args()
 
-    sconfig = load_config_file(args.config)
-    config = json.loads(sconfig)
+    config = load_config_file(args.config)
 
     K.set_image_dim_ordering(config['imgord'])
 
