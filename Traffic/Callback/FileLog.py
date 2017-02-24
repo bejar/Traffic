@@ -26,6 +26,7 @@ import json
 import numpy as np
 from numpy.random import randint
 
+
 class FileLog(Callback):
     """
     Callback used to stream events to a DB
