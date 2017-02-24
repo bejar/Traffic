@@ -40,7 +40,7 @@ class FileLog(Callback):
                        'host': socket.gethostname().split('.')[0],
                        'config': config,
                        'model': modelj,
-                     '  acc': [],
+                       'acc': [],
                        'loss': [],
                        'val_acc': [],
                        'val_loss': [],
