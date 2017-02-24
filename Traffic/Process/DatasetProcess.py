@@ -86,6 +86,8 @@ def get_day_predictions(day):
     :return:
     """
     ldir = glob.glob(status_path + day + '/*-dadestram.data')
+    if ldir == []:
+        raise Exception('Day does not exists')
     ldata = []
     for f in sorted(ldir):
         ldata.append(DataTram(f))
