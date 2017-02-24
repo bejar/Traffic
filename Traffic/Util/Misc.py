@@ -27,7 +27,8 @@ def load_config_file(nfile):
     :param nfile:
     :return:
     '''
-    fp = open('./' + nfile + '.json', 'r')
+    ext = '.json' if 'json' not in nfile else ''
+    fp = open('./' + nfile + ext , 'r')
 
     s = ''
 

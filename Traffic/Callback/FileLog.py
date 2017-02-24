@@ -49,7 +49,7 @@ class FileLog(Callback):
                        'done': False
                        }
 
-        with open(self.backup['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
+        with open(self.backup['config']['savepath']+ '/' + str(self.id) + '.json', 'w') as outfile:
             json.dump(self.backup, outfile)
 
     def on_epoch_end(self, epoch, logs={}):
@@ -58,7 +58,7 @@ class FileLog(Callback):
             self.backup[k].append(v)
         self.backup['time_upd'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
-        with open(self.backup['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
+        with open(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
             json.dump(self.backup, outfile)
 
     def on_train_end(self, logs={}):
@@ -68,7 +68,7 @@ class FileLog(Callback):
         self.backup['final_acc'] = logs['acc']
         self.backup['final_val_acc'] = logs['val_acc']
 
-        with open(self.backup['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
+        with open(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
             json.dump(self.backup, outfile)
 
     def save_final_results(self, accuracy, confusion, report):
@@ -88,7 +88,7 @@ class FileLog(Callback):
         self.backup['report'] = report
         self.backup['accuracy'] = accuracy
 
-        with open(self.backup['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
+        with open(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
             json.dump(self.backup, outfile)
 
     def is_best_epoch(self):
