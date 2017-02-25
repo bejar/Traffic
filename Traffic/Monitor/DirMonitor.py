@@ -67,7 +67,6 @@ def info():
 
     res = {}
     for v in vals:
-        print(v['acc'])
         if len(v['acc']) > 0:
 
             # if we are resuming a stopped training we have to discount the epochs of the previous training to
