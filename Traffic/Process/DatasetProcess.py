@@ -335,7 +335,7 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     image = TrImage()
     for t in dataset:
         for cam, l in dataset[t]:
-            if l != 0 and l != 6:
+             if l != 0 and l != 6:
                 if log:
                     print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 image.load_image(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
