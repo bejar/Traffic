@@ -382,7 +382,7 @@ def load_generated_day(datapath, day, z_factor, imgordering='th'):
     return X_train, y_train, img_path
 
 
-def chunkify(lchunks, size):
+def chunkify(lchunks, size, test = False):
     """
     Returns the saving list for the data with chunks of size = size
     :param lchunks:
@@ -405,20 +405,21 @@ def chunkify(lchunks, size):
             if i < len(lchunks):
                 quant = lchunks[i]
             else:
-                if accum == size:
+                if accum == size or test:
                     lcut.append(lpos)
         else:
             lpos.append((i, size - accum))
             lcut.append(lpos)
             lpos = []
-            quant = quant - (size - accum)
+            quant -= (size - accum)
             accum = 0
             csize += size
+
 
     return lcut
 
 
-def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th'):
+def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th', test=False):
     """
     Generates an hdf5 file for a list of days with blocks of data for training
     It need the files for each day, the data is grouped and chunked in same sized
@@ -436,7 +437,8 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
         labels = np.load(datapath + 'labels-D%s-Z%0.2f.npy' % (day, z_factor))
         nlabels.append(len(labels))
 
-    lsave = chunkify(nlabels, chunk)
+    lsave = chunkify(nlabels, chunk, test=test)
+    print lsave
 
     nf = name_days_file(ldays)
     sfile = h5py.File(datapath + '/Data-%s-Z%0.2f-%s.hdf5'% (nf, z_factor, imgordering), 'w')
@@ -488,12 +490,12 @@ if __name__ == '__main__':
     #     generate_data_day(day, z_factor, method='two', mxdelay=60)
 
     # Uncomment to view information of day datafiles (examples per class)
-    info_dataset(process_path, days, z_factor, imgordering='tf')
+    # info_dataset(process_path, days, z_factor, imgordering='tf')
 
     # Uncomment to generate files for a list of days
     # for day in days:
     #     generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=15, onlyfuture=False, imgordering='th')
 
     # Uncoment to generate a HDF5 file for a list of days
-    # generate_training_dataset(process_path, days, chunk= 1024, z_factor=z_factor, imgordering='th')
+    generate_training_dataset(process_path, days, chunk=256, z_factor=z_factor, imgordering='th')
 

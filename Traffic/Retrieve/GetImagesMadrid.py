@@ -91,11 +91,11 @@ def retrieve_camera(cam, name, ptime):
         with open(cameras_path_MAD + todaypath + '/' + '%s-%s.jpg' % (ptime, name), 'wb') as handler:
             handler.write(img_data)
     except ConnectionError:
-        print('error camera: '+name)
-        pass
+        print('CE - error camera: '+name)
+        return
     except ChunkedEncodingError:
-        print('error camera: '+name)
-        pass
+        print('CEE - error camera: '+name)
+        return
 
 if __name__ == '__main__':
     # get_info_cameras()
