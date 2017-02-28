@@ -37,7 +37,11 @@
      </tr>
     {% for net in data|sort%}
     <tr>
+       {%if data[net]['done']%}
+        <td><span style="color:red"> {{net}}</span></td>
+       {% else %}
         <td>{{data[net]['id']}}</td>
+        {% endif %}
         <td>{{data[net]['zfactor']}}</td>
         <td>{{data[net]['init']}}</td>
         <td>{{data[net]['upd']}}</td>

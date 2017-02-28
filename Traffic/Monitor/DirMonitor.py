@@ -76,6 +76,11 @@ def info():
         tminit = time.mktime(time.strptime(v['time_init'], '%Y-%m-%d %H:%M:%S'))
         res[id]['init'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tminit))
 
+        if 'done' in v:
+            res[id]['done'] = v['done']
+        else:
+            res[id]['done'] = False
+
         if len(v['acc']) >0:
             tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
             tepoch = ((tmupd-tminit)/ (len(v['acc'])))
