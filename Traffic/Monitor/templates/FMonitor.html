@@ -43,13 +43,13 @@
         <td>{{data[net]['end']}}</td>
         <td style="text-align:right">{{data[net]['epoch']}}</td>
         <td style="text-align:right">{{'%3.2f'|format(data[net]['eptime']|float)}}</td>
-        <td>{{'%0.2f'|format(data[net]['acc']|float)}}</td>
+        <td>{{'%0.3f'|format(data[net]['acc']|float)}}</td>
         {% if data[net]['acc_dir'] %}
         <td style="text-align:center">+</td>
        {% else %}
         <td style="text-align:center">-</td>
         {% endif %}
-        <td>{{'%0.2f'|format(data[net]['val_acc']|float)}}</td>
+        <td>{{'%0.3f'|format(data[net]['val_acc']|float)}}</td>
         {% if data[net]['val_acc_dir'] %}
         <td style="text-align:center">+</td>
        {% else %}
