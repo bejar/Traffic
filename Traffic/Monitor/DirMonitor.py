@@ -232,7 +232,7 @@ def stop():
     config['stop'] = True
 
     with open(datafiles + '/' + payload + '.json', 'w') as outfile:
-        json.dump(config, outfile)
+        json.dump(config, outfile, sort_keys=True, indent=4)
 
 
     head = """

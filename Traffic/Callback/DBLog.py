@@ -172,7 +172,7 @@ class DBLog(Callback):
 
         except ConnectionFailure:
             with open(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
-                json.dump(self.backup, outfile)
+                json.dump(self.backup, outfile, sort_keys=True, indent=4)
 
     def is_best_epoch(self):
         """
