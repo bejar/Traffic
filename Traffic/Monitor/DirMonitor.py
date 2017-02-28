@@ -67,122 +67,48 @@ def info():
 
     res = {}
     for v in vals:
-        if len(v['acc']) > 0:
 
-            # if we are resuming a stopped training we have to discount the epochs of the previous training to
-            # compute the end time
-            if 'epochs_trained' not in v['config']['train']:
-                epochdiscount = 0
-            else:
-                epochdiscount = v['config']['train']['epochs_trained']
 
-            tminit = time.mktime(time.strptime(v['time_init'], '%Y-%m-%d %H:%M:%S'))
-            tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
+        tminit = time.mktime(time.strptime(v['time_init'], '%Y-%m-%d %H:%M:%S'))
+        tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
 
-            tepoch = ((tmupd-tminit)/ (len(v['acc']) - epochdiscount))
-            ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
-            id = int(tmupd+(tepoch*ep))
+        tepoch = ((tmupd-tminit)/ (len(v['acc'])))
+        ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
+        id = v['_id']
 
-            # id is the approximated end time in seconds, so the table will be sorted that way
-            res[id] = {}
-            res[id]['id'] = v['_id']
-            res[id]['epoch'] = len(v['acc'])
+        # id is the approximated end time in seconds, so the table will be sorted that way
+
+        res[id] = {}
+        res[id]['id'] = v['_id']
+        res[id]['zfactor'] = v['config']['zfactor']
+        res[id]['epoch'] = len(v['acc'])
+        if len(v['acc']) >0:
             res[id]['acc'] = v['acc'][-1]
             res[id]['val_acc'] = v['val_acc'][-1]
-            res[id]['host'] = v['host']
-            res[id]['init'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tminit))
             res[id]['upd'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd))
-            res[id]['end'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd+(tepoch*ep)))
+            res[id]['end'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd + (tepoch * ep)))
+        else:
+            res[id]['acc'] = 0
+            res[id]['val_acc'] = 0
+            res[id]['upd'] = "pending"
+            res[id]['end'] = "pending"
 
+        res[id]['init'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tminit))
 
-            res[id]['eptime'] = ((tmupd-tminit)/ (len(v['acc']))) /60.0
+        res[id]['eptime'] = ((tmupd-tminit)/ (len(v['acc']))) /60.0
 
-            if len(v['acc']) >1:
-                res[id]['acc_dir'] = v['acc'][-1] > v['acc'][-2]
-                res[id]['val_acc_dir'] = v['val_acc'][-1] > v['val_acc'][-2]
-            else:
-                res[id]['acc_dir'] = True
-                res[id]['val_acc_dir'] = True
+        if len(v['acc']) >1:
+            res[id]['acc_dir'] = v['acc'][-1] > v['acc'][-2]
+            res[id]['val_acc_dir'] = v['val_acc'][-1] > v['val_acc'][-2]
+        else:
+            res[id]['acc_dir'] = True
+            res[id]['val_acc_dir'] = True
 
     old = {}
 
 
-    return render_template('Monitor.html', data=res, old=old)
+    return render_template('FMonitor.html', data=res, old=old)
 
-
-@app.route('/Logs')
-def logs():
-    """
-    Returns the logs in the DB
-    """
-
-    vals = [load_config_file(f, abs=True) for f in glob.glob(datafiles +'/*.json')]
-    res = {}
-    for v in vals:
-        if 'time_init' in v:
-            res[v['_id']] = {}
-            if 'mark' in v:
-                res[v['_id']]['mark'] = v['mark']
-            else:
-                res[v['_id']]['mark'] = False
-            if 'final_acc' in v:
-                res[v['_id']]['acc'] = v['final_acc']
-            else:
-                res[v['_id']]['acc'] = 0
-            if 'final_val_acc' in v:
-                res[v['_id']]['val_acc'] = v['final_val_acc']
-            else:
-                res[v['_id']]['val_acc'] = 0
-            res[v['_id']]['init'] = v['time_init']
-            if 'time_end' in v:
-                res[v['_id']]['end'] = v['time_end']
-            else:
-                res[v['_id']]['end'] = 'pending'
-            res[v['_id']]['zfactor'] = v['config']['zfactor']
-
-    return render_template('Logs.html', data=res)
-
-@app.route('/Mark', methods=['GET','POST'])
-def mark():
-    """
-    Marks an experiment
-    :return:
-    """
-
-    head = """
-    <!DOCTYPE html>
-<html>
-<head>
-    <title>Keras NN Mark </title>
-   <meta http-equiv="refresh" content="3;http://%s:%d/Logs" />
-  </head>
-<body>
-""" % (hostname, port)
-    end = '</body></html>'
-
-
-    return head + "No Marking Available" + end
-
-
-@app.route('/Delete', methods=['GET','POST'])
-def delete():
-    """
-    Deletes a log
-    """
-
-    head = """
-    <!DOCTYPE html>
-<html>
-<head>
-    <title>Keras NN Delete </title>
-   <meta http-equiv="refresh" content="3;http://%s:%d/Logs" />
-  </head>
-<body>
-""" % (hostname, port)
-    end = '</body></html>'
-
-
-    return head + 'No deleting Available' + end
 
 @app.route('/Graph', methods=['GET','POST'])
 def graphic():
