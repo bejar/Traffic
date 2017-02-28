@@ -32,6 +32,7 @@
         <th>+/-</th>
         <th>Graph</th>
         <th>Model</th>
+        <th>Stop</th>
     </tr>
     {% for net in data|sort%}
     <tr>
@@ -62,6 +63,12 @@
        <td>
            <form action="/Model" method="post">
                <button type="submit" name="model"  value={{data[net]['id']}}> Model</button>
+            </form>
+
+        </td>
+      <td>
+           <form action="/Stop" method="post">
+               <button type="submit" name="model"  value={{data[net]['id']}}> Stop!</button>
             </form>
 
         </td>

@@ -339,6 +339,35 @@ def report():
         return 'No report'
 
 
+@app.route('/Stop', methods=['GET','POST'])
+def stop():
+    """
+    Writes on the DB configuration of the process that it has to stop the next epoch
+
+    :return:
+    """
+    payload = request.form['model']
+
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+    col.update({'_id':payload}, {'$set': {'stop': True}})
+
+    head = """
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Keras NN Stop </title>
+   <meta http-equiv="refresh" content="3;http://%s:%d/Monitor" />
+  </head>
+<body>
+""" % (hostname, port)
+    end = '</body></html>'
+
+
+    return head + str(payload) + ' Stopped' + end
+
 
 if __name__ == '__main__':
     # The Flask Server is started

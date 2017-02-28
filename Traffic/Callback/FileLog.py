@@ -25,7 +25,7 @@ import socket
 import json
 import numpy as np
 from numpy.random import randint
-
+from Traffic.Util.Misc import load_config_file
 
 class FileLog(Callback):
     """
@@ -103,3 +103,16 @@ class FileLog(Callback):
             return(self.config['val_acc'][-1] > np.max(self.config['val_acc'][:-1]))
         else:
             return True
+
+    def force_stop(self):
+        """
+        Return if the training has been forced to stop
+        This stop is triggered remotely by the log webpage
+        :return:
+        """
+        config = load_config_file(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', abs=True)
+
+        if 'stop' in config:
+            return config['stop']
+        else:
+            return False

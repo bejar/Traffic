@@ -30,6 +30,7 @@ from pymongo.errors import ConnectionFailure
 import json
 import numpy as np
 from numpy.random import randint
+from Traffic.Util.Misc import load_config_file
 
 class DBLog(Callback):
     """
@@ -185,3 +186,24 @@ class DBLog(Callback):
             return(self.config['val_acc'][-1] > np.max(self.config['val_acc'][:-1]))
         else:
             return True
+
+    def force_stop(self):
+        """
+        Return if the training has been forced to stop
+        This stop is triggered remotely by the log webpage
+        :return:
+        """
+        try: # Try to save log in DB
+            client = MongoClient(self.mgdb.server)
+            db = client[self.mgdb.db]
+            db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
+            col = db[self.mgdb.col]
+
+            exists = col.find_one({'_id':self.id}, {'stop':1})
+            if exists is not None and 'stop' in exists:
+                return exists['stop']
+            else:
+                return False
+        except ConnectionFailure:
+            return False
+

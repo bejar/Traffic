@@ -90,10 +90,17 @@ def train_model_batch_lrate_schedule(model, config, test):
 
             logs['val_loss'], logs['val_acc'] = model.evaluate(test.X_train, test.y_train, verbose=0)
 
+            force_stop = dblog.force_stop()
             dblog.on_epoch_end(epoch, logs=logs)
 
             if config['savepath']:
                 model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
+
+            # If the training is stopped remotely training stops
+            if force_stop:
+                break
+        if force_stop:
+            break
 
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
@@ -168,10 +175,15 @@ def train_model_batch(model, config, test, resume=None):
 
         logs['val_loss'], logs['val_acc'] = model.evaluate(test.X_train, test.y_train, verbose=0)
 
+        force_stop = dblog.force_stop()
         dblog.on_epoch_end(epoch, logs=logs)
 
         if config['savepath']:
             model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
+
+        # If the training is stopped remotely training stops
+        if force_stop:
+            break
 
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})

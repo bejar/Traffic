@@ -37,6 +37,7 @@ import numpy as np
 import pprint
 import time
 import argparse
+import json
 
 from Traffic.Util.Misc import load_config_file
 
@@ -63,7 +64,7 @@ def info():
     Status de las ciudades
     """
 
-    vals = [load_config_file(f, abs=True) for f in glob.glob(datafiles +'/*.json')]
+    vals = [load_config_file(f, abs=True) for f in glob.glob(datafiles + '/*.json')]
 
     res = {}
     for v in vals:
@@ -102,6 +103,9 @@ def info():
 
 
     return render_template('FMonitor.html', data=res, old=old)
+
+
+
 
 
 @app.route('/Graph', methods=['GET','POST'])
@@ -209,6 +213,35 @@ def report():
 
     else:
         return 'No report'
+
+
+@app.route('/Stop', methods=['GET', 'POST'])
+def stop():
+    """
+    Writes on the DB configuration of the process that it has to stop the next epoch
+
+    :return:
+    """
+    payload = request.form['model']
+    config = load_config_file(datafiles + '/' + payload + '.json', abs=True)
+    config['stop'] = True
+
+    with open(datafiles + '/' + payload + '.json', 'w') as outfile:
+        json.dump(config, outfile)
+
+
+    head = """
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Keras NN Stop </title>
+   <meta http-equiv="refresh" content="3;http://%s:%d/Monitor" />
+  </head>
+<body>
+""" % (hostname, port)
+    end = '</body></html>'
+
+    return head + str(payload) + ' Stopped' + end
 
 
 
