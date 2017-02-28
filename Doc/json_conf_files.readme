@@ -26,3 +26,4 @@ Configuration for training is read from a config.json file
         "batchsize": batch size
         "epochs": number of epochs
  "imgord": image order, now only theano ordering is used "th", in case of using tensorflow "tf" data has to be generated again in that order
+ "recode": String representing the recoding of the names of the classes, mainly to be able to merge them

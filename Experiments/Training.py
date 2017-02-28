@@ -34,7 +34,7 @@ from keras.optimizers import SGD, Adagrad, Adadelta, Adam
 from numpy.random import shuffle
 from pymongo import MongoClient
 from sklearn.metrics import confusion_matrix, classification_report
-from Traffic.Util.Misc import load_config_file,  detransweights
+from Traffic.Util.Misc import load_config_file,  detransweights, recoding_dictionary
 
 __author__ = 'bejar'
 
@@ -54,8 +54,9 @@ def train_model_batch_lrate_schedule(model, config, test):
         dblog = FileLog(config=config, modelj=model.to_json())
 
     classweight = detransweights(config['train']['classweight'])
+    recode = None if 'recode' not in config else recoding_dictionary(config['recode'])
     train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'],
-                    nclasses=test.nclasses)
+                    nclasses=test.nclasses, recode=recode)
     train.open()
     chunks, _ = train.chunks()
 
@@ -148,7 +149,10 @@ def train_model_batch(model, config, test, resume=None):
     else:
         dblog = FileLog(config=config, modelj=model.to_json())
 
-    train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'], nclasses=test.nclasses)
+    recode = None if 'recode' not in config else recoding_dictionary(config['recode'])
+
+    train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'],
+                    nclasses=test.nclasses, recode=recode)
     train.open()
     chunks, _ = train.chunks()
 
@@ -205,8 +209,10 @@ if __name__ == '__main__':
 
     # Only the test set in memory, the training is loaded in batches
     testdays = []
-    test = Dataset(config['datapath'], config['testdata'], config['zfactor'], imgord=config['imgord'])
+    recode = None if 'recode' not in config else recoding_dictionary(config['recode'])
+    test = Dataset(config['datapath'], config['testdata'], config['zfactor'], imgord=config['imgord'], recode=recode)
     test.open()
+
     test.in_memory()
 
     config['input_shape'] = test.input_shape

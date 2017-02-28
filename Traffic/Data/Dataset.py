@@ -45,7 +45,7 @@ def name_days_file(ldays):
 
 class Dataset:
 
-    def __init__(self, datapath, ldays, zfactor, imgord='th', nclasses=None):
+    def __init__(self, datapath, ldays, zfactor, imgord='th', nclasses=None, recode=None):
         """
         Checks if the file exists
 
@@ -53,8 +53,10 @@ class Dataset:
         :param days:
         :param zfactor:
         :param nclases:
+        :param merge: Merge classes
         """
         self.fname =  datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f-%s' % (zfactor, imgord) + '.hdf5'
+        self.merge = recode
 
         if not os.path.isfile(self.fname):
             raise Exception('Data file does not exists')
@@ -97,8 +99,12 @@ class Dataset:
 
             self.nclasses = len(np.unique(y_train))
             self.X_train = np.concatenate(X_train)
-            self.y_labels = y_train
-            self.y_train = np_utils.to_categorical(y_train, self.nclasses)
+
+            if self.recode is None:
+                self.y_labels = y_train
+            else:
+                self.y_labels = [self.recode[i] for i in y_train]
+            self.y_train = np_utils.to_categorical(self.y_labels, self.nclasses)
             self.input_shape = self.X_train[0].shape
         else:
             raise Exception("Data file not open")
@@ -115,7 +121,10 @@ class Dataset:
             self.X_train = self.handle[chunk + '/data'][()]
             if self.X_train.shape[0] % batchsize != 0:
                 raise Exception('Chunksize not a multiple of batchsize')
-            tlabels = self.handle[chunk + '/labels'][()]
+            if self.recode is None:
+                tlabels = self.handle[chunk + '/labels'][()]
+            else:
+                tlabels = [self.recode[i] for i in self.handle[chunk + '/labels'][()]]
             self.y_train = np_utils.to_categorical(tlabels, self.nclasses)
 
             perm = [i for i in range(self.X_train.shape[0])]  # so shuffle works on python 3

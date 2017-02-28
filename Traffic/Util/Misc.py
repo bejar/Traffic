@@ -21,6 +21,18 @@ import json
 
 __author__ = 'bejar'
 
+def recoding_dictionary(recode):
+    """
+    Transforms a recoding string into a recoding dictionary
+    :param recode:
+    :return:
+    """
+    code = recode.split(',')
+    rec = {}
+    for c in code:
+        k, v = c.split('|')
+        rec[int(k)] =int(v)
+    return rec
 
 def load_config_file(nfile, abs=False):
     '''
@@ -147,4 +159,5 @@ def dist_time(time1, time2):
 
 
 if __name__ == '__main__':
-    print (list_range_days_generator('20161101', '20170205'))
+    # print (list_range_days_generator('20161101', '20170205'))
+    print(recoding_dictionary("0|0,1|1,2|2,3|3,4|4"))
