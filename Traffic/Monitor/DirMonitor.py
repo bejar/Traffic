@@ -67,35 +67,29 @@ def info():
 
     res = {}
     for v in vals:
-
-
-        tminit = time.mktime(time.strptime(v['time_init'], '%Y-%m-%d %H:%M:%S'))
-        tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
-
-        tepoch = ((tmupd-tminit)/ (len(v['acc'])))
-        ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
         id = v['_id']
-
-        # id is the approximated end time in seconds, so the table will be sorted that way
-
         res[id] = {}
         res[id]['id'] = v['_id']
         res[id]['zfactor'] = v['config']['zfactor']
         res[id]['epoch'] = len(v['acc'])
+        tminit = time.mktime(time.strptime(v['time_init'], '%Y-%m-%d %H:%M:%S'))
+        res[id]['init'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tminit))
+
         if len(v['acc']) >0:
+            tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
+            tepoch = ((tmupd-tminit)/ (len(v['acc'])))
+            ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
             res[id]['acc'] = v['acc'][-1]
             res[id]['val_acc'] = v['val_acc'][-1]
             res[id]['upd'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd))
             res[id]['end'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd + (tepoch * ep)))
+            res[id]['eptime'] = ((tmupd-tminit)/ (len(v['acc']))) /60.0
         else:
             res[id]['acc'] = 0
             res[id]['val_acc'] = 0
             res[id]['upd'] = "pending"
             res[id]['end'] = "pending"
-
-        res[id]['init'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tminit))
-
-        res[id]['eptime'] = ((tmupd-tminit)/ (len(v['acc']))) /60.0
+            res[id]['eptime'] = 0
 
         if len(v['acc']) >1:
             res[id]['acc_dir'] = v['acc'][-1] > v['acc'][-2]
