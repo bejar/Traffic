@@ -104,6 +104,8 @@ class Dataset:
                 self.y_labels = y_train
             else:
                 self.y_labels = [self.recode[i] for i in y_train]
+                self.nclasses = len(np.unique(self.y_labels))
+
             self.y_train = np_utils.to_categorical(self.y_labels, self.nclasses)
             self.input_shape = self.X_train[0].shape
         else:
