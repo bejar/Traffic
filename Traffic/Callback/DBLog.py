@@ -193,7 +193,7 @@ class DBLog(Callback):
         This stop is triggered remotely by the log webpage
         :return:
         """
-        try: # Try to save log in DB
+        try:
             client = MongoClient(self.mgdb.server)
             db = client[self.mgdb.db]
             db.authenticate(self.mgdb.user, password=self.mgdb.passwd)
