@@ -348,12 +348,13 @@ def stop():
     """
     payload = request.form['stop']
 
+    print payload
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
-    print payload
-    print col.update({'_id':payload}, {'$set': {'stop': True}})
+
+    col.update({'_id':payload}, {'$set': {'stop': True}})
 
     head = """
     <!DOCTYPE html>
