@@ -438,7 +438,6 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
         nlabels.append(len(labels))
 
     lsave = chunkify(nlabels, chunk, test=test)
-    print lsave
 
     nf = name_days_file(ldays)
     sfile = h5py.File(datapath + '/Data-%s-Z%0.2f-%s.hdf5'% (nf, z_factor, imgordering), 'w')

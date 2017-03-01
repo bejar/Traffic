@@ -56,7 +56,7 @@ class Dataset:
         :param merge: Merge classes
         """
         self.fname =  datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f-%s' % (zfactor, imgord) + '.hdf5'
-        self.merge = recode
+        self.recode = recode
 
         if not os.path.isfile(self.fname):
             raise Exception('Data file does not exists')

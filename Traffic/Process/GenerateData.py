@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('--zoom', default='0.25', help='Zoom Factor')
     parser.add_argument('--chunk', default='1024', help='Chunk size')
     # --test flaf for including all data in the HDF5 file (last chunk is not the same size than the rest)
-    parser.add_argument('--test', default=False, help='Data generated for test')
+    parser.add_argument('--test', default=False, help='Data generated for test', type=bool)
     parser.add_argument('--imgord', default='th', help='Image Ordering')
     parser.add_argument('--delay', default='15', help='Time Delay')
     parser.add_argument('--idate', default='20161101', help='First day')
@@ -52,11 +52,12 @@ if __name__ == '__main__':
     print 'IO = ', imgord
     print 'CHS = ', chunk
     print 'DLY = ', mxdelay
+    print 'TEST = ', args.test
 
     print
     print 'Generating days ...'
     for day in days:
-        print 'Generating %s', day
+        print 'Generating %s' % day
         generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=mxdelay, onlyfuture=False, imgordering=imgord, augmentation=args.augmentation)
 
     print
