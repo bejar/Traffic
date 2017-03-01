@@ -346,7 +346,7 @@ def stop():
 
     :return:
     """
-    payload = request.form['model']
+    payload = request.form['stop']
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
