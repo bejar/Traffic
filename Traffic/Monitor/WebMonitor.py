@@ -352,6 +352,7 @@ def stop():
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
+    print payload
     print col.update({'_id':payload}, {'$set': {'stop': True}})
 
     head = """
