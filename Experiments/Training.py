@@ -164,7 +164,6 @@ def train_model_batch(model, config, test, resume=None):
     for epoch in range(iepoch, config['train']['epochs']):
         train.open()
         chunks, _ = train.chunks()
-
         shuffle(chunks)
 
         # Train Batches
@@ -190,13 +189,9 @@ def train_model_batch(model, config, test, resume=None):
         if config['savepath']:
             model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
 
-
-
         # If the training is stopped remotely training stops
         if force_stop:
             break
-
-
 
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})

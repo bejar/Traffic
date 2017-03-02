@@ -55,12 +55,12 @@ class Dataset:
         :param nclases:
         :param merge: Merge classes
         """
-        self.fname =  datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f-%s' % (zfactor, imgord) + '.hdf5'
+        self.fname = datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f-%s' % (zfactor, imgord) + '.hdf5'
         self.recode = recode
 
         if not os.path.isfile(self.fname):
             raise Exception('Data file does not exists')
-        self.hande = None
+        self.handle = None
 
         # If the dataset is going to be loaded in batches we need the number of classes
         if nclasses is not None:
@@ -154,6 +154,26 @@ class Dataset:
             raise Exception("Data file not open")
 
         return self.chunks, self.chunk_size
+
+    def describe(self):
+        """
+        Prints information about the dataset object
+
+        :return:
+        """
+
+        print (self.fname)
+        if self.handle is not None:
+            print("File Open")
+        else:
+            print("File Closed")
+        print ('NC= %d'% len(self.chunks))
+        print ('CS= %d'% self.chunk_size)
+
+        if self.recode is not None:
+            print('RC = %s' %self.recode)
+
+
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
