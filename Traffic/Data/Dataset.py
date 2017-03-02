@@ -116,7 +116,8 @@ class Dataset:
             cnt = Counter(self.y_labels)
             lprop = {}
             for l in cnt:
-                lprop[l] = cnt[l]/float(len(self.y_labels))
+                # String key because is going to be converted to JSON
+                lprop[str(l)] = cnt[l]/float(len(self.y_labels))
 
             self.labprop = lprop
             self.y_train = np_utils.to_categorical(self.y_labels, self.nclasses)
