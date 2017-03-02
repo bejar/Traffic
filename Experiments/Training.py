@@ -69,7 +69,7 @@ def train_model_batch_lrate_schedule(model, config, test):
         # Train Epochs
         logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
         train.open()
-        chunks, _ = train.chunks()
+        chunks, _ = train.chunks_list()
         for epoch in range(nepochs):
 
 
@@ -161,7 +161,8 @@ def train_model_batch(model, config, test, resume=None):
     # Train Epochs
     logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
     train.open()
-    chunks, _ = train.chunks()
+    chunks, _ = train.chunks_list()
+
     for epoch in range(iepoch, config['train']['epochs']):
 
         shuffle(chunks)

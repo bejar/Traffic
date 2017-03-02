@@ -384,7 +384,7 @@ def load_generated_day(datapath, day, z_factor, imgordering='th'):
 
 def chunkify(lchunks, size, test = False):
     """
-    Returns the saving list for the data with chunks of size = size
+    Returns the saving list for the data with chunks_list of size = size
     :param lchunks:
     :param size:
     :return:

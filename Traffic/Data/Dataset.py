@@ -91,7 +91,7 @@ class Dataset:
 
     def in_memory(self):
         """
-        Loads all the chunks in the datafile in memory
+        Loads all the chunks_list in the datafile in memory
         :return:
         """
         if self.handle is not None:
@@ -156,9 +156,9 @@ class Dataset:
         else:
             raise Exception("Data file not open")
 
-    def chunks(self):
+    def chunks_list(self):
         """
-        Returns a list with the names of the chunks in the file and the size of the chunks
+        Returns a list with the names of the chunks_list in the file and the size of the chunks_list
         :return:
         """
         if self.handle is not None:
@@ -192,8 +192,9 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     d = Dataset(process_path, [[2016, 11, 1, 30]], 0.25, nclasses=5)
     d.open()
-    chunks, _ = d.chunks()
-    # for chunk in chunks:
+    chunks, _ = d.chunks_list()
+    d.describe()
+    # for chunk in chunks_list:
     #     d.load_chunk(chunk, 256)
     #     print d.perm
     # d.in_memory()
