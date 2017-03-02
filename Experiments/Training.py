@@ -57,8 +57,6 @@ def train_model_batch_lrate_schedule(model, config, test):
     recode = None if 'recode' not in config else recoding_dictionary(config['recode'])
     train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'],
                     nclasses=test.nclasses, recode=recode)
-    train.open()
-    chunks, _ = train.chunks()
 
     # For now only SDG
     for lrate, nepochs in zip(config['optimizer']['params']['lrate'], config['train']['epochs']):
@@ -72,6 +70,8 @@ def train_model_batch_lrate_schedule(model, config, test):
         logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
 
         for epoch in range(nepochs):
+            train.open()
+            chunks, _ = train.chunks()
 
             shuffle(chunks)
 
@@ -86,6 +86,8 @@ def train_model_batch_lrate_schedule(model, config, test):
                     lloss.append(loss)
                     lacc.append(acc)
 
+            train.close()
+
             logs['loss'] = float(np.mean(lloss))
             logs['acc'] = float(np.mean(lacc))
 
@@ -97,6 +99,8 @@ def train_model_batch_lrate_schedule(model, config, test):
             if config['savepath']:
                 model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
 
+
+
             # If the training is stopped remotely training stops
             if force_stop:
                 break
@@ -107,7 +111,7 @@ def train_model_batch_lrate_schedule(model, config, test):
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
     y_pred = model.predict_classes(test.X_train, verbose=0)
     dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred), classification_report(test.y_labels, y_pred))
-    train.close()
+
 
 
 def train_model_batch(model, config, test, resume=None):
@@ -153,13 +157,13 @@ def train_model_batch(model, config, test, resume=None):
 
     train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'],
                     nclasses=test.nclasses, recode=recode)
-    train.open()
-    chunks, _ = train.chunks()
 
     # Train Epochs
     logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
 
     for epoch in range(iepoch, config['train']['epochs']):
+        train.open()
+        chunks, _ = train.chunks()
 
         shuffle(chunks)
 
@@ -173,6 +177,7 @@ def train_model_batch(model, config, test, resume=None):
                 loss, acc = model.train_on_batch(train.X_train[p], train.y_train[p], class_weight=classweight)
                 lloss.append(loss)
                 lacc.append(acc)
+        train.close()
 
         logs['loss'] = float(np.mean(lloss))
         logs['acc'] = float(np.mean(lacc))
@@ -185,15 +190,19 @@ def train_model_batch(model, config, test, resume=None):
         if config['savepath']:
             model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
 
+
+
         # If the training is stopped remotely training stops
         if force_stop:
             break
+
+
 
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
     y_pred = model.predict_classes(test.X_train, verbose=0)
     dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred), classification_report(test.y_labels, y_pred))
-    train.close()
+
 
 
 if __name__ == '__main__':
