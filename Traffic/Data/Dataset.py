@@ -28,6 +28,7 @@ from Traffic.Config.Constants import process_path
 from keras.utils import np_utils
 from numpy.random import shuffle
 from Traffic.Util.Misc import list_days_generator
+from collections import Counter
 
 def name_days_file(ldays):
     """
@@ -57,6 +58,12 @@ class Dataset:
         """
         self.fname = datapath + '/' + "Data-" + name_days_file(ldays) + '-Z%0.2f-%s' % (zfactor, imgord) + '.hdf5'
         self.recode = recode
+        self.labprop = None
+        self.X_train = None
+        self.y_labels = None
+        self.input_shape = None
+        self.chunk_size = None
+        self.chunks = None
 
         if not os.path.isfile(self.fname):
             raise Exception('Data file does not exists')
@@ -106,6 +113,12 @@ class Dataset:
                 self.y_labels = [self.recode[i] for i in y_train]
                 self.nclasses = len(np.unique(self.y_labels))
 
+            cnt = Counter(self.y_labels)
+            lprop = {}
+            for l in cnt:
+                lprop[l] = cnt[l]/float(len(self.y_labels))
+
+            self.labprop = lprop
             self.y_train = np_utils.to_categorical(self.y_labels, self.nclasses)
             self.input_shape = self.X_train[0].shape
         else:
@@ -167,12 +180,11 @@ class Dataset:
             print("File Open")
         else:
             print("File Closed")
-        print ('NC= %d'% len(self.chunks))
-        print ('CS= %d'% self.chunk_size)
+        print ('NC= %d' % len(self.chunks))
+        print ('CS= %d' % self.chunk_size)
 
         if self.recode is not None:
-            print('RC = %s' %self.recode)
-
+            print('RC = %s' % self.recode)
 
 
 if __name__ == '__main__':

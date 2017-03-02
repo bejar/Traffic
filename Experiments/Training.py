@@ -68,10 +68,10 @@ def train_model_batch_lrate_schedule(model, config, test):
 
         # Train Epochs
         logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
-
+        train.open()
+        chunks, _ = train.chunks()
         for epoch in range(nepochs):
-            train.open()
-            chunks, _ = train.chunks()
+
 
             shuffle(chunks)
 
@@ -86,7 +86,6 @@ def train_model_batch_lrate_schedule(model, config, test):
                     lloss.append(loss)
                     lacc.append(acc)
 
-            train.close()
 
             logs['loss'] = float(np.mean(lloss))
             logs['acc'] = float(np.mean(lacc))
@@ -107,6 +106,7 @@ def train_model_batch_lrate_schedule(model, config, test):
         if force_stop:
             break
 
+    train.close()
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
     y_pred = model.predict_classes(test.X_train, verbose=0)
@@ -218,6 +218,7 @@ if __name__ == '__main__':
     test.open()
 
     test.in_memory()
+    config['test_lab_prop'] = test.labprop # Proportions of labels in the test set
 
     config['input_shape'] = test.input_shape
     config['num_classes'] = test.nclasses
