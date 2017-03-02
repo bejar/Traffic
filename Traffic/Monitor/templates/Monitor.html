@@ -86,12 +86,13 @@
         <th>Val Acc</th>
         <th>Graph</th>
         <th>Model</th>
+         <th>Report</th>
     </tr>
     {% for net in old|sort %}
     <tr>
         <td> {{net}}</td>
-        <td>{{old[net]['acc']}}</td>
-        <td>{{old[net]['val_acc']}}</td>
+        <td>{{'%0.3f'|format(old[net]['final_acc']|float)}}</td>
+        <td>{{'%0.3f'|format(old[net]['final_val_acc']|float)}}</td>
         <td>
              <form action="/Graph" method="post">
             <button type="submit" name="graph"  value={{net}}> Graph</button>
@@ -103,6 +104,13 @@
             </form>
 
         </td>
+        <td>
+           <form action="/Report" method="post">
+               <button type="submit" name="report"  value={{net}}> Report</button>
+            </form>
+
+        </td>
+
     </tr>
     {% endfor %}
 </table>

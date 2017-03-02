@@ -160,10 +160,10 @@ def train_model_batch(model, config, test, resume=None):
 
     # Train Epochs
     logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
-
+    train.open()
+    chunks, _ = train.chunks()
     for epoch in range(iepoch, config['train']['epochs']):
-        train.open()
-        chunks, _ = train.chunks()
+
         shuffle(chunks)
 
         # Train Batches
@@ -176,7 +176,6 @@ def train_model_batch(model, config, test, resume=None):
                 loss, acc = model.train_on_batch(train.X_train[p], train.y_train[p], class_weight=classweight)
                 lloss.append(loss)
                 lacc.append(acc)
-        train.close()
 
         logs['loss'] = float(np.mean(lloss))
         logs['acc'] = float(np.mean(lacc))
@@ -192,6 +191,7 @@ def train_model_batch(model, config, test, resume=None):
         # If the training is stopped remotely training stops
         if force_stop:
             break
+    train.close()
 
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
     dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})

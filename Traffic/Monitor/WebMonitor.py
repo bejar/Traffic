@@ -86,8 +86,6 @@ def info():
             res[id]['init'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tminit))
             res[id]['upd'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd))
             res[id]['end'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd+(tepoch*ep)))
-
-
             res[id]['eptime'] = ((tmupd-tminit)/ (len(v['acc']))) /60.0
 
             if len(v['acc']) >1:
@@ -97,17 +95,15 @@ def info():
                 res[id]['acc_dir'] = True
                 res[id]['val_acc_dir'] = True
 
-
-
-    vals = col.find({'done': True, 'final_val_acc': {'$gt': 0.7}},
+    vals = col.find({'done': True, 'final_val_acc': {'$gt': 0.67}},
                     {'_id': 1,'final_acc': 1, 'final_val_acc': 1, 'val_loss': 1})
 
     old = {}
 
     for v in vals:
-        res[v['_id']] = {}
-        res[v['_id']]['final_acc'] = v['final_acc']
-        res[v['_id']]['final_val_acc'] = v['final_val_acc']
+        old[v['_id']] = {}
+        old[v['_id']]['final_acc'] = v['final_acc']
+        old[v['_id']]['final_val_acc'] = v['final_val_acc']
 
 
     return render_template('Monitor.html', data=res, old=old)
@@ -310,7 +306,7 @@ def report():
 
     :return:
     """
-    payload = request.form['model']
+    payload = request.form['report']
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
