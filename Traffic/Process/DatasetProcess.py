@@ -419,7 +419,7 @@ def chunkify(lchunks, size, test = False):
     return lcut
 
 
-def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th', test=False):
+def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th', test=False, compress='gzip'):
     """
     Generates an hdf5 file for a list of days with blocks of data for training
     It need the files for each day, the data is grouped and chunked in same sized
@@ -468,13 +468,13 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
 
         namechunk = 'chunk%03d' % nchunk
         sfile.require_dataset(namechunk + '/' + 'data', X_train.shape, dtype='f',
-                              data=X_train, compression='gzip')
+                              data=X_train, compression=compress)
 
         sfile.require_dataset(namechunk + '/' + 'labels', y_train.shape, dtype='i',
-                              data=y_train, compression='gzip')
+                              data=y_train, compression=compress)
 
         sfile.require_dataset(namechunk + '/' + 'imgpath', (len(imgpath), 1), dtype='S100',
-                              data=imgpath, compression='gzip')
+                              data=imgpath, compression=compress)
         sfile.flush()
     sfile.close()
 

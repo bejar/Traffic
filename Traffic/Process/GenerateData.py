@@ -36,6 +36,8 @@ if __name__ == '__main__':
     parser.add_argument('--idate', default='20161101', help='First day')
     parser.add_argument('--fdate', default='20161130', help='Final day')
     parser.add_argument('--augmentation', default=False, help='Use data augmentation')
+    # for compresssing uses as value in the parameter gzip
+    parser.add_argument('--compress', default=None, help='Compression for the HDF5 file')
 
     args = parser.parse_args()
 
@@ -53,6 +55,7 @@ if __name__ == '__main__':
     print 'CHS = ', chunk
     print 'DLY = ', mxdelay
     print 'TEST = ', args.test
+    print 'COMPRESS = ', args.compress
 
     print
     print 'Generating days ...'
@@ -66,5 +69,5 @@ if __name__ == '__main__':
 
     print
     print 'Generating HDF5 file ...'
-    generate_training_dataset(process_path, days, chunk=chunk, z_factor=z_factor, imgordering=imgord, test=args.test)
+    generate_training_dataset(process_path, days, chunk=chunk, z_factor=z_factor, imgordering=imgord, test=args.test, compress=args.compress)
 
