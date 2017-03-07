@@ -32,6 +32,7 @@ def add_full_layer(model, fullsize, regfull, classes):
     """
     adds to the model a set of full layers and a final layer for the classes
 
+    :param classes:
     :param model:
     :param fullsize:
     :param regfull:
@@ -48,12 +49,13 @@ def add_full_layer(model, fullsize, regfull, classes):
 
     model.add(Dense(classes, activation='softmax'))
 
+
 def add_pooling(model, method, psize):
     """
     adds pooling to the model
+    :param psize:
     :param model:
     :param method:
-    :param stride:
     :return:
     """
     if method == 'max':
@@ -61,10 +63,11 @@ def add_pooling(model, method, psize):
     if method == 'average':
         model.add(AveragePooling2D(pool_size=psize))
 
+
 def simple_model(config):
     """
     Simple convolutional models
-    :param smodel:
+    :param config:
     :return:
     """
     input_shape = config['input_shape']
@@ -76,35 +79,44 @@ def simple_model(config):
     pmethod = config['convolayers']['pool'][0]
     psize = (config['convolayers']['pool'][1], config['convolayers']['pool'][2])
 
-
     fulllayer = config['fulllayers']['sizes']
     regfull = config['fulllayers']['reg']
 
     smodel = config['model']
-
+    model = None
     if smodel == 1:
         # Model 1
         model = Sequential()
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(
+            Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same',
+                          activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         add_pooling(model, pmethod, psize)
         model.add(Flatten())
         add_full_layer(model, fulllayer, regfull, num_classes)
     elif smodel == 2:
         # Model 2 - Six convolutionals
         model = Sequential()
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same'))
+        model.add(
+            Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu',
+                          border_mode='same'))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         add_pooling(model, pmethod, psize)
-        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         add_pooling(model, pmethod, psize)
-        model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-3], convofield[1], convofield[1], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         add_pooling(model, pmethod, psize)
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
@@ -112,13 +124,18 @@ def simple_model(config):
     elif smodel == 3:
         # Model 3 - Four convolutionals
         model = Sequential()
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(
+            Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, activation='relu',
+                          border_mode='same', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         add_pooling(model, pmethod, psize)
-        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-2], convofield[1], convofield[1], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         add_pooling(model, pmethod, psize)
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))
@@ -126,9 +143,12 @@ def simple_model(config):
     elif smodel == 4:
         # Model 4 - Two convolutionals
         model = Sequential()
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same', activation='relu', W_constraint=maxnorm(3)))
+        model.add(
+            Convolution2D(convolayer[-1], convofield[0], convofield[0], input_shape=input_shape, border_mode='same',
+                          activation='relu', W_constraint=maxnorm(3)))
         model.add(Dropout(dropoutconvo))
-        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same', W_constraint=maxnorm(3)))
+        model.add(Convolution2D(convolayer[-1], convofield[0], convofield[0], activation='relu', border_mode='same',
+                                W_constraint=maxnorm(3)))
         add_pooling(model, pmethod, psize)
         model.add(Flatten())
         model.add(Dropout(dropoutconvo))

@@ -21,7 +21,7 @@ import glob
 from collections import Counter
 import numpy as np
 from Traffic.Config.Cameras import Cameras_ok
-from Traffic.Config.Constants import cameras_path, dataset_path, process_path,  status_path
+from Traffic.Config.Constants import cameras_path, dataset_path, process_path, status_path
 from Traffic.Data.DataTram import DataTram
 from Traffic.Process.CamTram import CamTram
 import pickle
@@ -36,6 +36,8 @@ def info_dataset(path, ldaysTr, z_factor, imgordering='th'):
     """
     Prints counts of the labels of the dataset for a list of days
 
+    :param path:
+    :param imgordering:
     :param ldaysTr:
     :param z_factor:
     :return:
@@ -54,11 +56,10 @@ def get_day_images_data(day, cpatt=None):
     """
     Return a dictionary with all the camera identifiers that exist for all the timestamps of the day
     cpatt allows to select only some cameras that match the pattern
+    :param day:
     :param cpatt:
     :return:
     """
-    camdic = {}
-
     if cpatt is not None:
         ldir = sorted(glob.glob(cameras_path + day + '/*' + cpatt + '*.gif'))
     else:
@@ -86,7 +87,7 @@ def get_day_predictions(day):
     :return:
     """
     ldir = glob.glob(status_path + day + '/*-dadestram.data')
-    if ldir == []:
+    if not ldir:
         raise Exception('Day does not exists')
     ldata = []
     for f in sorted(ldir):
@@ -103,6 +104,7 @@ def generate_classification_dataset_one(day, cpatt=None):
 
     (superseded by generate_labeled_dataset_day)
 
+    :param cpatt:
     :param day:
     :return:
     """
@@ -119,7 +121,7 @@ def generate_classification_dataset_one(day, cpatt=None):
         vmin = 60
         for d in ldata:
             diff = dist_time(imgtime, d.date)
-            if vmin > np.abs(diff): # Only if it is ahead in time
+            if vmin > np.abs(diff):  # Only if it is ahead in time
                 if imgtime - d.date > 0:
                     vmin2 = vmin
                     vmin = diff
@@ -150,6 +152,7 @@ def generate_classification_dataset_two(day, cpatt=None, mxdelay=60):
 
     (superseded by generate_labeled_dataset_day)
 
+    :param cpatt:
     :param day:
     :param mxdelay: Maximum delay distance between image and status label
     :return:
@@ -168,7 +171,7 @@ def generate_classification_dataset_two(day, cpatt=None, mxdelay=60):
         vmin2 = 70
         for d in ldata:
             diff = dist_time(imgtime, d.date)
-            if vmin > np.abs(diff): # Only if it is ahead in time
+            if vmin > np.abs(diff):  # Only if it is ahead in time
                 if diff >= 0:
                     vmin2 = vmin
                     vmin = diff
@@ -198,10 +201,9 @@ def generate_dataset(ldaysTr, z_factor, method='one', cpatt=None):
     """
     Generates a training and test datasets from the days in the parameters
     z_factor is the zoom factor to rescale the images
+    :param cpatt:
     :param ldaysTr:
-    :param ldaysTs:
     :param z_factor:
-    :param PCA:
     :param method:
     :return:
 
@@ -239,6 +241,10 @@ def generate_data_day(day, z_factor, method='two', mxdelay=60, log=False):
 
     Superseded by generate_labeled_dataset_day
 
+    :param log:
+    :param mxdelay:
+    :param method:
+    :param day:
     :param z_factor:
     :return:
     """
@@ -255,14 +261,15 @@ def generate_data_day(day, z_factor, method='two', mxdelay=60, log=False):
                 if log:
                     print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
 
-                image = TrImage(cameras_path + day + '/' + str(t) + '-' + cam + '.gif', z_factor=z_factor, crop=(5,5,5,5))
+                image = TrImage(cameras_path + day + '/' + str(t) + '-' + cam + '.gif', z_factor=z_factor,
+                                crop=(5, 5, 5, 5))
                 if image.correct():
                     ldata.append(image.get_data())
                     llabels.append(l)
                     limages.append(day + '/' + str(t) + '-' + cam)
 
     X_train = np.array(ldata)
-    X_train = X_train.transpose((0,3,1,2)) # Theano ordering
+    X_train = X_train.transpose((0, 3, 1, 2))  # Theano ordering
     llabels = [i - 1 for i in llabels]  # change labels from 1-5 to 0-4
     np.save(dataset_path + 'data-D%s-Z%0.2f.npy' % (day, z_factor), X_train)
     np.save(dataset_path + 'labels-D%s-Z%0.2f.npy' % (day, z_factor), np.array(llabels))
@@ -279,6 +286,7 @@ def generate_image_labels(day, mxdelay=30, onlyfuture=True):
     Generates a dictionary with the dates of the images with lists that contain the camera name and current
     traffic status using the two nearest prediction in space
 
+    :param onlyfuture:
     :param day:
     :param mxdelay: Maximum delay distance between image and status label
     :return:
@@ -321,9 +329,17 @@ def generate_image_labels(day, mxdelay=30, onlyfuture=True):
     return assoc
 
 
-def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=True, log=False, imgordering='th', augmentation=False):
+def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=True, log=False, imgordering='th',
+                                 augmentation=False):
     """
     Generates a raw dataset for a day with a zoom factor (data and labels)
+    :param augmentation:
+    :param imgordering:
+    :param log:
+    :param onlyfuture:
+    :param mxdelay:
+    :param day:
+    :param path:
     :param z_factor:
     :return:
     """
@@ -335,12 +351,12 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     image = TrImage()
     for t in dataset:
         for cam, l in dataset[t]:
-             if l != 0 and l != 6:
+            if l != 0 and l != 6:
                 if log:
                     print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 image.load_image(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if image.is_correct():
-                    ldata.append(image.transform_image(z_factor=z_factor, crop=(5,5,5,5)))
+                    ldata.append(image.transform_image(z_factor=z_factor, crop=(5, 5, 5, 5)))
                     llabels.append(l)
                     limages.append(day + '/' + str(t) + '-' + cam)
                     if augmentation:
@@ -352,7 +368,7 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
 
     X_train = np.array(ldata)
     if imgordering == 'th':
-        X_train = X_train.transpose((0,3,1,2)) # Theano image ordering
+        X_train = X_train.transpose((0, 3, 1, 2))  # Theano image ordering
 
     llabels = [i - 1 for i in llabels]  # change labels from 1-5 to 0-4
     np.save(path + 'data-D%s-Z%0.2f-%s.npy' % (day, z_factor, imgordering), X_train)
@@ -367,8 +383,9 @@ def load_generated_day(datapath, day, z_factor, imgordering='th'):
     Load the dataset for a given day returns a data matrix, a list of labels an a list
     of the names of the files of the examples
 
-    :param ldaysTr:
-    :param ldaysTs:
+    :param imgordering:
+    :param day:
+    :param datapath:
     :param z_factor:
     :return:
     """
@@ -382,9 +399,10 @@ def load_generated_day(datapath, day, z_factor, imgordering='th'):
     return X_train, y_train, img_path
 
 
-def chunkify(lchunks, size, test = False):
+def chunkify(lchunks, size, test=False):
     """
     Returns the saving list for the data with chunks_list of size = size
+    :param test:
     :param lchunks:
     :param size:
     :return:
@@ -415,11 +433,11 @@ def chunkify(lchunks, size, test = False):
             accum = 0
             csize += size
 
-
     return lcut
 
 
-def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th', test=False, compress='gzip'):
+def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th', test=False,
+                              compress='gzip'):
     """
     Generates an hdf5 file for a list of days with blocks of data for training
     It need the files for each day, the data is grouped and chunked in same sized
@@ -427,8 +445,13 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
 
     Some data may be discarded is the total number of examples is not a multiple of chunk
 
+    :param compress:
+    :param test:
+    :param imgordering:
+    :param z_factor:
+    :param chunk:
+    :param datapath:
     :param ldays:
-    :param zfactor:
     :return:
     """
 
@@ -440,7 +463,7 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
     lsave = chunkify(nlabels, chunk, test=test)
 
     nf = name_days_file(ldays)
-    sfile = h5py.File(datapath + '/Data-%s-Z%0.2f-%s.hdf5'% (nf, z_factor, imgordering), 'w')
+    sfile = h5py.File(datapath + '/Data-%s-Z%0.2f-%s.hdf5' % (nf, z_factor, imgordering), 'w')
 
     prev = {}
     for nchunk, save in enumerate(lsave):
@@ -478,8 +501,8 @@ def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgord
         sfile.flush()
     sfile.close()
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # days = list_days_generator(2016, 11, 1, 30) + list_days_generator(2016, 12, 1, 3)
     days = list_days_generator(2016, 12, 1, 2)
     z_factor = 0.25
@@ -497,4 +520,3 @@ if __name__ == '__main__':
 
     # Uncoment to generate a HDF5 file for a list of days
     generate_training_dataset(process_path, days, chunk=256, z_factor=z_factor, imgordering='th')
-

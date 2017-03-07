@@ -27,16 +27,15 @@
     <tr>
         <td> {{net}}</td>
         <td>{{data[net]['host']}}</td>
-       <td>
-           <form action="/BConfig" method="post">
-               <button type="submit" name="config"  value={{net}}> Config</button>
+        <td>
+            <form action="/BConfig" method="post">
+                <button type="submit" name="config" value={{net}}> Config</button>
             </form>
 
         </td>
     </tr>
     {% endfor %}
 </table>
-
 
 
 </body>

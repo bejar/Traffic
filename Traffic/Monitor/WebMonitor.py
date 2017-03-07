@@ -23,9 +23,10 @@ from flask import Flask, render_template, request
 from pymongo import MongoClient
 import StringIO
 
-import bokeh.plotting as plt
+# import bokeh.plotting as plt
 
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -37,7 +38,6 @@ from Traffic.Private.DBConfig import mongoconnection
 import pprint
 import time
 
-
 __author__ = 'bejar'
 
 # Configuration stuff
@@ -45,6 +45,7 @@ hostname = socket.gethostname()
 port = 8850
 
 app = Flask(__name__)
+
 
 @app.route('/Monitor')
 def info():
@@ -56,7 +57,9 @@ def info():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find({'done': False}, {'_id':1,'acc':1, 'loss': 1, 'val_acc':1, 'val_loss':1, 'host':1, 'time_upd':1, 'time_init': 1, 'config':1})
+    vals = col.find({'done': False},
+                    {'_id': 1, 'acc': 1, 'loss': 1, 'val_acc': 1, 'val_loss': 1, 'host': 1, 'time_upd': 1,
+                     'time_init': 1, 'config': 1})
 
     res = {}
     for v in vals:
@@ -70,11 +73,11 @@ def info():
                 epochdiscount = v['config']['train']['epochs_trained']
 
             tminit = time.mktime(time.strptime(v['time_init'], '%Y-%m-%d %H:%M:%S'))
-            tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S')) 
-            
-            tepoch = ((tmupd-tminit)/ (len(v['acc']) - epochdiscount))
+            tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
+
+            tepoch = ((tmupd - tminit) / (len(v['acc']) - epochdiscount))
             ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
-            id = int(tmupd+(tepoch*ep))
+            id = int(tmupd + (tepoch * ep))
 
             # id is the approximated end time in seconds, so the table will be sorted that way
             res[id] = {}
@@ -85,10 +88,10 @@ def info():
             res[id]['host'] = v['host']
             res[id]['init'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tminit))
             res[id]['upd'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd))
-            res[id]['end'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd+(tepoch*ep)))
-            res[id]['eptime'] = ((tmupd-tminit)/ (len(v['acc']))) /60.0
+            res[id]['end'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd + (tepoch * ep)))
+            res[id]['eptime'] = ((tmupd - tminit) / (len(v['acc']))) / 60.0
 
-            if len(v['acc']) >1:
+            if len(v['acc']) > 1:
                 res[id]['acc_dir'] = v['acc'][-1] > v['acc'][-2]
                 res[id]['val_acc_dir'] = v['val_acc'][-1] > v['val_acc'][-2]
             else:
@@ -96,7 +99,7 @@ def info():
                 res[id]['val_acc_dir'] = True
 
     vals = col.find({'done': True, 'final_val_acc': {'$gt': 0.67}},
-                    {'_id': 1,'final_acc': 1, 'final_val_acc': 1, 'val_loss': 1})
+                    {'_id': 1, 'final_acc': 1, 'final_val_acc': 1, 'val_loss': 1})
 
     old = {}
 
@@ -104,7 +107,6 @@ def info():
         old[v['_id']] = {}
         old[v['_id']]['final_acc'] = v['final_acc']
         old[v['_id']]['final_val_acc'] = v['final_val_acc']
-
 
     return render_template('Monitor.html', data=res, old=old)
 
@@ -119,7 +121,8 @@ def logs():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find({},  {'final_acc':1, 'final_val_acc':1, 'time_init': 1, 'time_end': 1, 'time_upd':1, 'acc':1,'done':1, 'mark':1, 'config':1})
+    vals = col.find({}, {'final_acc': 1, 'final_val_acc': 1, 'time_init': 1, 'time_end': 1, 'time_upd': 1, 'acc': 1,
+                         'done': 1, 'mark': 1, 'config': 1})
     res = {}
     for v in vals:
         if 'time_init' in v:
@@ -145,7 +148,8 @@ def logs():
 
     return render_template('Logs.html', data=res)
 
-@app.route('/Mark', methods=['GET','POST'])
+
+@app.route('/Mark', methods=['GET', 'POST'])
 def mark():
     """
     Marks an experiment
@@ -156,7 +160,7 @@ def mark():
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
-    vals = col.find_one({'_id': int(payload)},  {'mark':1, 'done':1})
+    vals = col.find_one({'_id': int(payload)}, {'mark': 1, 'done': 1})
 
     text = ' Not Marked'
     if vals['done']:
@@ -165,7 +169,7 @@ def mark():
         else:
             marked = not vals['mark']
 
-        col.update({'_id':vals['_id']},{'$set': {'mark': marked}})
+        col.update({'_id': vals['_id']}, {'$set': {'mark': marked}})
         text = ' Marked'
 
     head = """
@@ -179,11 +183,10 @@ def mark():
 """ % (hostname, port)
     end = '</body></html>'
 
-
     return head + str(payload) + text + end
 
 
-@app.route('/Delete', methods=['GET','POST'])
+@app.route('/Delete', methods=['GET', 'POST'])
 def delete():
     """
     Deletes a log
@@ -207,10 +210,10 @@ def delete():
 """ % (hostname, port)
     end = '</body></html>'
 
-
     return head + str(payload) + ' Removed' + end
 
-@app.route('/Graph', methods=['GET','POST'])
+
+@app.route('/Graph', methods=['GET', 'POST'])
 def graphic():
     """
     Generates a page with the training trace
@@ -218,8 +221,8 @@ def graphic():
     :return:
     """
 
-    lstyles = ['-', '-', '-', '-'] *3
-    lcolors = ['r', 'g', 'b', 'y'] *3
+    lstyles = ['-', '-', '-', '-'] * 3
+    lcolors = ['r', 'g', 'b', 'y'] * 3
     payload = request.form['graph']
 
     client = MongoClient(mongoconnection.server)
@@ -227,17 +230,17 @@ def graphic():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find_one({'_id': int(payload)}, {'acc':1, 'loss': 1, 'val_acc':1, 'val_loss':1})
+    vals = col.find_one({'_id': int(payload)}, {'acc': 1, 'loss': 1, 'val_acc': 1, 'val_loss': 1})
     if vals is not None:
         del vals['_id']
 
         img = StringIO.StringIO()
 
-        fig = plt.figure(figsize=(10,8),dpi=200)
-        axes = fig.add_subplot(1,1,1)
+        fig = plt.figure(figsize=(10, 8), dpi=200)
+        axes = fig.add_subplot(1, 1, 1)
 
         for v, color, style in zip(sorted(vals), lcolors, lstyles):
-            axes.plot(range(len(vals[v])),vals[v], color + style, label=v)
+            axes.plot(range(len(vals[v])), vals[v], color + style, label=v)
 
         axes.set_xlabel('epoch')
         axes.set_ylabel('acc/loss')
@@ -252,19 +255,19 @@ def graphic():
         plot_url = base64.b64encode(img.getvalue())
         plt.close()
 
-        return render_template('Graphview.html', plot_url=plot_url, acc=vals['acc'][-1], vacc=vals['val_acc'][-1], id=payload, ep=len(vals['acc']))
+        return render_template('Graphview.html', plot_url=plot_url, acc=vals['acc'][-1], vacc=vals['val_acc'][-1],
+                               id=payload, ep=len(vals['acc']))
     else:
         return ""
 
 
-@app.route('/Model', methods=['GET','POST'])
+@app.route('/Model', methods=['GET', 'POST'])
 def model():
     """
     Generates a page with the configuration of the training and the model
 
     :return:
     """
-
 
     payload = request.form['model']
 
@@ -273,7 +276,7 @@ def model():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find_one({'_id': int(payload)}, {'model':1, 'config':1, 'svgmodel':1})
+    vals = col.find_one({'_id': int(payload)}, {'model': 1, 'config': 1, 'svgmodel': 1})
     pp = pprint.PrettyPrinter(indent=4)
 
     if 'svgmodel' in vals:
@@ -293,13 +296,13 @@ def model():
 
     return head + \
            '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=60).replace('\n', '<br>') + \
-           '<br><br><h2>Graph:</h2><br><br>' + svgmodel +'<br><br><h2>Net:</h2><br><br>'+ \
+           '<br><br><h2>Graph:</h2><br><br>' + svgmodel + '<br><br><h2>Net:</h2><br><br>' + \
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
-            '<br>' + \
+           '<br>' + \
            end
 
 
-@app.route('/Report', methods=['GET','POST'])
+@app.route('/Report', methods=['GET', 'POST'])
 def report():
     """
     Returns a web page with the classification report
@@ -313,7 +316,7 @@ def report():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    vals = col.find_one({'_id': int(payload)}, {'report':1, 'confusion':1})
+    vals = col.find_one({'_id': int(payload)}, {'report': 1, 'confusion': 1})
 
     head = """
     <!DOCTYPE html>
@@ -328,14 +331,14 @@ def report():
     if 'report' in vals:
         return head + \
                '<br><h2>Report:</h2><pre>' + vals['report'] + \
-               '</pre><br><br><h2>Confusion:</h2><pre>' + vals['confusion'] +'</pre><br><br>' + \
+               '</pre><br><br><h2>Confusion:</h2><pre>' + vals['confusion'] + '</pre><br><br>' + \
                end
 
     else:
         return 'No report'
 
 
-@app.route('/Stop', methods=['GET','POST'])
+@app.route('/Stop', methods=['GET', 'POST'])
 def stop():
     """
     Writes on the DB configuration of the process that it has to stop the next epoch
@@ -360,7 +363,6 @@ def stop():
 <body>
 """ % (hostname, port)
     end = '</body></html>'
-
 
     return head + str(payload) + ' Stopped' + end
 

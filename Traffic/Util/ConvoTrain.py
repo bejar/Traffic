@@ -17,7 +17,6 @@ ConvoTrain
 
 """
 
-__author__ = 'bejar'
 
 import numpy as np
 from Traffic.Callback.DBLog import DBLog
@@ -33,17 +32,20 @@ __author__ = 'bejar'
 
 K.set_image_dim_ordering('th')
 
+
 def transweights(weights):
     wtrans = {}
     for v in weights:
         wtrans[str(v)] = weights[v]
     return wtrans
 
+
 def detransweights(weights):
     wtrans = {}
     for v in weights:
         wtrans[int(v)] = weights[v]
     return wtrans
+
 
 def train_model(model, config, train, test, test_labels, generator=None, samples_epoch=10000):
     """
@@ -71,9 +73,9 @@ def train_model(model, config, train, test, test_labels, generator=None, samples
         model.fit(train[0], train[1], validation_data=(test[0], test[1]), nb_epoch=config['train']['epochs'],
                   batch_size=config['train']['batchsize'], callbacks=[dblog], class_weight=classweight, verbose=0)
     else:
-        model.fit_generator(generator, samples_per_epoch=samples_epoch, validation_data=(test[0], test[1]), nb_epoch=config['train']['epochs'],
-                   callbacks=[dblog], class_weight=classweight, verbose=0)
-
+        model.fit_generator(generator, samples_per_epoch=samples_epoch, validation_data=(test[0], test[1]),
+                            nb_epoch=config['train']['epochs'],
+                            callbacks=[dblog], class_weight=classweight, verbose=0)
 
     scores = model.evaluate(test[0], test[1], verbose=0)
     y_pred = model.predict_classes(test[0], verbose=0)
@@ -85,13 +87,15 @@ def train_model_batch(model, config, test, test_labels, acctrain=False, resume=N
     """
     Trains the model using Keras batch method
 
+    :param resume:
+    :param acctrain:
     :param model:
     :param config:
     :param test:
     :param test_labels:
     :return:
     """
-
+    iepoch = 0
     if config['optimizer']['method'] == 'adagrad':
         optimizer = Adagrad()
     elif config['optimizer']['method'] == 'adadelta':
@@ -104,7 +108,7 @@ def train_model_batch(model, config, test, test_labels, acctrain=False, resume=N
             optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['decay'],
                             nesterov=params['nesterov'])
             iepoch = 0
-        else: # Resume training
+        else:  # Resume training
             lrate = params['lrate'] - ((params['lrate'] / config['train']['epochs']) * params['epochs_trained'])
 
             optimizer = SGD(lr=lrate, momentum=params['momentum'], decay=params['decay'],
@@ -120,7 +124,7 @@ def train_model_batch(model, config, test, test_labels, acctrain=False, resume=N
     reb = config['rebalanced']
 
     # Train Epochs
-    logs = {'loss':0.0, 'acc':0.0, 'val_loss':0.0, 'val_acc':0.0}
+    logs = {'loss': 0.0, 'acc': 0.0, 'val_loss': 0.0, 'val_acc': 0.0}
     for epoch in range(iepoch, config['train']['epochs']):
         shuffle(ldaysTr)
         tloss = []
@@ -128,7 +132,8 @@ def train_model_batch(model, config, test, test_labels, acctrain=False, resume=N
 
         # Train Batches
         for day in ldaysTr:
-            X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'], config['train']['batchsize'], reb=reb, imgord=config['imgord'])
+            X_train, y_train, perm = dayGenerator(config['datapath'], day, config['zfactor'], config['num_classes'],
+                                                  config['train']['batchsize'], reb=reb, imgord=config['imgord'])
             for p in perm:
                 loss = model.train_on_batch(X_train[p], y_train[p], class_weight=classweight)
                 tloss.append(loss[0])
@@ -162,7 +167,7 @@ def train_model_batch(model, config, test, test_labels, acctrain=False, resume=N
             model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
 
     scores = model.evaluate(test[0], test[1], verbose=0)
-    dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
+    dblog.on_train_end(logs={'acc': logs['acc'], 'val_acc': scores[1]})
     y_pred = model.predict_classes(test[0], verbose=0)
     dblog.save_final_results(scores, confusion_matrix(test_labels, y_pred), classification_report(test_labels, y_pred))
 
@@ -204,8 +209,8 @@ def load_generated_dataset(datapath, ldaysTr, z_factor):
     """
     Load the already generated datasets
 
+    :param datapath:
     :param ldaysTr:
-    :param ldaysTs:
     :param z_factor:
     :return:
     """
@@ -218,4 +223,3 @@ def load_generated_dataset(datapath, ldaysTr, z_factor):
     X_train = np.concatenate(ldata)
 
     return X_train, y_train
-

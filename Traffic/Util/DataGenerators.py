@@ -35,7 +35,7 @@ def list_days_generator(year, month, iday, fday):
     :return:
     """
     ldays = []
-    for v in range(iday, fday+1):
+    for v in range(iday, fday + 1):
         ldays.append("%d%d%02d" % (year, month, v))
     return ldays
 
@@ -49,9 +49,13 @@ def name_days_file(ldays):
     """
     return ldays[0] + '-' + ldays[-1]
 
+
 def load_days(datapath, days, z_factor, reb=False):
     """
     loads and contatenates files from a list of days
+    :param reb:
+    :param z_factor:
+    :param datapath:
     :param days:
     :return:
     """
@@ -77,6 +81,10 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
 
     NOTE: Something weird is happening with training with generators so this is not used currently
 
+    :param groups:
+    :param batchsize:
+    :param nclasses:
+    :param z_factor:
     :param days:
     :return:
     """
@@ -93,7 +101,7 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
         for lday in lgroups:
             data, labels = load_days(lday, z_factor)
 
-            limit = (data.shape[0]//batchsize) - 1
+            limit = (data.shape[0] // batchsize) - 1
             X_train = data
 
             y_trainO = labels
@@ -108,7 +116,6 @@ def simpleDataGenerator(days, z_factor, nclasses, batchsize, groups):
                         gperm.append(perm[i + j])
                 lperm.append(gperm)
 
-
             for i in range(limit):
                 yield X_train[lperm[i]], y_train[lperm[i]]
 
@@ -118,6 +125,9 @@ def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord
     Load the data for a day and returns a random permutation for
     generating the random batches
 
+    :param imgord:
+    :param reb:
+    :param datapath:
     :param day:
     :param z_factor:
     :param nclasses:
@@ -125,7 +135,6 @@ def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord
     :return:
     """
     data, labels = load_days(datapath, [day], z_factor, reb=reb)
-
 
     X_train = data
     y_trainO = labels
@@ -144,10 +153,8 @@ def dayGenerator(datapath, day, z_factor, nclasses, batchsize, reb=False, imgord
     return X_train, y_train, lperm
 
 
-
 if __name__ == '__main__':
     ldays = list_days_generator(2016, 11, 12, 12)
     gen = simpleDataGenerator(ldays, 0.25, 5, 100, 5)
     for d in gen:
         print(d[0])
-

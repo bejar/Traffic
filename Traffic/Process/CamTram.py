@@ -16,13 +16,12 @@ CamTram
 :Created on: 14/11/2016 14:05 
 
 """
+from Traffic.Config.Constants import info_path
 
 __author__ = 'bejar'
 
-from Traffic.Config.Constants import info_path
 
 class CamTram:
-
     ct = None
 
     def __init__(self):

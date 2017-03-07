@@ -28,15 +28,15 @@
         <th>Graph</th>
         <th>Model</th>
         <th>Report</th>
-         <th>Delete</th>
-          <th>Mark</th>
+        <th>Delete</th>
+        <th>Mark</th>
 
-   </tr>
+    </tr>
     {% for net in data|sort %}
     <tr>
         {%if data[net]['mark']%}
         <td><span style="color:blue"> {{net}}</span></td>
-       {% else %}
+        {% else %}
         <td>{{net}}</td>
         {% endif %}
         <td>{{data[net]['zfactor']}}</td>
@@ -46,28 +46,28 @@
         <td>{{'%0.3f'|format(data[net]['val_acc']|float)}}</td>
         <td>
             <form action="/Graph" method="post">
-            <button type="submit" name="graph"  value={{net}}> Graph </button>
-            </form>
-        </td>
-       <td>
-           <form action="/Model" method="post">
-               <button type="submit" name="model"  value={{net}}> Model</button>
+                <button type="submit" name="graph" value={{net}}> Graph</button>
             </form>
         </td>
         <td>
-           <form action="/Report" method="post">
-               <button type="submit" name="report"  value={{net}}> Report</button>
+            <form action="/Model" method="post">
+                <button type="submit" name="model" value={{net}}> Model</button>
+            </form>
+        </td>
+        <td>
+            <form action="/Report" method="post">
+                <button type="submit" name="report" value={{net}}> Report</button>
             </form>
 
         </td>
-      <td>
-           <form action="/Delete" method="post">
-               <button type="submit" name="delete"  value={{net}}> Delete</button>
+        <td>
+            <form action="/Delete" method="post">
+                <button type="submit" name="delete" value={{net}}> Delete</button>
             </form>
         </td>
-      <td>
-           <form action="/Mark" method="post">
-               <button type="submit" name="mark"  value={{net}}> Mark</button>
+        <td>
+            <form action="/Mark" method="post">
+                <button type="submit" name="mark" value={{net}}> Mark</button>
             </form>
         </td>
     </tr>

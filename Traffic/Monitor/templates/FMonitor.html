@@ -34,12 +34,12 @@
         <th>Model</th>
         <th>Report</th>
         <th>Stop</th>
-     </tr>
+    </tr>
     {% for net in data|sort%}
     <tr>
-       {%if data[net]['done']%}
+        {%if data[net]['done']%}
         <td><span style="color:red"> {{net}}</span></td>
-       {% else %}
+        {% else %}
         <td>{{data[net]['id']}}</td>
         {% endif %}
         <td>{{data[net]['zfactor']}}</td>
@@ -51,35 +51,35 @@
         <td>{{'%0.3f'|format(data[net]['acc']|float)}}</td>
         {% if data[net]['acc_dir'] %}
         <td style="text-align:center">+</td>
-       {% else %}
+        {% else %}
         <td style="text-align:center">-</td>
         {% endif %}
         <td>{{'%0.3f'|format(data[net]['val_acc']|float)}}</td>
         {% if data[net]['val_acc_dir'] %}
         <td style="text-align:center">+</td>
-       {% else %}
+        {% else %}
         <td style="text-align:center">-</td>
         {% endif %}
         <td>
             <form action="/Graph" method="post">
-            <button type="submit" name="graph"  value={{data[net]['id']}}> Graph </button>
+                <button type="submit" name="graph" value={{data[net]['id']}}> Graph</button>
             </form>
         </td>
-       <td>
-           <form action="/Model" method="post">
-               <button type="submit" name="model"  value={{data[net]['id']}}> Model</button>
-            </form>
-
-        </td>
-         <td>
-           <form action="/Report" method="post">
-               <button type="submit" name="model"  value={{net}}> Report</button>
+        <td>
+            <form action="/Model" method="post">
+                <button type="submit" name="model" value={{data[net]['id']}}> Model</button>
             </form>
 
         </td>
-     <td>
-           <form action="/Stop" method="post">
-               <button type="submit" name="model"  value={{data[net]['id']}}>Stop!l</button>
+        <td>
+            <form action="/Report" method="post">
+                <button type="submit" name="model" value={{net}}> Report</button>
+            </form>
+
+        </td>
+        <td>
+            <form action="/Stop" method="post">
+                <button type="submit" name="model" value={{data[net]['id']}}>Stop!l</button>
             </form>
 
         </td>
@@ -105,13 +105,13 @@
         <td>{{old[net]['acc']}}</td>
         <td>{{old[net]['val_acc']}}</td>
         <td>
-             <form action="/Graph" method="post">
-            <button type="submit" name="graph"  value={{net}}> Graph</button>
+            <form action="/Graph" method="post">
+                <button type="submit" name="graph" value={{net}}> Graph</button>
             </form>
         </td>
-       <td>
-           <form action="/Model" method="post">
-               <button type="submit" name="model"  value={{net}}> Model</button>
+        <td>
+            <form action="/Model" method="post">
+                <button type="submit" name="model" value={{net}}> Model</button>
             </form>
 
         </td>

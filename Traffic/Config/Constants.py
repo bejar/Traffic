@@ -29,11 +29,9 @@ process_path = '/home/bejar/storage/Data/Traffic/Process/'
 models_path = '/home/bejar/storage/Data/Traffic/Models/'
 info_path = '/home/bejar/storage/Data/Traffic/Info/'  # Files used for processing the data
 
-
 # Madrid Data
 data_path_MAD = '/home/bejar/storage/Data/TrafficMAD/'
 cameras_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Cameras/'
 status_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Status/'
 results_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Results'
 dataset_path_MAD = '/home/bejar/storage/Data/TrafficMAD/Datasets/'
-

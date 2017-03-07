@@ -18,7 +18,7 @@ Dataset
 
 """
 
-__author__ = 'bejar'
+
 
 import os.path
 
@@ -29,6 +29,8 @@ from keras.utils import np_utils
 from numpy.random import shuffle
 from Traffic.Util.Misc import list_days_generator
 from collections import Counter
+
+__author__ = 'bejar'
 
 def name_days_file(ldays):
     """
@@ -45,7 +47,6 @@ def name_days_file(ldays):
 
 
 class Dataset:
-
     def __init__(self, datapath, ldays, zfactor, imgord='th', nclasses=None, recode=None):
         """
         Checks if the file exists
@@ -64,6 +65,8 @@ class Dataset:
         self.input_shape = None
         self.chunk_size = None
         self.chunks = None
+        self.y_train = None
+        self.perm = None
 
         if not os.path.isfile(self.fname):
             raise Exception('Data file does not exists')
@@ -117,7 +120,7 @@ class Dataset:
             lprop = {}
             for l in cnt:
                 # String key because is going to be converted to JSON
-                lprop[str(l)] = cnt[l]/float(len(self.y_labels))
+                lprop[str(l)] = cnt[l] / float(len(self.y_labels))
 
             self.labprop = lprop
             self.y_train = np_utils.to_categorical(self.y_labels, self.nclasses)
@@ -128,6 +131,7 @@ class Dataset:
     def load_chunk(self, chunk, batchsize):
         """
         Loads a chunk from the file
+        :param batchsize:
         :param chunk:
         :return:
         """
@@ -190,6 +194,7 @@ class Dataset:
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
+
     d = Dataset(process_path, [[2016, 11, 1, 30]], 0.25, nclasses=5)
     d.open()
     chunks, _ = d.chunks_list()
@@ -200,13 +205,13 @@ if __name__ == '__main__':
     # d.in_memory()
     d.load_chunk(chunks[0], 128)
 
-    print (d.X_train[0].transpose((1,2,0))).shape
+    print (d.X_train[0].transpose((1, 2, 0))).shape
 
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(10)
-    sp1 = fig.add_subplot(1,1,1)
-    sp1.imshow(d.X_train[100].transpose((1,2,0)))
+    sp1 = fig.add_subplot(1, 1, 1)
+    sp1.imshow(d.X_train[100].transpose((1, 2, 0)))
     plt.show()
     plt.close()
 

@@ -28,7 +28,6 @@ TrImage
 
 """
 
-
 from scipy.ndimage import zoom, imread
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,8 +38,7 @@ from Traffic.Config.Constants import info_path
 __author__ = 'bejar'
 
 
-class TrImage():
-
+class TrImage:
     def __init__(self):
         """
         Object to process camera images.
@@ -80,7 +78,7 @@ class TrImage():
             raise Exception('Image already transformed')
         return self.correct
 
-    def transform_image(self, z_factor, crop=(0,0,0,0)):
+    def transform_image(self, z_factor, crop=(0, 0, 0, 0)):
         """
         Performs the transformation of the image
 
@@ -91,9 +89,10 @@ class TrImage():
         :return:
         """
         if self.data is not None and not self.trans:
-            img = self.data.crop((crop[0], crop[2], self.data.size[0]-crop[1], self.data.size[1]-crop[3]))
-            img = img.resize((int(z_factor * img.size[0]), int(z_factor * img.size[1])), PIL.Image.ANTIALIAS).convert('RGB')
-            self.data = np.asarray(img)/255.0  # Normalize to [0-1] range
+            img = self.data.crop((crop[0], crop[2], self.data.size[0] - crop[1], self.data.size[1] - crop[3]))
+            img = img.resize((int(z_factor * img.size[0]), int(z_factor * img.size[1])), PIL.Image.ANTIALIAS).convert(
+                'RGB')
+            self.data = np.asarray(img) / 255.0  # Normalize to [0-1] range
         else:
             raise Exception('Image already transformed')
         return self.data
@@ -131,24 +130,26 @@ class TrImage():
         fig = plt.figure()
         fig.set_figwidth(10)
         fig.set_figheight(10)
-        sp1 = fig.add_subplot(1,1,1)
+        sp1 = fig.add_subplot(1, 1, 1)
         sp1.imshow(self.data)
         plt.show()
         plt.close()
 
+
 if __name__ == '__main__':
     from Traffic.Config.Constants import cameras_path
+
     image = TrImage()
     image.load_image(cameras_path + '/20161101/201611011453-RondaLitoralZonaFranca.gif')
     image.show()
     if image.is_correct():
-        im = image.transform_image(z_factor=0.5, crop=(5,5,5,5))
+        im = image.transform_image(z_factor=0.5, crop=(5, 5, 5, 5))
         print im.shape
         image.show()
     image.load_image(cameras_path + '/20161101/201611010004-PlPauVila.gif')
     image.show()
     if image.is_correct():
-        im = image.transform_image(z_factor=0.5, crop=(5,5,5,5))
+        im = image.transform_image(z_factor=0.5, crop=(5, 5, 5, 5))
         print im.shape
         image.show()
     else:

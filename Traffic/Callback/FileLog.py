@@ -27,6 +27,7 @@ import numpy as np
 from numpy.random import randint
 from Traffic.Util.Misc import load_config_file
 
+
 class FileLog(Callback):
     """
     Callback used to stream events to a DB
@@ -49,7 +50,7 @@ class FileLog(Callback):
                        'done': False
                        }
 
-        with open(self.backup['config']['savepath']+ '/' + str(self.id) + '.json', 'w') as outfile:
+        with open(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', 'w') as outfile:
             json.dump(self.backup, outfile)
 
     def on_epoch_end(self, epoch, logs={}):
@@ -74,6 +75,7 @@ class FileLog(Callback):
     def save_final_results(self, accuracy, confusion, report):
         """
         Adds  accuracy, confusion matrix and classification report to the DB
+        :param accuracy:
         :param confusion:
         :param report:
         :return:
@@ -100,7 +102,7 @@ class FileLog(Callback):
         """
 
         if len(self.config['val_acc']) > 1:
-            return(self.config['val_acc'][-1] > np.max(self.config['val_acc'][:-1]))
+            return self.config['val_acc'][-1] > np.max(self.config['val_acc'][:-1])
         else:
             return True
 
@@ -110,7 +112,7 @@ class FileLog(Callback):
         This stop is triggered remotely by the log webpage
         :return:
         """
-        config = load_config_file(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', abs=True)
+        config = load_config_file(self.backup['config']['savepath'] + '/' + str(self.id) + '.json', abspath=True)
 
         if 'stop' in config:
             return config['stop']

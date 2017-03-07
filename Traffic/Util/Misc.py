@@ -21,6 +21,7 @@ import json
 
 __author__ = 'bejar'
 
+
 def recoding_dictionary(recode):
     """
     Transforms a recoding string into a recoding dictionary
@@ -31,19 +32,21 @@ def recoding_dictionary(recode):
     rec = {}
     for c in code:
         k, v = c.split('|')
-        rec[int(k)] =int(v)
+        rec[int(k)] = int(v)
     return rec
 
-def load_config_file(nfile, abs=False):
-    '''
+
+def load_config_file(nfile, abspath=False):
+    """
     Read the configuration from a json file
 
+    :param abspath:
     :param nfile:
     :return:
-    '''
+    """
     ext = '.json' if 'json' not in nfile else ''
-    pre = '' if abs else './'
-    fp = open(pre + nfile + ext , 'r')
+    pre = '' if abspath else './'
+    fp = open(pre + nfile + ext, 'r')
 
     s = ''
 
@@ -88,9 +91,10 @@ def list_days_generator(year, month, iday, fday):
     :return:
     """
     ldays = []
-    for v in range(iday, fday+1):
+    for v in range(iday, fday + 1):
         ldays.append("%04d%02d%02d" % (year, month, v))
     return ldays
+
 
 def list_range_days_generator(idate, fdate):
     """
@@ -103,31 +107,31 @@ def list_range_days_generator(idate, fdate):
     :return:
     """
 
-    ndays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] # no leap year
+    ndays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]  # no leap year
     irange = (int(idate[0:4]), int(idate[4:6]), int(idate[6:8]))
     erange = (int(fdate[0:4]), int(fdate[4:6]), int(fdate[6:8]))
 
     if 0 < irange[1] <= 12 and 0 < erange[1] <= 12:
         if irange[0] == erange[0]:  # Same Year
-            if irange[1] == erange[1]: # Same Month
+            if irange[1] == erange[1]:  # Same Month
                 ldays = list_days_generator(irange[0], irange[1], irange[2], erange[2])
             else:  # Several months
                 ldays = list_days_generator(irange[0], irange[1], irange[2], ndays[irange[1]])
-                for i in range (irange[1]+1, erange[1]):
+                for i in range(irange[1] + 1, erange[1]):
                     ldays.extend(list_days_generator(irange[0], i, 1, ndays[i]))
                 ldays.extend(list_days_generator(irange[0], erange[1], 1, erange[2]))
         else:
             if erange[0] - irange[0] <= 1:
                 ldays = list_days_generator(irange[0], irange[1], irange[2], ndays[irange[1]])
-                for i in range (irange[1]+1, 13):
+                for i in range(irange[1] + 1, 13):
                     ldays.extend(list_days_generator(irange[0], i, 1, ndays[i]))
-                for i in range (1, erange[1]):
+                for i in range(1, erange[1]):
                     ldays.extend(list_days_generator(erange[0], i, 1, ndays[i]))
                 ldays.extend(list_days_generator(erange[0], erange[1], 1, erange[2]))
 
 
             else:
-               raise Exception('More than a year')
+                raise Exception('More than a year')
 
     else:
         raise Exception('Wrong month number')

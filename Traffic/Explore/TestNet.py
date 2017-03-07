@@ -25,8 +25,8 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 from Traffic.Config.Constants import models_path, dataset_path, cameras_path
-from Util.ConvoTrain import load_generated_dataset
-from Util.DataGenerators import list_days_generator
+from Traffic.Util.ConvoTrain import load_generated_dataset
+from Traffic.Util.DataGenerators import list_days_generator
 from keras.utils import np_utils
 from sklearn.metrics import confusion_matrix, classification_report
 
@@ -48,9 +48,11 @@ def view_image(im, lab, pred):
     plt.show()
     plt.close()
 
+
 def load_day_files(day, z_factor):
     """
     loads the names of the files corresponding to the examples of a day dataset
+    :param z_factor:
     :param day:
     :return:
     """
@@ -59,6 +61,7 @@ def load_day_files(day, z_factor):
     output.close()
 
     return limages
+
 
 if __name__ == '__main__':
     nclasses = 5
@@ -87,9 +90,3 @@ if __name__ == '__main__':
     for s, s2, l, p, im in zip(sel, sel2, yO, y_pred, limages):
         if s and s2:
             view_image(im, l, p)
-
-
-
-
-
-

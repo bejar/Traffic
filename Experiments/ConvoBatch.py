@@ -1,4 +1,4 @@
-'''
+"""
 .. module:: ConvoBatch
 
 ConvoBatch
@@ -13,13 +13,11 @@ ConvoBatch
 
 :Authors: bejar
 
-:Version: 
+:Version:
 
-:Created on: 23/12/2016 15:05 
+:Created on: 23/12/2016 15:05
 
-'''
-
-__author__ = 'bejar'
+"""
 
 import argparse
 
@@ -34,8 +32,6 @@ from pymongo import MongoClient
 from Traffic.Util.Misc import load_config_file, transweights
 
 __author__ = 'bejar'
-
-
 
 if __name__ == '__main__':
 
@@ -115,7 +111,7 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
-        vals = col.find_one({'_id': int(args.retrain)}, {'config':1})
+        vals = col.find_one({'_id': int(args.retrain)}, {'config': 1})
         if vals is None:
             raise ValueError('This experiment does not exist ' + args.retrain)
         else:
@@ -130,7 +126,7 @@ if __name__ == '__main__':
             config['fulllayers'] = vals['config']['fulllayers']
             config['cont'] = args.retrain
             model = keras.models.load_model(config['savepath'] + args.retrain + '.h5')
-    elif args.resume is not None: # Network interrupted
+    elif args.resume is not None:  # Network interrupted
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)

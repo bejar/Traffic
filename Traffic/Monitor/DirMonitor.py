@@ -25,9 +25,9 @@ import glob
 from flask import Flask, render_template, request
 import StringIO
 
-
 import matplotlib
-matplotlib.use('Agg')
+
+
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
@@ -41,7 +41,7 @@ import json
 
 from Traffic.Util.Misc import load_config_file
 
-
+matplotlib.use('Agg')
 __author__ = 'bejar'
 
 # Configuration stuff
@@ -49,6 +49,7 @@ hostname = socket.gethostname()
 port = 8850
 
 app = Flask(__name__)
+
 
 def retrieve_all(datafiles):
     """
@@ -58,13 +59,14 @@ def retrieve_all(datafiles):
 
     return
 
+
 @app.route('/Monitor')
 def info():
     """
     Status de las ciudades
     """
 
-    vals = [load_config_file(f, abs=True) for f in glob.glob(datafiles + '/*.json')]
+    vals = [load_config_file(f, abspath=True) for f in glob.glob(datafiles + '/*.json')]
 
     res = {}
     for v in vals:
@@ -81,15 +83,15 @@ def info():
         else:
             res[id]['done'] = False
 
-        if len(v['acc']) >0:
+        if len(v['acc']) > 0:
             tmupd = time.mktime(time.strptime(v['time_upd'], '%Y-%m-%d %H:%M:%S'))
-            tepoch = ((tmupd-tminit)/ (len(v['acc'])))
+            tepoch = ((tmupd - tminit) / (len(v['acc'])))
             ep = np.sum(v['config']['train']['epochs']) - len(v['acc'])
             res[id]['acc'] = v['acc'][-1]
             res[id]['val_acc'] = v['val_acc'][-1]
             res[id]['upd'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd))
             res[id]['end'] = time.strftime('%m/%d %H:%M:%S', time.localtime(tmupd + (tepoch * ep)))
-            res[id]['eptime'] = ((tmupd-tminit)/ (len(v['acc']))) /60.0
+            res[id]['eptime'] = ((tmupd - tminit) / (len(v['acc']))) / 60.0
         else:
             res[id]['acc'] = 0
             res[id]['val_acc'] = 0
@@ -97,7 +99,7 @@ def info():
             res[id]['end'] = "pending"
             res[id]['eptime'] = 0
 
-        if len(v['acc']) >1:
+        if len(v['acc']) > 1:
             res[id]['acc_dir'] = v['acc'][-1] > v['acc'][-2]
             res[id]['val_acc_dir'] = v['val_acc'][-1] > v['val_acc'][-2]
         else:
@@ -106,14 +108,10 @@ def info():
 
     old = {}
 
-
     return render_template('FMonitor.html', data=res, old=old)
 
 
-
-
-
-@app.route('/Graph', methods=['GET','POST'])
+@app.route('/Graph', methods=['GET', 'POST'])
 def graphic():
     """
     Generates a page with the training trace
@@ -121,21 +119,21 @@ def graphic():
     :return:
     """
 
-    lstyles = ['-', '-', '-', '-'] *3
-    lcolors = ['r', 'g', 'b', 'y'] *3
+    lstyles = ['-', '-', '-', '-'] * 3
+    lcolors = ['r', 'g', 'b', 'y'] * 3
     payload = request.form['graph']
 
-    vals = load_config_file(datafiles + payload + '.json', abs=True)
+    vals = load_config_file(datafiles + payload + '.json', abspath=True)
     if vals is not None:
         nvals = ['acc', 'val_acc', 'loss', 'val_loss']
 
         img = StringIO.StringIO()
 
-        fig = plt.figure(figsize=(10,8),dpi=200)
-        axes = fig.add_subplot(1,1,1)
+        fig = plt.figure(figsize=(10, 8), dpi=200)
+        axes = fig.add_subplot(1, 1, 1)
 
         for v, color, style in zip(sorted(nvals), lcolors, lstyles):
-            axes.plot(range(len(vals[v])),vals[v], color + style, label=v)
+            axes.plot(range(len(vals[v])), vals[v], color + style, label=v)
 
         axes.set_xlabel('epoch')
         axes.set_ylabel('acc/loss')
@@ -150,12 +148,13 @@ def graphic():
         plot_url = base64.b64encode(img.getvalue())
         plt.close()
 
-        return render_template('Graphview.html', plot_url=plot_url, acc=vals['acc'][-1], vacc=vals['val_acc'][-1], id=payload, ep=len(vals['acc']))
+        return render_template('Graphview.html', plot_url=plot_url, acc=vals['acc'][-1], vacc=vals['val_acc'][-1],
+                               id=payload, ep=len(vals['acc']))
     else:
         return ""
 
 
-@app.route('/Model', methods=['GET','POST'])
+@app.route('/Model', methods=['GET', 'POST'])
 def model():
     """
     Generates a page with the configuration of the training and the model
@@ -163,13 +162,11 @@ def model():
     :return:
     """
 
-
     payload = request.form['model']
 
-    vals = load_config_file(datafiles + payload + '.json', abs=True)
+    vals = load_config_file(datafiles + payload + '.json', abspath=True)
 
     pp = pprint.PrettyPrinter(indent=4)
-
 
     head = """
     <!DOCTYPE html>
@@ -183,13 +180,13 @@ def model():
 
     return head + \
            '<br><h2>Config:</h2><br><br>' + pprint.pformat(vals['config'], indent=4, width=60).replace('\n', '<br>') + \
-           '<br><br><h2>Graph:</h2><br><br>'  +'<br><br><h2>Net:</h2><br><br>'+ \
+           '<br><br><h2>Graph:</h2><br><br>' + '<br><br><h2>Net:</h2><br><br>' + \
            pprint.pformat(vals['model'], indent=4, width=40).replace('\n', '<br>') + \
-            '<br>' + \
+           '<br>' + \
            end
 
 
-@app.route('/Report', methods=['GET','POST'])
+@app.route('/Report', methods=['GET', 'POST'])
 def report():
     """
     Returns a web page with the classification report
@@ -198,7 +195,7 @@ def report():
     """
     payload = request.form['model']
 
-    vals = load_config_file(datafiles + payload + '.json', abs=True)
+    vals = load_config_file(datafiles + payload + '.json', abspath=True)
 
     head = """
     <!DOCTYPE html>
@@ -213,7 +210,7 @@ def report():
     if 'report' in vals:
         return head + \
                '<br><h2>Report:</h2><pre>' + vals['report'] + \
-               '</pre><br><br><h2>Confusion:</h2><pre>' + vals['confusion'] +'</pre><br><br>' + \
+               '</pre><br><br><h2>Confusion:</h2><pre>' + vals['confusion'] + '</pre><br><br>' + \
                end
 
     else:
@@ -228,12 +225,11 @@ def stop():
     :return:
     """
     payload = request.form['model']
-    config = load_config_file(datafiles + '/' + payload + '.json', abs=True)
+    config = load_config_file(datafiles + '/' + payload + '.json', abspath=True)
     config['stop'] = True
 
     with open(datafiles + '/' + payload + '.json', 'w') as outfile:
         json.dump(config, outfile, sort_keys=True, indent=4)
-
 
     head = """
     <!DOCTYPE html>
@@ -249,9 +245,7 @@ def stop():
     return head + str(payload) + ' Stopped' + end
 
 
-
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--datafiles', default='', help='Directory of files to monitor')
     args = parser.parse_args()

@@ -17,15 +17,13 @@ Webservice
 
 """
 
-__author__ = 'bejar'
-
-
 import requests
 
 __author__ = 'bejar'
 
 WS_port = 8870
 Webservice = "http://polaris.lsi.upc.edu:8870/Update"
+
 
 def inform_webservice(city, status):
     """

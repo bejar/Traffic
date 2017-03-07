@@ -32,21 +32,18 @@ if __name__ == '__main__':
     parser.add_argument('--day', default=None, help='Day to clean')
     args = parser.parse_args()
 
-
-
     # day = '20170216'
     day = args.day
     for cam in Cameras:
 
-        ldir = glob.glob(cameras_path + day + '/*%s.gif'%cam)
+        ldir = glob.glob(cameras_path + day + '/*%s.gif' % cam)
 
         lfiles = sorted(ldir)
         ldel = []
-        for i in range(len(lfiles)-1):
-            if filecmp.cmp(lfiles[i], lfiles[i+1], shallow=False):
-                ldel.append(lfiles[i+1])
-                print('R=', lfiles[i+1])
+        for i in range(len(lfiles) - 1):
+            if filecmp.cmp(lfiles[i], lfiles[i + 1], shallow=False):
+                ldel.append(lfiles[i + 1])
+                print('R=', lfiles[i + 1])
         for f in ldel:
             print('Removing=', f)
             os.remove(f)
-

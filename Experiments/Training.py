@@ -1,4 +1,4 @@
-'''
+"""
 .. module:: Training
 
 ConvoBatch
@@ -12,13 +12,12 @@ ConvoBatch
 
 :Authors: bejar
 
-:Version: 
+:Version:
 
-:Created on: 23/12/2016 15:05 
+:Created on: 23/12/2016 15:05
 
-'''
+"""
 
-__author__ = 'bejar'
 
 import argparse
 import json
@@ -34,7 +33,7 @@ from keras.optimizers import SGD, Adagrad, Adadelta, Adam
 from numpy.random import shuffle
 from pymongo import MongoClient
 from sklearn.metrics import confusion_matrix, classification_report
-from Traffic.Util.Misc import load_config_file,  detransweights, recoding_dictionary
+from Traffic.Util.Misc import load_config_file, detransweights, recoding_dictionary
 
 __author__ = 'bejar'
 
@@ -43,6 +42,7 @@ def train_model_batch_lrate_schedule(model, config, test):
     """
     Trains the model when there is a schedule of learning rates
 
+    :param test:
     :param model:
     :param config:
     :return:
@@ -58,6 +58,9 @@ def train_model_batch_lrate_schedule(model, config, test):
     train = Dataset(config['datapath'], config['traindata'], config['zfactor'], imgord=config['imgord'],
                     nclasses=test.nclasses, recode=recode)
 
+    force_stop = False
+    logs = {}
+    iepoch = 0
     # For now only SDG
     for lrate, nepochs in zip(config['optimizer']['params']['lrate'], config['train']['epochs']):
         params = config['optimizer']['params']
@@ -72,7 +75,6 @@ def train_model_batch_lrate_schedule(model, config, test):
         chunks, _ = train.chunks_list()
         for epoch in range(nepochs):
 
-
             shuffle(chunks)
 
             # Train Batches
@@ -86,7 +88,6 @@ def train_model_batch_lrate_schedule(model, config, test):
                     lloss.append(loss)
                     lacc.append(acc)
 
-
             logs['loss'] = float(np.mean(lloss))
             logs['acc'] = float(np.mean(lacc))
 
@@ -98,8 +99,6 @@ def train_model_batch_lrate_schedule(model, config, test):
             if config['savepath']:
                 model.save(config['savepath'] + '/' + str(dblog.id) + '.h5')
 
-
-
             # If the training is stopped remotely training stops
             if force_stop:
                 break
@@ -108,23 +107,22 @@ def train_model_batch_lrate_schedule(model, config, test):
 
     train.close()
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
-    dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
+    dblog.on_train_end(logs={'acc': logs['acc'], 'val_acc': scores[1]})
     y_pred = model.predict_classes(test.X_train, verbose=0)
-    dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred), classification_report(test.y_labels, y_pred))
-
+    dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred),
+                             classification_report(test.y_labels, y_pred))
 
 
 def train_model_batch(model, config, test, resume=None):
     """
     Trains the model using Keras train batch method
 
+    :param resume:
     :param model:
     :param config:
     :param test:
-    :param test_labels:
     :return:
     """
-
 
     if config['optimizer']['method'] == 'adagrad':
         optimizer = Adagrad()
@@ -138,13 +136,12 @@ def train_model_batch(model, config, test, resume=None):
             optimizer = SGD(lr=params['lrate'], momentum=params['momentum'], decay=params['decay'],
                             nesterov=params['nesterov'])
             iepoch = 0
-        else: # Resume training
+        else:  # Resume training
             nlrate = params['lrate'] - ((params['lrate'] / config['train']['epochs']) * params['epochs_trained'])
 
             optimizer = SGD(lr=nlrate, momentum=params['momentum'], decay=params['decay'],
                             nesterov=params['nesterov'])
             iepoch = config['train']['epochs_trained']
-
 
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     classweight = detransweights(config['train']['classweight'])
@@ -195,10 +192,10 @@ def train_model_batch(model, config, test, resume=None):
     train.close()
 
     scores = model.evaluate(test.X_train, test.y_train, verbose=0)
-    dblog.on_train_end(logs={'acc':logs['acc'], 'val_acc':scores[1]})
+    dblog.on_train_end(logs={'acc': logs['acc'], 'val_acc': scores[1]})
     y_pred = model.predict_classes(test.X_train, verbose=0)
-    dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred), classification_report(test.y_labels, y_pred))
-
+    dblog.save_final_results(scores, confusion_matrix(test.y_labels, y_pred),
+                             classification_report(test.y_labels, y_pred))
 
 
 if __name__ == '__main__':
@@ -219,7 +216,7 @@ if __name__ == '__main__':
     test.open()
 
     test.in_memory()
-    config['test_lab_prop'] = test.labprop # Proportions of labels in the test set
+    config['test_lab_prop'] = test.labprop  # Proportions of labels in the test set
 
     config['input_shape'] = test.input_shape
     config['num_classes'] = test.nclasses
@@ -231,7 +228,7 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
-        vals = col.find_one({'_id': int(args.retrain)}, {'config':1})
+        vals = col.find_one({'_id': int(args.retrain)}, {'config': 1})
         if vals is None:
             raise ValueError('This experiment does not exist ' + args.retrain)
         else:
@@ -246,7 +243,7 @@ if __name__ == '__main__':
             config['fulllayers'] = vals['config']['fulllayers']
             config['cont'] = args.retrain
             model = keras.models.load_model(config['savepath'] + args.retrain + '.h5')
-    elif args.resume is not None: # Network interrupted
+    elif args.resume is not None:  # Network interrupted
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)

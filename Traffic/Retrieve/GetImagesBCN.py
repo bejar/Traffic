@@ -30,31 +30,31 @@ __author__ = 'bejar'
 state = 0
 
 while True:
-    todaypath = time.strftime('%Y%m%d', time.localtime(int(time.time())-600))
+    todaypath = time.strftime('%Y%m%d', time.localtime(int(time.time()) - 600))
     if not os.path.exists(cameras_path + todaypath):
         os.mkdir(cameras_path + todaypath)
         os.mkdir(status_path + todaypath)
 
-    rtime = str((int(time.time())-600)*1000)
-    ptime = time.strftime('%Y%m%d%H%M', time.localtime(int(time.time())-600))
+    rtime = str((int(time.time()) - 600) * 1000)
+    ptime = time.strftime('%Y%m%d%H%M', time.localtime(int(time.time()) - 600))
 
     try:
-        print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
+        print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y', time.localtime()))
         req = requests.get('http://www.bcn.cat/transit/dades/dadestrams.dat')
         if req.status_code == 200:
             tram = req.content
-            with open(status_path + todaypath + '/' + '%s-dadestram.data' % (ptime), 'wb') as handler:
-                    handler.write(tram)
+            with open(status_path + todaypath + '/' + '%s-dadestram.data' % ptime, 'wb') as handler:
+                handler.write(tram)
 
             tram = requests.get('http://www.bcn.cat/transit/dades/dadesitineraris.dat').content
-            with open(status_path + todaypath + '/' + '%s-dadesitineraris.data' % (ptime), 'wb') as handler:
-                    handler.write(tram)
+            with open(status_path + todaypath + '/' + '%s-dadesitineraris.data' % ptime, 'wb') as handler:
+                handler.write(tram)
 
-            #if (state % 3) == 0:
-            print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
+            # if (state % 3) == 0:
+            print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y', time.localtime()))
             for cam in Cameras:
-                img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam,rtime)).content
-                with open(cameras_path + todaypath + '/' +'%s-%s.gif' % (ptime, cam), 'wb') as handler:
+                img_data = requests.get('http://www.bcn.cat/transit/imatges/%s.gif?a=1&time=%s' % (cam, rtime)).content
+                with open(cameras_path + todaypath + '/' + '%s-%s.gif' % (ptime, cam), 'wb') as handler:
                     handler.write(img_data)
 
             inform_webservice('BCN', 0)
@@ -68,6 +68,3 @@ while True:
         pass
 
     time.sleep(15 * 60)
-
-
-

@@ -16,12 +16,13 @@ cudatest
 :Date:  25/02/2017
 """
 
-__author__ = 'bejar'
 
 from theano import function, config, shared, sandbox
 import theano.tensor as T
 import numpy
 import time
+
+__author__ = 'bejar'
 
 vlen = 10 * 30 * 768  # 10 x #cores x # threads per core
 iters = 1000

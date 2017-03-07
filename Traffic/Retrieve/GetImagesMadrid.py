@@ -55,26 +55,28 @@ def get_info_cameras():
     # print(data.data)
     soup = BeautifulSoup(str(data.data), "lxml")
     lcameras = []
-    for camera, coord, name in zip(soup.find_all('description'), soup.find_all('coordinates'), soup.find_all(attrs={"name": "Nombre"})):
+    for camera, coord, name in zip(soup.find_all('description'), soup.find_all('coordinates'),
+                                   soup.find_all(attrs={"name": "Nombre"})):
         url_camera = str(camera)
         url_camera = url_camera[url_camera.find('http'):url_camera.find('?')]
         vcoord = str(coord)
-        long = vcoord.split(',')[0].strip()
-        long = long[long.find('>')+1:]
+        longitude = vcoord.split(',')[0].strip()
+        longitude = longitude[longitude.find('>') + 1:]
         lat = vcoord.split(',')[1].strip()
         nombre = str(name)
-        nombre = nombre[nombre.find('ue>')+3:nombre.find('</')]
-        # print(nombre, url_camera, long,lat)
-        lcameras.append((nombre, url_camera, long,lat))
+        nombre = nombre[nombre.find('ue>') + 3:nombre.find('</')]
+        # print(nombre, url_camera, longitude,lat)
+        lcameras.append((nombre, url_camera, longitude, lat))
 
     # f = open(data_path_MAD + 'MAD_cameras.txt', 'w')
 
     with open(data_path_MAD + 'MAD_cameras.txt', 'w') as csvfile:
         camwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
         for camera in lcameras:
             camwriter.writerow(camera)
+
 
 def retrieve_camera(cam, name, ptime):
     """
@@ -91,11 +93,12 @@ def retrieve_camera(cam, name, ptime):
         with open(cameras_path_MAD + todaypath + '/' + '%s-%s.jpg' % (ptime, name), 'wb') as handler:
             handler.write(img_data)
     except ConnectionError:
-        print('CE - error camera: '+name)
+        print('CE - error camera: ' + name)
         return
     except ChunkedEncodingError:
-        print('CEE - error camera: '+name)
+        print('CEE - error camera: ' + name)
         return
+
 
 if __name__ == '__main__':
     # get_info_cameras()
@@ -119,12 +122,12 @@ if __name__ == '__main__':
 
         ptime = time.strftime('%Y%m%d%H%M', time.localtime(int(time.time())))
 
-        print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
+        print('%s Retrieving Traffic Status' % time.strftime('%H:%M %d-%m-%Y', time.localtime()))
 
         try:
             tram = requests.get(niveles).content
             with open(status_path_MAD + todaypath + '/' + '%s-niveles.kml' % ptime, 'wb') as handler:
-                    handler.write(tram)
+                handler.write(tram)
         except ChunkedEncodingError:
             print('Error retrieving status')
             pass
@@ -135,7 +138,7 @@ if __name__ == '__main__':
         try:
             tram = requests.get(intensidades).content
             with open(status_path_MAD + todaypath + '/' + '%s-intensidades.kml' % ptime, 'wb') as handler:
-                    handler.write(tram)
+                handler.write(tram)
         except ChunkedEncodingError:
             print('Error retrieving intensity')
             pass
@@ -143,10 +146,10 @@ if __name__ == '__main__':
             print('Error retrieving intensity')
             pass
 
-        print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y',time.localtime()))
+        print('%s Retrieving Cameras' % time.strftime('%H:%M %d-%m-%Y', time.localtime()))
 
         Parallel(n_jobs=-1)(
-            delayed(retrieve_camera)(cam, name, ptime) for cam, name in zip(lcameras,lnames))
+            delayed(retrieve_camera)(cam, name, ptime) for cam, name in zip(lcameras, lnames))
 
         inform_webservice('MAD', 0)
         time.sleep(3 * 60)

@@ -22,9 +22,10 @@ from Traffic.Config.Constants import results_path
 
 __author__ = 'bejar'
 
-def config_logger(silent=False, file=None, logpath=results_path):
-    if file is not None:
-        logging.basicConfig(filename=logpath + '/' + file + '.log', filemode='w')
+
+def config_logger(silent=False, filename=None, logpath=results_path):
+    if filename is not None:
+        logging.basicConfig(filename=logpath + '/' + filename + '.log', filemode='w')
 
     # Logging configuration
     logger = logging.getLogger('log')

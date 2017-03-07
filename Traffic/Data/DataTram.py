@@ -21,7 +21,6 @@ __author__ = 'bejar'
 
 
 class DataTram:
-
     dt = None
     date = None
 

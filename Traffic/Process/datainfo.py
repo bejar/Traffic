@@ -36,7 +36,7 @@ def euc_dist(c1, c2):
     :param c2:
     :return:
     """
-    return np.sqrt(((c1[0]-c2[0])**2)+((c1[1]-c2[1])**2))
+    return np.sqrt(((c1[0] - c2[0]) ** 2) + ((c1[1] - c2[1]) ** 2))
 
 
 path = '/home/bejar/Data/Traffic/'
@@ -52,7 +52,7 @@ for line in f:
         it = line.strip()
     if c % 3 == 1:
         val = line.strip()
-    if c %3 == 2:
+    if c % 3 == 2:
         tramos[it] = (val, line.strip())
     c += 1
 
@@ -70,14 +70,14 @@ for line in f:
     if v[1] in tramos:
         coord = tramos[v[1]][1].split(' ')
         lcoord = []
-        #print(tramos[v[1]][0])
+        # print(tramos[v[1]][0])
         for c in coord:
             vcoord = c.split(',')
-            #print(vcoord)
+            # print(vcoord)
             lcoord.append((float(vcoord[0]), float(vcoord[1])))
         litin.append([int(v[1]), tramos[v[1]][0], lcoord])
 
-#print(len(litin))
+# print(len(litin))
 
 # for v in sorted(litin):
 #     print(v)
@@ -91,18 +91,16 @@ for cam in Cameras:
     for ni, street, iti in litin:
 
         for i in iti:
-            if euc_dist(coord,i) < mdist:
+            if euc_dist(coord, i) < mdist:
                 mdist2 = mdist
-                mdist = euc_dist(coord,i)
+                mdist = euc_dist(coord, i)
                 res[2] = res[1]
                 res[1] = ni
                 res[4] = res[3]
                 res[3] = street
-            elif euc_dist(coord,i) < mdist2:
-                mdist2 = euc_dist(coord,i)
+            elif euc_dist(coord, i) < mdist2:
+                mdist2 = euc_dist(coord, i)
                 res[2] = ni
                 res[4] = street
 
     print('%s, %d, %d, %s, %s' % (res[0], res[1], res[2], res[3], res[4]))
-
-

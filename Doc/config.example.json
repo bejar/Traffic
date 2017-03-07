@@ -1,32 +1,82 @@
 {
- "datapath": "/home/bejar/storage/Data/Traffic/Datasets/",
- "savepath": "/home/bejar/storage/Data/Traffic/Models/",
- "traindata": [[2016,11,1,30],[2016,10,29,31]],
- "testdata": [[2016, 12, 1,2]],
- "rebalanced": false,
- "recode": "0|0,1|1,2|2,3|3,4|4",
- "zfactor": 0.25,
- "model": 4,
- "convolayers":
-  {"sizes": [128, 64, 32],
-   "convofields": [3, 3],
-   "reg": ["drop", 0.2],
-   "pool": ["max", 2, 2]},
- "fulllayers":
-  {"sizes": [64, 32],
-   "reg": ["l1", 0.2]},
- "optimizer":
-   {"method": "sgd",
-    "params":
-     {"lrate": 0.005,
+  "datapath": "/home/bejar/storage/Data/Traffic/Datasets/",
+  "savepath": "/home/bejar/storage/Data/Traffic/Models/",
+  "traindata": [
+    [
+      2016,
+      11,
+      1,
+      30
+    ],
+    [
+      2016,
+      10,
+      29,
+      31
+    ]
+  ],
+  "testdata": [
+    [
+      2016,
+      12,
+      1,
+      2
+    ]
+  ],
+  "rebalanced": false,
+  "recode": "0|0,1|1,2|2,3|3,4|4",
+  "zfactor": 0.25,
+  "model": 4,
+  "convolayers": {
+    "sizes": [
+      128,
+      64,
+      32
+    ],
+    "convofields": [
+      3,
+      3
+    ],
+    "reg": [
+      "drop",
+      0.2
+    ],
+    "pool": [
+      "max",
+      2,
+      2
+    ]
+  },
+  "fulllayers": {
+    "sizes": [
+      64,
+      32
+    ],
+    "reg": [
+      "l1",
+      0.2
+    ]
+  },
+  "optimizer": {
+    "method": "sgd",
+    "params": {
+      "lrate": 0.005,
       "momentum": 0.9,
       "decay": 0,
       "nesterov": false
-      }},
- "train":
-   {"batchsize": 256,
+    }
+  },
+  "train": {
+    "batchsize": 256,
     "epochs": 200,
-    "classweight": {"0": 1.0, "1": 1.0, "2": 2.0, "3": 3.0, "4": 4.0}},
- "imgord": "th",
- "log": "db"
+    "classweight": {
+      "0": 1.0,
+      "1": 1.0,
+      "2": 2.0,
+      "3": 3.0,
+      "4": 4.0
+    }
+  },
+  "imgord": "th",
+  "log": "db"
 }
