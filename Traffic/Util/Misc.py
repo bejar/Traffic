@@ -151,7 +151,7 @@ def name_days_file(ldays):
 
 def dist_time(time1, time2):
     """
-    distance between two hours
+    distance between two hours in minutes
 
     :param time1:
     :param time2:
@@ -160,6 +160,16 @@ def dist_time(time1, time2):
     t1 = (time1 % 100) + (60 * ((time1 // 100) % 100))
     t2 = (time2 % 100) + (60 * ((time2 // 100) % 100))
     return t2 - t1
+
+def get_hour(time1):
+    """
+    returns the hour of an integer coded yyyymmddhhmm
+
+    :param time1:
+    :param time2:
+    :return:
+    """
+    return (time1 // 100) % 100
 
 
 if __name__ == '__main__':

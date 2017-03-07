@@ -27,7 +27,7 @@ from Traffic.Process.CamTram import CamTram
 import pickle
 import h5py
 from Traffic.Data.TrImage import TrImage
-from Traffic.Util.Misc import list_days_generator, name_days_file, dist_time
+from Traffic.Util.Misc import list_days_generator, name_days_file, dist_time, get_hour
 
 __author__ = 'bejar'
 
@@ -281,7 +281,7 @@ def generate_data_day(day, z_factor, method='two', mxdelay=60, log=False):
 # --------------------------------------------------------------------------------------
 # New functions for generating the datasets
 
-def generate_image_labels(day, mxdelay=30, onlyfuture=True):
+def generate_image_labels(day, mxdelay=30, onlyfuture=True, hourban=(None,None)):
     """
     Generates a dictionary with the dates of the images with lists that contain the camera name and current
     traffic status using the two nearest prediction in space
@@ -298,6 +298,13 @@ def generate_image_labels(day, mxdelay=30, onlyfuture=True):
     CTram = CamTram()
 
     for imgtime in sorted(camdic):
+        if hourban[0] is not None and hourban[1] is not None and hourban[0] <= get_hour(imgtime) <= hourban[1]:
+            continue
+        if hourban[0] is not None and hourban[1] is None and hourban[0] <= get_hour(imgtime) <= 24:
+            continue
+        if hourban[0] is None and hourban[1] is not None and 0 <= get_hour(imgtime) <= hourban[1]:
+            continue
+
         # Look for the status and forecast closer to the image only future or future and past
         dmin = None
         vmin = 100
@@ -325,12 +332,11 @@ def generate_image_labels(day, mxdelay=30, onlyfuture=True):
                 # store for an image of that time the name and worst status from the two closest positions
                 lclass.append((img, max(dmin.dt[tram1][0], dmin.dt[tram2][0])))
             assoc[imgtime] = lclass
-
     return assoc
 
 
 def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=True, log=False, imgordering='th',
-                                 augmentation=False):
+                                 augmentation=[], hourban=(None,None)):
     """
     Generates a raw dataset for a day with a zoom factor (data and labels)
     :param augmentation:
@@ -347,7 +353,7 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
     llabels = []
     limages = []
 
-    dataset = generate_image_labels(day, mxdelay=mxdelay, onlyfuture=onlyfuture)
+    dataset = generate_image_labels(day, mxdelay=mxdelay, onlyfuture=onlyfuture, hourban=hourban)
     image = TrImage()
     for t in dataset:
         for cam, l in dataset[t]:
@@ -359,12 +365,12 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
                     ldata.append(image.transform_image(z_factor=z_factor, crop=(5, 5, 5, 5)))
                     llabels.append(l)
                     limages.append(day + '/' + str(t) + '-' + cam)
-                    if augmentation:
+                    if l - 1 in augmentation:
                         aug = image.data_augmentation()
-                        for im in aug:
+                        for cnt, im in enumerate(aug):
                             ldata.append(im)
                             llabels.append(l)
-                            limages.append(day + '/' + str(t) + '-' + cam)
+                            limages.append(day + '/' + str(t) + '-' + cam + str(cnt))
 
     X_train = np.array(ldata)
     if imgordering == 'th':
@@ -437,7 +443,7 @@ def chunkify(lchunks, size, test=False):
 
 
 def generate_training_dataset(datapath, ldays, chunk=1024, z_factor=0.25, imgordering='th', test=False,
-                              compress='gzip'):
+                              compress='gzip', augmentation=[]):
     """
     Generates an hdf5 file for a list of days with blocks of data for training
     It need the files for each day, the data is grouped and chunked in same sized

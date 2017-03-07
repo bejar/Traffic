@@ -93,6 +93,7 @@ class TrImage:
             img = img.resize((int(z_factor * img.size[0]), int(z_factor * img.size[1])), PIL.Image.ANTIALIAS).convert(
                 'RGB')
             self.data = np.asarray(img) / 255.0  # Normalize to [0-1] range
+            self.trans = True
         else:
             raise Exception('Image already transformed')
         return self.data
@@ -146,6 +147,11 @@ if __name__ == '__main__':
         im = image.transform_image(z_factor=0.5, crop=(5, 5, 5, 5))
         print im.shape
         image.show()
+
+        nimg = TrImage()
+        nimg.data = image.data_augmentation()[0]
+        nimg.show()
+
     image.load_image(cameras_path + '/20161101/201611010004-PlPauVila.gif')
     image.show()
     if image.is_correct():
