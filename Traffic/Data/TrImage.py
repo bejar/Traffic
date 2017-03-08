@@ -138,19 +138,39 @@ class TrImage:
 
     def bad_pixels(self, nbins, percentage):
         """
-        Returs if the pixels binarize in nbins represent more than a percentage of the image
+        Returs if the pixels combining the RBG components and binarized in nbins represent more than a percentage of the image
         :param perc:
         :return:
         """
         if self.data is not None and self.trans:
             cutout = int(self.data.shape[0] * self.data.shape[1] * (percentage/100.0))
-            # mprod = self.data[:, :, 0] * (self.data[:, :, 1] + 1) * (self.data[:, :, 0] + 2)
             mprod = self.data[:, :, 0] + 10 * self.data[:, :, 1] + 100 * self.data[:, :, 0]
             hist, bins = np.histogram(mprod.ravel(), bins=nbins)
             return np.max(hist) > cutout
         else:
             raise Exception('Image not yet transformed')
 
+    def truncated_bad_pixels(self, nbins, percentage):
+        """
+        Returns if the pixels binarizing the RGB components in nbins represents more than a percentage of the image
+        :param perc:
+        :return:
+        """
+        if self.data is not None and self.trans:
+            cutout = int(self.data.shape[0] * self.data.shape[1] * (percentage/100.0))
+            pixels_dict = {}
+
+            for i in range(self.data.shape[0]):
+                for j in range(self.data.shape[1]):
+                    coord = (int(self.data[i,j,0] * nbins),int(self.data[i,j,1] * nbins),int(self.data[i,j,2] * nbins))
+                    if coord in pixels_dict:
+                        pixels_dict[coord] += 1
+                    else:
+                        pixels_dict[coord] = 1
+            hist = np.array([pixels_dict[c] for c in pixels_dict])
+            return np.max(hist) > cutout
+        else:
+            raise Exception('Image not yet transformed')
 
     def histogram(self):
         """
@@ -179,8 +199,13 @@ if __name__ == '__main__':
     image = TrImage()
     for img in limg:
         image.load_image(img)
-        image.transform_image(z_factor=0.5, crop=(5, 5, 5, 5))
-        if image.bad_pixels(100, 20):
+        image.transform_image(z_factor=0.25, crop=(5, 5, 5, 5))
+        if image.truncated_bad_pixels(10, 20) or image.bad_pixels(120, 20):
+            if image.truncated_bad_pixels(10, 20):
+                print 'truncated'
+            if image.bad_pixels(120, 20):
+                print 'not truncated'
+
             image.histogram()
 
     # image.load_image(cameras_path + '/20161101/201611011453-RondaLitoralZonaFranca.gif')
