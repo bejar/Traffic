@@ -34,9 +34,13 @@ if __name__ == '__main__':
     parser.add_argument('--delay', default='15', help='Time Delay')
     parser.add_argument('--idate', default='20161101', help='First day')
     parser.add_argument('--fdate', default='20161130', help='Final day')
-    parser.add_argument('--ihban', default=None, help='Initial ban hour', type=int)
-    parser.add_argument('--fhban', default=None, help='Final ban hour', type=int)
+    # Dicards images from an hour larger or equal than the first element and  less or equal than the second element
+    parser.add_argument('--hourban', nargs='+', default=[None, None], help='Initial ban hour', type=int)
+
     parser.add_argument('--augmentation', nargs='+', default=[], help='Use data augmentation for certain classes', type=int)
+    # The badpixels filted discards the images using a histogram of colors, it has two values
+    # number of bins for the histogram and a percentage that is the threshold for discarding the image
+    parser.add_argument('--badpixels', nargs='+', default=None, help='Apply the badpixels filter to the images', type=int)
     # for compresssing uses as value in the parameter gzip
     parser.add_argument('--compress', action='store_true', default=False, help='Compression for the HDF5 file')
 
@@ -48,8 +52,33 @@ if __name__ == '__main__':
     mxdelay = int(args.delay)
     days = list_range_days_generator(args.idate, args.fdate)
     compress = 'gzip' if args.compress else None
-    ihour = args.ihban
-    fhour = args.fhban
+
+    if len(args.hourban) > 0:
+        if args.hourban[0] is None or 0<= args.hourban[0] <= 23:
+            ihour = args.hourban[0]
+        else:
+            raise Exception('Parameters for HOURBAN incorrect hours in [0,23]')
+
+    if len(args.hourban) == 2:
+        if args.hourban[0] is None or 0<= args.hourban[1] <= 23:
+            fhour = args.hourban[1]
+        else:
+            raise Exception('Parameters for HOURBAN incorrect hours in [0,23]')
+    else:
+        fhour = None
+
+
+    if args.badpixels is not None:
+        if len(args.badpixels) == 2:
+            nbin = args.badpixels[0]
+            if 0 <= args.badpixels[1] <= 100:
+                perc = args.badpixels[1]
+            else:
+                raise Exception('Parameters for BADPIXELS incorrect Percentage in [0,100]')
+        else:
+            raise Exception('Parameters for BADPIXELS incorrect')
+    else:
+        nbin, perc = None, None
 
     print 'Generating data for:'
     print 'ID = ', days[0]
@@ -60,9 +89,11 @@ if __name__ == '__main__':
     print 'DLY = ', mxdelay
     print 'TEST = ', args.test
     if ihour is not None:
-        print 'IHBAN = ', args.ihban
+        print 'IHBAN = ', args.hourban[0]
     if fhour is not None:
-        print 'FHBAN = ', args.fhban
+        print 'FHBAN = ', args.hourban[1]
+    if args.badpixels is not [None, None]:
+        print 'BPXS = ', args.badpixels
     print 'AUG = ', args.augmentation
     print 'COMPRESS = ', compress
 
@@ -71,7 +102,7 @@ if __name__ == '__main__':
     for day in days:
         print 'Generating %s' % day
         generate_labeled_dataset_day(process_path, day, z_factor, mxdelay=mxdelay, onlyfuture=False, imgordering=imgord,
-                                     augmentation=args.augmentation, hourban=(ihour, fhour))
+                                     augmentation=args.augmentation, hourban=(ihour, fhour), badpixels=(nbin,perc))
 
     print
     print 'Days info ...'

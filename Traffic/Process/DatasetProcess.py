@@ -336,7 +336,7 @@ def generate_image_labels(day, mxdelay=30, onlyfuture=True, hourban=(None,None))
 
 
 def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=True, log=False, imgordering='th',
-                                 augmentation=[], hourban=(None,None)):
+                                 augmentation=[], hourban=(None,None), badpixels=[None,None]):
     """
     Generates a raw dataset for a day with a zoom factor (data and labels)
     :param augmentation:
@@ -362,15 +362,17 @@ def generate_labeled_dataset_day(path, day, z_factor, mxdelay=60, onlyfuture=Tru
                     print(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 image.load_image(cameras_path + day + '/' + str(t) + '-' + cam + '.gif')
                 if image.is_correct():
-                    ldata.append(image.transform_image(z_factor=z_factor, crop=(5, 5, 5, 5)))
-                    llabels.append(l)
-                    limages.append(day + '/' + str(t) + '-' + cam)
-                    if l - 1 in augmentation:
-                        aug = image.data_augmentation()
-                        for cnt, im in enumerate(aug):
-                            ldata.append(im)
-                            llabels.append(l)
-                            limages.append(day + '/' + str(t) + '-' + cam + str(cnt))
+                    image.transform_image(z_factor=z_factor, crop=(5, 5, 5, 5))
+                    if badpixels[0] is None or not image.bad_pixels(badpixels[0], badpixels[1]):
+                        ldata.append(image.get_data())
+                        llabels.append(l)
+                        limages.append(day + '/' + str(t) + '-' + cam)
+                        if l - 1 in augmentation:
+                            aug = image.data_augmentation()
+                            for cnt, im in enumerate(aug):
+                                ldata.append(im)
+                                llabels.append(l)
+                                limages.append(day + '/' + str(t) + '-' + cam + str(cnt))
 
     X_train = np.array(ldata)
     if imgordering == 'th':
