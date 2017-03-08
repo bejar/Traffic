@@ -144,7 +144,8 @@ class TrImage:
         """
         if self.data is not None and self.trans:
             cutout = int(self.data.shape[0] * self.data.shape[1] * (percentage/100.0))
-            mprod = self.data[:, :, 0] * (self.data[:, :, 1]+1) * (self.data[:, :, 0]+2)
+            # mprod = self.data[:, :, 0] * (self.data[:, :, 1] + 1) * (self.data[:, :, 0] + 2)
+            mprod = self.data[:, :, 0] + 10 * self.data[:, :, 1] + 100 * self.data[:, :, 0]
             hist, bins = np.histogram(mprod.ravel(), bins=nbins)
             return np.max(hist) > cutout
         else:
@@ -163,13 +164,10 @@ class TrImage:
             fig.set_figheight(10)
             sp1 = fig.add_subplot(1, 2, 1)
             sp1.imshow(self.data)
-            cutout = int(self.data.shape[0] * self.data.shape[1] * 0.3)
-            mprod = self.data[:, :, 0] * (self.data[:, :, 1]+1) * (self.data[:, :, 0]+2)
+            mprod = self.data[:, :, 0] + 10 * self.data[:, :, 1] + 100 * self.data[:, :, 0]
             hist, bins = np.histogram(mprod.ravel(), bins=50)
-            climg = 'GOOD' if np.max(hist) < cutout else 'BAD'
             sp2 = fig.add_subplot(1, 2, 2)
             sp2.plot(bins[:-1], hist, 'r')
-            plt.title(climg)
             plt.show()
             plt.close()
         else:
@@ -181,8 +179,8 @@ if __name__ == '__main__':
     image = TrImage()
     for img in limg:
         image.load_image(img)
-        image.transform_image(z_factor=0.25, crop=(5, 5, 5, 5))
-        if image.bad_pixels(100, 40):
+        image.transform_image(z_factor=0.5, crop=(5, 5, 5, 5))
+        if image.bad_pixels(100, 20):
             image.histogram()
 
     # image.load_image(cameras_path + '/20161101/201611011453-RondaLitoralZonaFranca.gif')
